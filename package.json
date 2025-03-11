@@ -1,5 +1,5 @@
 {
-  "name": "readium-playground",
+  "name": "nyu-press-reader",
   "description": "Play with the capabilities of the Readium Web toolkit",
   "keywords": [
     "readium",
@@ -21,7 +21,8 @@
     "lint": "next lint",
     "deploy": "npx @cloudflare/next-on-pages && npx wrangler pages deploy",
     "preinstall": "npx only-allow pnpm && cd ./src/readium/ts-toolkit && pnpm install",
-    "postinstall": "pnpm run build:submodules"
+    "postinstall": "pnpm run build:submodules",
+    "syncgit": "git submodule update --init --recursive && git submodule sync --recursive && git submodule update --remote --recursive"
   },
   "dependencies": {
     "@readium/navigator": "link:src/readium/ts-toolkit/navigator",

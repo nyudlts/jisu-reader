@@ -1,0 +1,330 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+
+import { RSPrefs } from "@/preferences";
+import Locale from "../resources/locales/en.json";
+
+import { Locator } from "@readium/shared";
+import { ActionComponentVariant, ActionKeys, IActionComponentContainer, IActionComponentTrigger } from "@/models/actions";
+
+import tocStyles from "./assets/styles/toc.module.css";
+import "./assets/styles/nyuSearchResults.css"; // Import regular CSS file
+
+import LocationIcon from "./assets/icons/nyu_search.svg";
+
+import { ActionIcon } from "./ActionTriggers/NYUActionIcon";
+import { SheetWithType } from "./Sheets/SheetWithType";
+import { OverflowMenuItem } from "./ActionTriggers/OverflowMenuItem";
+import { Button, Disclosure, Form, Heading, Input, Key, Link as AriaLink, TextField, DisclosurePanel } from "react-aria-components";
+import { ListBox, ListBoxItem } from "react-aria-components";
+import {
+  UNSTABLE_Tree as Tree,
+  UNSTABLE_TreeItem as TreeItem,
+  UNSTABLE_TreeItemContent as TreeItemContent,
+} from "react-aria-components";
+
+import { useEpubNavigator } from "@/hooks/useEpubNavigator";
+import { useDocking } from "@/hooks/useDocking";
+
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { setActionOpen } from "@/lib/actionsReducer";
+import { SheetTypes } from "@/models/sheets";
+
+interface SearchResult {
+  id: string;
+  href: string;
+  bookTitle: string;
+  chapterTitle: string;
+  bookID: string;
+}
+
+interface Highlighting {
+  [key: string]: {
+    content: string[];
+  };
+}
+
+interface JsonResponse {
+  response: {
+    numFound: number;
+    docs: SearchResult[];
+  };
+  highlighting: Highlighting;
+}
+
+export const NYUSearchContainer: React.FC<IActionComponentContainer> = ({ triggerRef }) => {
+  const actionState = useAppSelector(state => state.actions.keys[ActionKeys.nyuSearch]);
+  const dispatch = useAppDispatch();
+  const { go } = useEpubNavigator();
+
+  const isDev = process.env.NODE_ENV === "development";
+  const NYU_PRESS_API = isDev ? 'http://localhost:3001' : 'http://35.95.95.96:3001';
+
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [highlighting, setHighlighting] = useState<Highlighting>({});
+  const [groupedResults, setGroupedResults] = useState<Record<string, SearchResult[]>>({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [numFound, setNumFound] = useState(-1);
+  const [booksFound, setBooksFound] = useState(0);
+  const currentTitle = useAppSelector(state => state.publication.runningHead);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const docking = useDocking(ActionKeys.nyuSearch);
+  const sheetType = docking.sheetType;
+
+  const setOpen = (value: boolean) => {
+    dispatch(setActionOpen({ 
+      key: ActionKeys.nyuSearch,
+      isOpen: value 
+    }));
+  }
+
+  useEffect(() => {
+    //on first run, check if there is a search term in the URL
+    const urlSearchTerm = searchParams.get("search");
+    //if so, set the searchTerm and call the search API
+    if (urlSearchTerm) {
+      setSearchTerm(urlSearchTerm);
+      callSearchAPI(urlSearchTerm);
+    }
+  }, []);
+
+  const handleAction = (key: Key) => {
+    const keyString = key.toString();
+    const [chapterID, highlightNum] = keyString.split("-").map(Number);
+    const snippet = highlighting[chapterID].content[highlightNum];
+    const context = extractContextSnippet(snippet);
+    const before = context?.before;
+    const after = context?.after;
+    const highlight = context?.highlight;
+    const searchResult = findResultById(chapterID.toString(), results);
+    const href = searchResult?.href || "";
+    const title = searchResult?.bookTitle || "";
+    const bookID = searchResult?.bookID || "";
+
+    console.log("PK Navigating to:", title, href, bookID, before, after, highlight);
+
+    //create locator to find the highligh in the book
+    const locatorData = {
+      href: href,
+      type: "application/xhtml+xml",
+      "locations": {
+          "progression": 0.750
+      },
+      text: {after: after, before: before, highlight: highlight}
+    };
+
+    function getBookIDFromUrl(url: string): string | undefined {
+      if (!url) return undefined;
+      return url.split('/').pop() ?? '';
+    }
+
+    const bookParam = searchParams.get("book");
+    const urlBookID = getBookIDFromUrl(bookParam!);
+
+    console.log("PK BookID", bookID, urlBookID);
+
+    //TODO Switch to bookID instead of title
+    if (bookID === urlBookID) {
+      // If the title is the same as the current title just go to the locator
+      const myLocator = Locator.deserialize(locatorData);
+      console.log("PK Navigating to locator", myLocator);
+      go(myLocator! , true, () => {});
+    } else {
+      const host = typeof window !== "undefined" ? `${window.location.origin}${pathname}` : "";
+      const bookUrl = searchParams.get("book"); // Extract "book" param from URL
+      const newBookUrl = bookUrl!.replace(/\/[^/]+$/, `/${bookID}`);
+      const encodedLocator = encodeURIComponent(JSON.stringify(locatorData));
+
+      const deepLink = `${host}?book=${newBookUrl}&locator=${encodedLocator}&search=${searchTerm}`;
+      console.log("PK DeepLink", deepLink);
+
+      //router.push(deepLink);
+      //window.open(deepLink, "_blank");
+      window.location.href = deepLink;
+    }
+
+  };
+
+  const findResultById = (id: string, results: SearchResult[]): SearchResult | undefined => {
+    return results.find((result) => result.id === id);
+  };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    // Prevent default browser page refresh.
+    e.preventDefault();
+
+    // Get form data as an object.
+    let searchForm = Object.fromEntries(new FormData(e.currentTarget));
+    setSearchTerm(`${searchForm.term}`);
+    callSearchAPI(`${searchForm.term}`);
+
+  };
+
+  const callSearchAPI = async (term: string) => {
+    try {
+      const response = await fetch(`${NYU_PRESS_API}/search?q=${term}`);
+      const data: JsonResponse = await response.json();
+      setNumFound(data.response.numFound);
+      setResults(data.response.docs);   
+      setHighlighting(data.highlighting);
+      const grouped = groupByBookTitle(data.response.docs);
+      const numBooks = Object.keys(grouped).length;
+      setBooksFound(numBooks);
+      setGroupedResults(grouped);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }; 
+
+  const groupByBookTitle = (data: SearchResult[]): Record<string, SearchResult[]> => {
+    return data.reduce((acc: Record<string, SearchResult[]>, item) => {
+      if (!acc[item.bookTitle]) {
+        acc[item.bookTitle] = [];
+      }
+      acc[item.bookTitle].push(item);
+      return acc;
+    }, {});
+  };
+
+  const currentTitleFirst = Object.entries(groupedResults).sort(([keyA], [keyB]) => {
+    if (keyA === currentTitle) return -1; 
+    if (keyB === currentTitle) return 1;
+    return 0; 
+  });
+
+  // Function to extract the first occurrence of [BEFORE] and [AFTER]
+  const extractContextSnippet = (snippet: string, beforeWords = 18, afterWords = 10) => {
+    const match = snippet.match(/\[BEFORE\](.*?)\[AFTER\]/); // Find the first match
+    if (!match) return null; // If no highlighted term found, return null
+
+    const searchTerm = match[1]; // Extract search term
+    const words = snippet.split(/\s+/); // Split text into words
+
+    // Find the index of the first occurrence of `[BEFORE]search-term[AFTER]`
+    const searchIndex = words.findIndex(word => word.includes(`[BEFORE]${searchTerm}[AFTER]`));
+    if (searchIndex === -1) return null; // If no match, return null
+
+    // Get words before and after, ensuring we don't go out of bounds
+    const startIdx = Math.max(0, searchIndex - beforeWords);
+    const endIdx = Math.min(words.length, searchIndex + afterWords + 1);
+    const contextWords = words.slice(startIdx, endIdx).join(" ");
+
+    return {
+      before: words.slice(startIdx, searchIndex).join(" "),
+      highlight: searchTerm,
+      after: words.slice(searchIndex + 1, endIdx).join(" "),
+      formattedSnippet: contextWords.replace(/\[BEFORE\](.*?)\[AFTER\]/, `<em class="search-highlight">$1</em>`),
+    };
+  };
+
+  const makeSafeID = (str: string) => {
+    return str.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+  };
+
+  return(
+    <>
+    <SheetWithType 
+      sheetType={ sheetType }
+      sheetProps={ {
+        id: ActionKeys.nyuSearch,
+        triggerRef: triggerRef, 
+        heading: Locale.reader.nyuSearch.heading,
+        className: tocStyles.toc,
+        placement: "bottom",
+        isOpen: actionState.isOpen || false,
+        onOpenChangeCallback: setOpen,
+        onClosePressCallback: () => setOpen(false),
+        docker: docking.getDocker()
+      } }
+    >
+      <Form onSubmit={onSubmit} className="search-form">
+        <TextField name="term" className="input-container" defaultValue={searchTerm}>
+          <Input className="input-field"/>
+        </TextField>
+        <Button type="submit" className="submit-button">Search</Button>
+      </Form>
+
+      {numFound !== -1 && <div className="num-found">Results found: {numFound} chapters, in {booksFound} books.  </div>}
+
+      <div style={{ padding: "0px", maxWidth: "600px", margin: "0 auto" }}>
+        {currentTitleFirst.map(([bookTitle, chapters]) => (
+          <Disclosure key={bookTitle} defaultExpanded={true}>
+            <div key={bookTitle} id={makeSafeID(bookTitle)} style={{ marginBottom: "30px" }}>
+              <div key={bookTitle} className="book-title-header">
+                <Heading key={bookTitle} className="book-title">
+                <Button slot="trigger">
+                  <svg viewBox="0 0 24 24">
+                    <path d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                  </svg>
+                  {bookTitle}
+                </Button>
+     
+                </Heading>
+              </div>
+              <DisclosurePanel>
+              {chapters.map((chapter) => (
+                <div key={chapter.id}>
+                  <div key={chapter.id} className="chapter-title">
+                    {chapter.chapterTitle}
+                  </div>
+
+                  {/* Add the highlights returned for each chapter as a ListBox */}
+                  <ListBox key={chapter.chapterTitle} aria-label={`Search Results for ${chapter.chapterTitle}`}>
+                    {highlighting[chapter.id]?.content.map((highlight, index) => (
+                      <ListBoxItem key={index} className="listbox-item" onAction={() => handleAction(`${chapter.id}-${index}`)}>
+                        <p dangerouslySetInnerHTML={{ __html: extractContextSnippet(highlight)?.formattedSnippet as string}} />
+                      </ListBoxItem>
+                    ))}
+
+                  </ListBox>
+                </div>
+              ))}
+              </DisclosurePanel>
+            </div>
+          </Disclosure>
+        ))}
+        
+      </div>
+    </SheetWithType>
+    </>
+  )
+}
+
+export const NYUSearchAction: React.FC<IActionComponentTrigger> = ({ variant }) => {
+  const actionState = useAppSelector(state => state.actions.keys[ActionKeys.nyuSearch]);
+  const dispatch = useAppDispatch();
+
+  const setOpen = (value: boolean) => {
+    dispatch(setActionOpen({ 
+      key: ActionKeys.nyuSearch,
+      isOpen: value 
+    }));
+  }
+
+  return(
+    <>
+    { (variant && variant === ActionComponentVariant.menu) 
+      ? <OverflowMenuItem 
+          label={ Locale.reader.toc.trigger }
+          SVG={ LocationIcon } 
+          shortcut={ RSPrefs.actions.keys[ActionKeys.nyuSearch].shortcut }
+          id={ ActionKeys.nyuSearch }
+          onActionCallback={ () => setOpen(!actionState.isOpen) }
+        />
+      : <ActionIcon 
+          visibility={ RSPrefs.actions.keys[ActionKeys.nyuSearch].visibility }
+          ariaLabel={ Locale.reader.toc.trigger } 
+          SVG={ LocationIcon } 
+          placement="bottom"
+          tooltipLabel={ Locale.reader.toc.tooltip } 
+          onPressCallback={ () => setOpen(!actionState.isOpen) }
+        />
+    }
+    </>
+  )
+}

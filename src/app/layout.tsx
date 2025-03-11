@@ -9,8 +9,8 @@ export const runtime = "edge";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Readium Playground",
-  description: "Play with the capabilities of the Readium Web Toolkit",
+  title: "NYU Press Reader",
+  description: "An ebook reader based on the Readium Web Toolkit",
 };
 
 export default function RootLayout({

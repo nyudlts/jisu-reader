@@ -8,7 +8,8 @@ export const useColorScheme = () => {
   const colorScheme = useAppSelector(state => state.theming.colorScheme);
   const dispatch = useAppDispatch();
 
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+  //NYU PRESS Theme is always light
+  const prefersDarkMode = false; //useMediaQuery("(prefers-color-scheme: dark)");
 
   useEffect(() => {
     dispatch(setColorScheme(

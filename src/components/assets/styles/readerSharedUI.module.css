@@ -1,4 +1,5 @@
 .icon,
+.nyuIcon,
 .dockerButton,
 .closeButton {
   box-sizing: border-box;
@@ -19,13 +20,21 @@
   height: var(--icon-size, 24px);
 }
 
+.nyuIcon svg {
+  fill: #ffffff;
+  width: var(--icon-size, 24px);
+  height: var(--icon-size, 24px);
+}
+
 .icon[data-hovered],
+.nyuIcon[data-hovered],
 .dockerButton[data-hovered],
 .closeButton[data-hovered] {
   background-color: var(--theme-hover);
 }
 
 .icon[data-focus-visible],
+.nyuIcon[data-focus-visible],
 .dockerButton[data-focus-visible],
 .closeButton[data-focus-visible] {
   outline: 2px solid var(--theme-focus);
@@ -33,6 +42,7 @@
 
 .icon[data-disabled] svg,
 .dockerButton[data-disabled] svg,
+.nyuIcon[data-disabled] svg,
 .closeButton[data-disabled] svg {
   fill: var(--theme-disable);
 }
