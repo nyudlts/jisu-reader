@@ -9,4 +9,5 @@ export interface IPublicationState {
   atPublicationStart: boolean;
   atPublicationEnd: boolean;
   tocTree?: TocItem[];
+  chapterHref?: string;
 }

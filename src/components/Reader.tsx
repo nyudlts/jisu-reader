@@ -27,7 +27,7 @@ import { ReaderWithDock } from "./ReaderWithPanels";
 
 import { ReaderHeader } from "./NYUReaderHeader";
 import { ArrowButton } from "./ArrowButton";
-import { ReaderFooter } from "./ReaderFooter";
+import { ReaderFooter } from "./NYUReaderFooter";
 
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 import { useFullscreen } from "@/hooks/useFullscreen";
@@ -41,7 +41,7 @@ import { getPlatformModifier } from "@/helpers/keyboard/getMetaKeys";
 import { createTocTree } from "@/helpers/toc/createTocTree";
 
 import { setImmersive, setHovering, toggleImmersive, setPlatformModifier, setDirection, setArrows } from "@/lib/readerReducer";
-import { setFXL, setRTL, setProgression, setRunningHead, setTocTree } from "@/lib/publicationReducer";
+import { setFXL, setRTL, setProgression, setRunningHead, setTocTree, setChapterHref } from "@/lib/publicationReducer";
 import { toggleActionOpen } from "@/lib/actionsReducer";
 import { useAppSelector, useAppDispatch, useAppStore } from "@/lib/hooks";
 
@@ -237,6 +237,8 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
         
         const debouncedHandleProgression = debounce(
           () => {
+            //NYU Press set chapter href in redux, used in NYUReaderFooter
+            dispatch(setChapterHref(locator.href));
             handleProgression(locator);
             localData.set(localDataKey.current, locator);
           }, 250);

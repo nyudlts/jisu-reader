@@ -18,6 +18,13 @@
       "footer": {
         "label": "Bottom bar"
       },
+      "nyuFooterTitle": {
+        "label": "Chapter Title",
+        "of": "{{ current }} of {{ reference }}",
+        "referenceFallback": "current chapter",
+        "pubFallback": "the publication",
+        "footerTitleFallback": ""
+      },
       "progression": {
         "wrapper": "Current progression",
         "of": "{{ current }} of {{ reference }}",

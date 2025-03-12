@@ -8,7 +8,8 @@ const initialState: IPublicationState = {
   progression: {},
   atPublicationStart: false,
   atPublicationEnd: false,
-  tocTree: undefined, 
+  tocTree: undefined,
+  chapterHref: undefined, 
 }
 
 export const publicationSlice = createSlice({
@@ -36,6 +37,9 @@ export const publicationSlice = createSlice({
     setTocTree: (state, action) => {
       state.tocTree = action.payload;
     },
+    setChapterHref: (state, action) => {
+      state.chapterHref = action.payload
+    },
   }
 });
 
@@ -47,7 +51,8 @@ export const {
   setProgression,
   setPublicationStart,
   setPublicationEnd,
-  setTocTree, 
+  setTocTree,
+  setChapterHref, 
 } = publicationSlice.actions;
 
 export default publicationSlice.reducer;

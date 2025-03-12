@@ -1,0 +1,119 @@
+  .nyu-bottombar-left button,
+  .nyu-bottombar-right button {
+    background-color: transparent;
+    color: #000;
+    font-weight: 600;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 0.25rem;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* For smooth hover transition */
+  }
+  
+  .nyu-topbar-right button:hover,
+  .nyu-bottombar-left button:hover,
+  .nyu-bottombar-right button:hover {
+    background-color: #aaa; /* hover:bg-blue-500 */
+    color: white; /* hover:text-white */
+    border-color: transparent; /* hover:border-transparent */
+  }
+  
+  .nyuBottombar {
+    display: grid;
+    grid-template-columns: auto 6fr 1fr auto;
+    height: 48px;
+    align-items: center;
+    color: #000;
+
+  }
+  
+  .nyu-bottombar-slider {
+    align-items: center;
+    padding-top: 3px;
+    padding-right: 30px;
+    padding-left: 20px;
+  }
+  
+  .nyu-bottombar-pagenum {
+    padding-right: 20px;
+    padding-left: 10px;
+  }
+  
+  .nyuSlider {
+    width: 100%;
+  }
+  
+  .bottomBar {
+    height: 75px;
+
+    color: #555;
+    padding: 10px 0;
+  }
+  
+  .progressRow {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+  }
+  
+  .progressSlider {
+    width: calc(100% - 120px); /* 60px padding on each side */
+    appearance: none;
+    height: 1px;
+    background-color: #555;
+    border-radius: 5px;
+    outline: none;
+  }
+  
+  /* Customize the range slider thumb */
+  .progressSlider::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background-color: #555;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  .progressSlider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background-color: #555;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  .infoRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 60px;
+  }
+  
+  .chapterTitle {
+    font-size: 1em;
+  }
+  
+  .pageControls {
+    display: flex;
+    align-items: center;
+  }
+  
+  .nyuPagenumber {
+    margin-right: 10px;
+    font-size: 1em;
+  }
+  
+  .bookmarkButton {
+    padding: 5px 0px 0px 10px;
+    background-color: transparent;
+    border: 0px solid #555;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  
+  .bookmarkButton:hover {
+    background-color: #d7d7d7;
+  }
