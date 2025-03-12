@@ -416,7 +416,7 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
           }, () => p.observe(window));
 
           //NYU Press fixes init position bug TODO: remove when fixed in navigator
-          go(initialPosition , true, () => {});
+          //go(initialPosition , true, () => {});
         }
       });
 

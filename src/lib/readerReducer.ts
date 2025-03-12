@@ -26,10 +26,10 @@ export const readerSlice = createSlice({
       state.platformModifier = action.payload
     },
     setImmersive: (state, action) => {
-      state.isImmersive = action.payload
+      state.isImmersive = false; //NYU PRESS action.payload
     },
     toggleImmersive: (state) => {
-      state.isImmersive = !state.isImmersive;
+      state.isImmersive = false; //NYU PRESS !state.isImmersive;
     },
     setHovering: (state, action) => {
       state.isHovering = action.payload
