@@ -44,7 +44,7 @@ export const ReaderFooter = () => {
   const chapterHref = useAppSelector(state => state.publication.chapterHref);
   const [footerTitle, setFooterTitle] = useState<string | undefined>(undefined);
   const [localProgress, setLocalProgress] = useState(stateProgression);
-  const [shouldUpdate, setShouldUpdate] = useState(0);
+  const [shouldUpdate, setShouldUpdate] = useState(true);
   const isDev = process.env.NODE_ENV === "development";
   const NYU_PRESS_API = isDev ? 'http://localhost:3001' : 'http://35.95.95.96:3001';
   const searchParams = useSearchParams();
@@ -53,11 +53,11 @@ export const ReaderFooter = () => {
   const { go } = useEpubNavigator();
 
   useEffect(() => {
-    console.log("PK stateProgression", stateProgression, shouldUpdate);
-    if (shouldUpdate === 0) {
+    console.log("PK stateProgression", stateProgression);
+    if (shouldUpdate) {
       setLocalProgress(stateProgression);
     } else {
-      setShouldUpdate(shouldUpdate - 1);
+      delayUpdate(200);
     }
   }, [stateProgression]);
 
@@ -90,6 +90,12 @@ export const ReaderFooter = () => {
       }
   
     }, [chapters]);
+
+  const delayUpdate = (ms: number) => {
+    setTimeout(() => {
+      setShouldUpdate(true);
+    }, ms);
+  }
 
   const getChapterTitleByHref = (href: string): string | undefined => {
     const chapter = chapters.find(ch => ch.href === href);
@@ -130,7 +136,7 @@ export const ReaderFooter = () => {
   };
 
   const goToProgression = () => {
-    setShouldUpdate(2);
+    setShouldUpdate(false);
     const { href, prog, title } = getChapterFromProgress(localProgress);
 
     const locatorData = {
