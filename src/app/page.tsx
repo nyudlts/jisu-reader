@@ -5,10 +5,29 @@ import { Link } from "react-aria-components";
 export default function Home() {
   return (
     <main>
-      <h1>Welcome to the Readium Playground (Under Development)</h1>
+      <h1>Welcome to the NYU Press Reader</h1>
 
-      <p>Here’s a list of reflowable and fixed-layout publications you can read and test:</p>
+      <h2>NYU Press Books (Local)</h2>
+      <ul>
+        <li>
+          <Link href="/read?book=http://localhost:15080/OTc4MTQ3OTgxOTQ1NC5lcHVi">War, Conquest, and Catastrophe</Link>
+        </li>
+        <li>
+          <Link href="/read?book=http://localhost:15080/OTc4MTQ3OTgxOTQ5Mi5lcHVi">After Stalin</Link>
+        </li>
+      </ul>
 
+      <h2>NYU Press Books (EC2)</h2>
+      <ul>
+        <li>
+          <Link href="/read?book=http://35.95.95.96:15080/OTc4MTQ3OTgxOTQ1NC5lcHVi">War, Conquest, and Catastrophe</Link>
+        </li>
+        <li>
+          <Link href="/read?book=http://35.95.95.96:15080/OTc4MTQ3OTgxOTQ5Mi5lcHVi">After Stalin</Link>
+        </li>
+      </ul>
+
+      <h2>Readium Test Books</h2>
       <ul>
         <li>
           <Link href="/read?book=https%3A%2F%2Fpublication-server.readium.org%2FbW9ieS1kaWNrLmVwdWI">Moby Dick (reflow)</Link>

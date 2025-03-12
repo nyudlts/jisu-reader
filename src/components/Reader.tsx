@@ -47,7 +47,7 @@ import { useAppSelector, useAppDispatch, useAppStore } from "@/lib/hooks";
 
 import debounce from "debounce";
 
-export const Reader = ({ rawManifest, selfHref }: { rawManifest: object, selfHref: string }) => {
+export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: object, selfHref: string, locatorParam: string }) => {
   const container = useRef<HTMLDivElement>(null);
   const publication = useRef<Publication | null>(null);
   const localDataKey = useRef(`${selfHref}-current-location`);
@@ -94,7 +94,8 @@ export const Reader = ({ rawManifest, selfHref }: { rawManifest: object, selfHre
 
   const { 
     EpubNavigatorLoad, 
-    EpubNavigatorDestroy, 
+    EpubNavigatorDestroy,
+    go,  
     goLeft, 
     goRight, 
     goBackward, 
@@ -368,32 +369,69 @@ export const Reader = ({ rawManifest, selfHref }: { rawManifest: object, selfHre
       .catch(console.error)
       .then(() => {
         const initialPosition = localData.get(localDataKey.current);
-
         const initialConstraint = cache.current.arrowsOccupySpace ? arrowsWidth.current : 0;
         const themeProps = listThemeProps(cache.current.settings.theme, cache.current.colorScheme);
-  
-        EpubNavigatorLoad({
-          container: container.current, 
-          publication: publication.current!,
-          listeners: listeners, 
-          positionsList: positionsList,
-          initialPosition: initialPosition,
-          preferences: {
-            pageGutter: RSPrefs.typography.pageGutter,
-            optimalLineLength: RSPrefs.typography.optimalLineLength,
-            minimalLineLength: RSPrefs.typography.minimalLineLength,
-            fontFamily: fontStacks.RS__oldStyleTf,
-            constraint: initialConstraint,
-            ...themeProps
+
+        //NYU Press if a locatorParam was passed as a deeplink, send the reader there
+        if (locatorParam !== "") {  
+          const deepLinkData = JSON.parse(decodeURIComponent(locatorParam));
+          const deepLinkLocator = Locator.deserialize(deepLinkData);
+
+          EpubNavigatorLoad({
+            container: container.current, 
+            publication: publication.current!,
+            listeners: listeners, 
+            positionsList: positionsList,
+            initialPosition: initialPosition,
+            preferences: {
+              pageGutter: RSPrefs.typography.pageGutter,
+              optimalLineLength: RSPrefs.typography.optimalLineLength,
+              minimalLineLength: RSPrefs.typography.minimalLineLength,
+              fontFamily: fontStacks.RS__oldStyleTf,
+              constraint: initialConstraint,
+              ...themeProps
           },
           localDataKey: localDataKey.current,
-        }, () => p.observe(window));
+          }, () =>  goDeepLink(deepLinkLocator));
+      
+        } else {
+  
+          EpubNavigatorLoad({
+            container: container.current, 
+            publication: publication.current!,
+            listeners: listeners, 
+            positionsList: positionsList,
+            initialPosition: initialPosition,
+            preferences: {
+              pageGutter: RSPrefs.typography.pageGutter,
+              optimalLineLength: RSPrefs.typography.optimalLineLength,
+              minimalLineLength: RSPrefs.typography.minimalLineLength,
+              fontFamily: fontStacks.RS__oldStyleTf,
+              constraint: initialConstraint,
+              ...themeProps
+            },
+            localDataKey: localDataKey.current,
+          }, () => p.observe(window));
+
+          //NYU Press fixes init position bug TODO: remove when fixed in navigator
+          go(initialPosition , true, () => {});
+        }
       });
 
     return () => {
       EpubNavigatorDestroy(() => p.destroy());
     };
   }, [rawManifest, selfHref]);
+
+   //NYU Press if a locatorParam was passed as a deeplink, send the reader there
+  const goDeepLink = (deepLinkLocator:Locator | undefined) => {
+    p.observe(window);
+    setTimeout(() => {
+      if (deepLinkLocator) {
+        go(deepLinkLocator! , true, () => {});
+      }
+    }, 265);
+  }
 
   return (
     <>

@@ -14,7 +14,7 @@ import { FullscreenAction } from "./NYUFullscreenAction";
 import { JumpToPositionAction } from "./JumpToPositionAction";
 import { SettingsAction, SettingsActionContainer } from "./NYUSettingsAction";
 import { TocAction, TocActionContainer } from "./NYUTocAction";
-//import { NYUSearchAction, NYUSearchContainer } from "./NYUSearchAction";
+import { NYUSearchAction, NYUSearchContainer } from "./NYUSearchAction";
 import { RunningHead } from "./RunningHead";
 import { ActionsWithCollapsibility } from "./ActionsWithCollapsibility";
 
@@ -37,16 +37,12 @@ const ActionsMap: { [key in ActionKeys]: IActionsMapObject } = {
   [ActionKeys.toc]: {
     trigger: TocAction,
     container: TocActionContainer
-  }
-}
-
-/*
-,
+  },
   [ActionKeys.nyuSearch]: {
     trigger: NYUSearchAction,
     container: NYUSearchContainer
   }
-*/
+}
 
 export const ReaderHeader = () => {
   const actionsOrder = useRef(RSPrefs.actions.displayOrder);

@@ -183,6 +183,7 @@ export const RSPrefs: IRSPrefs = {
   },
   actions: {
     displayOrder: [
+      ActionKeys.nyuSearch,
       ActionKeys.settings,
       ActionKeys.toc,
       ActionKeys.fullscreen,
@@ -196,6 +197,24 @@ export const RSPrefs: IRSPrefs = {
       [StaticBreakpoints.medium]: 3
     }, 
     keys: {
+      [ActionKeys.nyuSearch]: {
+        visibility: ActionVisibility.partially,
+        shortcut: null, // `${ShortcutMetaKeywords.platform}+S`,
+        sheet: {
+          defaultSheet: SheetTypes.popover,
+          breakpoints: {
+            [StaticBreakpoints.compact]: SheetTypes.fullscreen,
+            [StaticBreakpoints.medium]: SheetTypes.fullscreen
+          }
+        },
+        docked: {
+          dockable: DockTypes.both,
+          dragIndicator: false,
+          width: 360,
+          minWidth: 320,
+          maxWidth: 450
+        }
+      },
       [ActionKeys.settings]: {
         visibility: ActionVisibility.partially,
         shortcut: null, // `${ ShortcutMetaKeywords.shift }+${ ShortcutMetaKeywords.alt }+P`,

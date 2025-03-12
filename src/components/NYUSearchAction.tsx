@@ -9,8 +9,8 @@ import Locale from "../resources/locales/en.json";
 import { Locator } from "@readium/shared";
 import { ActionComponentVariant, ActionKeys, IActionComponentContainer, IActionComponentTrigger } from "@/models/actions";
 
-import tocStyles from "./assets/styles/toc.module.css";
-import "./assets/styles/nyuSearchResults.css"; // Import regular CSS file
+import searchStyles from "./assets/styles/nyuSearch.module.css";
+import "./assets/styles/nyuDisclosure.css"; // Import regular CSS file for Disclosure styling
 
 import LocationIcon from "./assets/icons/nyu_search.svg";
 
@@ -20,9 +20,9 @@ import { OverflowMenuItem } from "./ActionTriggers/OverflowMenuItem";
 import { Button, Disclosure, Form, Heading, Input, Key, Link as AriaLink, TextField, DisclosurePanel } from "react-aria-components";
 import { ListBox, ListBoxItem } from "react-aria-components";
 import {
-  UNSTABLE_Tree as Tree,
-  UNSTABLE_TreeItem as TreeItem,
-  UNSTABLE_TreeItemContent as TreeItemContent,
+  Tree,
+  TreeItem,
+  TreeItemContent
 } from "react-aria-components";
 
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
@@ -234,7 +234,7 @@ export const NYUSearchContainer: React.FC<IActionComponentContainer> = ({ trigge
         id: ActionKeys.nyuSearch,
         triggerRef: triggerRef, 
         heading: Locale.reader.nyuSearch.heading,
-        className: tocStyles.toc,
+        className: searchStyles.nyuSearch,
         placement: "bottom",
         isOpen: actionState.isOpen || false,
         onOpenChangeCallback: setOpen,
@@ -242,45 +242,43 @@ export const NYUSearchContainer: React.FC<IActionComponentContainer> = ({ trigge
         docker: docking.getDocker()
       } }
     >
-      <Form onSubmit={onSubmit} className="search-form">
-        <TextField name="term" className="input-container" defaultValue={searchTerm}>
-          <Input className="input-field"/>
+      <Form onSubmit={onSubmit} aria-label="Search Form" className={ searchStyles.searchForm }>
+        <TextField name="term" className={ searchStyles.inputContainer } defaultValue={searchTerm}>
+          <Input className={ searchStyles.inputField } aria-label="Search Input" />
         </TextField>
-        <Button type="submit" className="submit-button">Search</Button>
+        <Button type="submit" aria-label="Search Button"  className={ searchStyles.submitButton }>Search</Button>
       </Form>
 
-      {numFound !== -1 && <div className="num-found">Results found: {numFound} chapters, in {booksFound} books.  </div>}
+      {numFound !== -1 && <div className={ searchStyles.numFound }>Results found: {numFound} chapters, in {booksFound} books.  </div>}
 
-      <div style={{ padding: "0px", maxWidth: "600px", margin: "0 auto" }}>
+      <div className={ searchStyles.booksContainer }>
         {currentTitleFirst.map(([bookTitle, chapters]) => (
           <Disclosure key={bookTitle} defaultExpanded={true}>
-            <div key={bookTitle} id={makeSafeID(bookTitle)} style={{ marginBottom: "30px" }}>
-              <div key={bookTitle} className="book-title-header">
-                <Heading key={bookTitle} className="book-title">
-                <Button slot="trigger">
+            <div key={bookTitle} id={makeSafeID(bookTitle)} className={ searchStyles.bookTitleContainer }>
+              <div key={bookTitle} className={ searchStyles.bookTitleHeader }>
+                <Heading key={bookTitle} className={ searchStyles.bookTitle } aria-label="Book Title">
+                <Button slot="trigger" aria-label="Book Title Disclosure">
                   <svg viewBox="0 0 24 24">
                     <path d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                   </svg>
                   {bookTitle}
                 </Button>
-     
                 </Heading>
               </div>
               <DisclosurePanel>
               {chapters.map((chapter) => (
                 <div key={chapter.id}>
-                  <div key={chapter.id} className="chapter-title">
+                  <div key={chapter.id} className={ searchStyles.chapterTitle } aria-label="Chapter Title">
                     {chapter.chapterTitle}
                   </div>
 
                   {/* Add the highlights returned for each chapter as a ListBox */}
                   <ListBox key={chapter.chapterTitle} aria-label={`Search Results for ${chapter.chapterTitle}`}>
                     {highlighting[chapter.id]?.content.map((highlight, index) => (
-                      <ListBoxItem key={index} className="listbox-item" onAction={() => handleAction(`${chapter.id}-${index}`)}>
+                      <ListBoxItem key={index} className={ searchStyles.listboxItem } onAction={() => handleAction(`${chapter.id}-${index}`)}>
                         <p dangerouslySetInnerHTML={{ __html: extractContextSnippet(highlight)?.formattedSnippet as string}} />
                       </ListBoxItem>
                     ))}
-
                   </ListBox>
                 </div>
               ))}
@@ -288,7 +286,6 @@ export const NYUSearchContainer: React.FC<IActionComponentContainer> = ({ trigge
             </div>
           </Disclosure>
         ))}
-        
       </div>
     </SheetWithType>
     </>

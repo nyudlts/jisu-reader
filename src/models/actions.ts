@@ -10,7 +10,8 @@ export enum ActionKeys {
   fullscreen = "fullscreen",
   jumpToPosition = "jumpToPosition",
   settings = "settings",
-  toc = "toc"
+  toc = "toc",
+  nyuSearch = "nyuSearch"
 }
 
 export enum ActionVisibility {

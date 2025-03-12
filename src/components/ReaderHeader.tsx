@@ -12,6 +12,7 @@ import { FullscreenAction } from "./FullscreenAction";
 import { JumpToPositionAction } from "./JumpToPositionAction";
 import { SettingsAction, SettingsActionContainer } from "./SettingsAction";
 import { TocAction, TocActionContainer } from "./TocAction";
+import { NYUSearchAction, NYUSearchContainer } from "./NYUSearchAction";
 import { RunningHead } from "./RunningHead";
 import { ActionsWithCollapsibility } from "./ActionsWithCollapsibility";
 
@@ -34,6 +35,10 @@ const ActionsMap: { [key in ActionKeys]: IActionsMapObject } = {
   [ActionKeys.toc]: {
     trigger: TocAction,
     container: TocActionContainer
+  },
+  [ActionKeys.nyuSearch]: {
+    trigger: NYUSearchAction,
+    container: NYUSearchContainer
   }
 }
 

@@ -72,6 +72,12 @@
       "entries": "Entries in the table",
       "empty": "The table of contents was not provided for this publication."
     },
+    "nyuSearch": {
+      "tooltip": "Search",
+      "trigger": "Search",
+      "close": "Close Search",
+      "heading": "Search"
+    },
     "jumpToPosition": {
       "tooltip": "Jump to…",
       "trigger": "Jump to position"

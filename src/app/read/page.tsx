@@ -28,6 +28,12 @@ export default async function ReaderPage({ searchParams }: { searchParams: Promi
   const fetched = fetcher.get(manifestLink);
   const selfLink = (await fetched.link()).toURL(publicationURL)!;
 
+  // NYU Press get locator/deep link from Url param 
+  let locatorParam = "";
+  if (params["locator"]) {
+    locatorParam = Array.isArray(params["locator"]) ? params["locator"][0] : params["locator"];
+  }
+
   let manifest: object | undefined;
   try {
     manifest = await fetched.readAsJSON() as object;
@@ -42,7 +48,7 @@ export default async function ReaderPage({ searchParams }: { searchParams: Promi
       ? <span>{error}</span> 
       : manifest 
         ? <StoreProvider>
-            <Reader rawManifest={manifest} selfHref={selfLink} />
+            <Reader rawManifest={manifest} selfHref={selfLink} locatorParam={locatorParam} />
           </StoreProvider> 
         : "Loading..."
     }

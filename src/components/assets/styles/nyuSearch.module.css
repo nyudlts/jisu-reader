@@ -1,0 +1,76 @@
+.searchForm {
+  display: flex;
+  align-items: center; /* Align items vertically */
+  gap: 20px; /* Adds space between input and button */
+}
+
+.inputContainer {
+  flex-grow: 1; /* Makes the input take up the available space */
+}
+
+.inputField {
+  width: 100%; /* Ensures input takes full width of the container */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.submitButton {
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submitButton:hover {
+  background-color: #0056b3;
+}
+
+.numFound {
+  font-size: 14px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  color: #555;
+}
+
+.booksContainer {
+  margin: 20px;
+  padding: 0px;
+  max-width: 600px;
+}
+
+.bookTitleContainer {
+  margin-bottom: 30ox;
+}
+
+.bookTitleHeader {
+  border: 0px;
+}
+
+.bookTitle {
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.chapterTitle {
+  font-size: 16px;
+  font-weight: normal;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.listboxItem {
+  font-size: 14px;
+  padding: 10px;
+  border-bottom: 2px solid #ddd;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.listboxItem:hover {
+  background-color: #f1f1f1;
+}
