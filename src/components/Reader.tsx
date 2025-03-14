@@ -20,7 +20,7 @@ import {
   BasicTextSelection,
   FrameClickEvent,
 } from "@readium/navigator-html-injectables";
-import { EpubNavigatorListeners, FrameManager, FXLFrameManager } from "@readium/navigator";
+import { EpubNavigatorListeners, FrameManager, FXLFrameManager, PaginationStrategy } from "@readium/navigator";
 import { Locator, Manifest, Publication, Fetcher, HttpFetcher, EPUBLayout, ReadingProgression } from "@readium/shared";
 
 import { ReaderWithDock } from "./ReaderWithPanels";
@@ -55,6 +55,7 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
 
   const isPaged = useAppSelector(state => state.reader.isPaged);
   const colCount = useAppSelector(state => state.reader.colCount);
+  const paginationStrategy = useAppSelector(state => state.reader.paginationStrategy);
   const theme = useAppSelector(state => state.theming.theme);
   const previousTheme = usePrevious(theme);
   const colorScheme = useAppSelector(state => state.theming.colorScheme);
@@ -74,6 +75,7 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
     settings: {
       paginated: isPaged,
       colCount: colCount,
+      paginationStrategy: paginationStrategy,
       theme: theme
     },
     colorScheme: colorScheme,
@@ -230,15 +232,18 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
         // Due to the lack of injection API we need to force scroll 
         // to mount/unmount scroll affordances ATM
         const currentLocator = localData.get(localDataKey.current);
-  
-        if (currentLocator?.href !== locator.href) {
-          await applyScroll(!cache.current.settings.paginated);
-        } 
         
         const debouncedHandleProgression = debounce(
-          () => {
+          async () => {
+            // TMP: To mount/unmount scroll affordances in the absence of the injection API. 
+            // We need to debounce because of swipe, which has a 150ms animation in Column Snapper, 
+            // otherwise the iframe will stay hidden since we must change the ReadingProgression,
+            // that requires re-loading the frame pool
+            if (currentLocator?.href !== locator.href) {
+              await applyScroll(!cache.current.settings.paginated);
+            }
             //NYU Press set chapter href in redux, used in NYUReaderFooter
-            dispatch(setChapterHref(locator.href));
+            dispatch(setChapterHref(locator.href)); 
             handleProgression(locator);
             localData.set(localDataKey.current, locator);
           }, 250);
@@ -288,6 +293,10 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   useEffect(() => {
     cache.current.settings.colCount = colCount;
   }, [colCount]);
+
+  useEffect(() => {
+    cache.current.settings.paginationStrategy = paginationStrategy;
+  }, [paginationStrategy]);
 
   // Handling side effects on Navigator
   useEffect(() => {
@@ -374,11 +383,11 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
         const initialConstraint = cache.current.arrowsOccupySpace ? arrowsWidth.current : 0;
         const themeProps = listThemeProps(cache.current.settings.theme, cache.current.colorScheme);
 
-        //NYU Press if a locatorParam was passed as a deeplink, send the reader there
+         //NYU Press if a locatorParam was passed as a deeplink, send the reader there
         if (locatorParam !== "") {  
           const deepLinkData = JSON.parse(decodeURIComponent(locatorParam));
           const deepLinkLocator = Locator.deserialize(deepLinkData);
-
+  
           EpubNavigatorLoad({
             container: container.current, 
             publication: publication.current!,
@@ -389,12 +398,14 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
               pageGutter: RSPrefs.typography.pageGutter,
               optimalLineLength: RSPrefs.typography.optimalLineLength,
               minimalLineLength: RSPrefs.typography.minimalLineLength,
+              maximalLineLength: RSPrefs.typography.maximalLineLength,
               fontFamily: fontStacks.RS__oldStyleTf,
               constraint: initialConstraint,
+              paginationStrategy: RSPrefs.typography.paginationStrategy as unknown as PaginationStrategy,
               ...themeProps
-          },
-          localDataKey: localDataKey.current,
-          }, () =>  goDeepLink(deepLinkLocator));
+            },
+            localDataKey: localDataKey.current,
+            }, () =>  goDeepLink(deepLinkLocator));
       
         } else {
   
@@ -408,15 +419,17 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
               pageGutter: RSPrefs.typography.pageGutter,
               optimalLineLength: RSPrefs.typography.optimalLineLength,
               minimalLineLength: RSPrefs.typography.minimalLineLength,
+              maximalLineLength: RSPrefs.typography.maximalLineLength,
               fontFamily: fontStacks.RS__oldStyleTf,
               constraint: initialConstraint,
+              paginationStrategy: RSPrefs.typography.paginationStrategy as unknown as PaginationStrategy,
               ...themeProps
             },
             localDataKey: localDataKey.current,
           }, () => p.observe(window));
 
           //NYU Press fixes init position bug TODO: remove when fixed in navigator
-          //go(initialPosition , true, () => {});
+          go(initialPosition , true, () => {});
         }
       });
 

@@ -164,7 +164,7 @@ const DockPanel = ({
       <div 
         id={ flow } 
         aria-label={ makeDockLabel() }
-        className={ dockClassName }
+        className={ classNames(dockStyles.dockPanelContainer, dockClassName) }
       ></div>
     </Panel>
     { flow === DockingKeys.start && 

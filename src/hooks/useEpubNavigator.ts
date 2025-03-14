@@ -4,17 +4,18 @@ import Locale from "../resources/locales/en.json";
 import { RSPrefs } from "@/preferences";
 
 import { ScrollBackTo } from "@/models/preferences";
+import { ReadingDisplayFontFamilyOptions, RSPaginationStrategy } from "@/models/layout";
 import { ColorScheme, ThemeKeys } from "@/models/theme";
 
 import { EPUBLayout, Link, Locator, Publication } from "@readium/shared";
-import { EpubNavigator, EpubNavigatorListeners, EpubPreferences, FrameManager, FXLFrameManager, IEpubDefaults, IEpubPreferences, Theme } from "@readium/navigator";
+import { EpubNavigator, EpubNavigatorListeners, EpubPreferences, FrameManager, FXLFrameManager, IEpubDefaults, IEpubPreferences, PaginationStrategy, Theme } from "@readium/navigator";
 
 import { ScrollAffordance } from "@/helpers/scrollAffordance";
 import { localData } from "@/helpers/localData";
 
 import { useAppDispatch } from "@/lib/hooks";
 import { setProgression } from "@/lib/publicationReducer";
-import { setColCount, setPaged } from "@/lib/readerReducer";
+import { setColCount, setFontFamily, setPaged, setPaginationStrategy } from "@/lib/readerReducer";
 import { setTheme } from "@/lib/themeReducer";
 
 type cbb = (ok: boolean) => void;
@@ -146,7 +147,7 @@ export const useEpubNavigator = () => {
     }))
   }, []);
 
-  const applyColCount = useCallback(async (count: string | null) => {    
+  const applyColCount = useCallback(async (count: string) => {    
     const colCount = count === "auto" ? null : Number(count);
     
     await navigatorInstance?.submitPreferences(new EpubPreferences({
@@ -155,6 +156,21 @@ export const useEpubNavigator = () => {
 
     dispatch(setColCount(count));
   }, [dispatch]);
+
+  const applyPaginationStrategy = useCallback(async (strategy: RSPaginationStrategy) => {
+    await navigatorInstance?.submitPreferences(new EpubPreferences({
+      paginationStrategy: strategy as unknown as PaginationStrategy
+    }));
+
+    dispatch(setPaginationStrategy(strategy));
+  }, [dispatch]);
+
+  // TMP for testing purposes
+  const nullifyMaxChars = useCallback(async (b: boolean) => {
+    await navigatorInstance?.submitPreferences(new EpubPreferences({
+      maximalLineLength: b ? null : RSPrefs.typography.maximalLineLength
+    }));
+  }, []);
 
   const incrementSize = useCallback(async () => {
     const editor = navigatorInstance?.preferencesEditor;
@@ -189,6 +205,13 @@ export const useEpubNavigator = () => {
     }
     return null;
   }, []);
+
+  const applyFontFamily = useCallback(async (fontFamily: { id: keyof typeof ReadingDisplayFontFamilyOptions, value: string | null }) => {
+    await navigatorInstance?.submitPreferences(new EpubPreferences({
+      fontFamily: fontFamily.value
+    }));
+    dispatch(setFontFamily(fontFamily.id));
+  }, [dispatch]);
 
   const handleProgression = useCallback((locator: Locator) => {
     const relativeRef = locator.title || Locale.reader.app.progression.referenceFallback;
@@ -328,6 +351,9 @@ export const useEpubNavigator = () => {
     applyTheme, 
     applyConstraint, 
     applyColCount, 
+    applyPaginationStrategy,
+    applyFontFamily, 
+    nullifyMaxChars,
     incrementSize,
     decrementSize,
     getCurrentSize,

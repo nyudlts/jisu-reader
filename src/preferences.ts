@@ -5,7 +5,7 @@ import { ActionKeys, ActionVisibility } from "./models/actions";
 import { SheetTypes } from "./models/sheets";
 import { DockTypes, DockingKeys } from "./models/docking";
 import { ThemeKeys } from "./models/theme";
-import { LayoutDirection } from "./models/layout";
+import { LayoutDirection, RSPaginationStrategy } from "./models/layout";
 
 import dayMode from "@readium/css/css/vars/day.json";
 import sepiaMode from "@readium/css/css/vars/sepia.json";
@@ -14,9 +14,11 @@ import nightMode from "@readium/css/css/vars/night.json";
 export const RSPrefs: IRSPrefs = {
   direction: LayoutDirection.ltr,
   typography: {
-    minimalLineLength: 35, // undefined | null | number of characters. If 2 cols will switch to 1 based on this
+    minimalLineLength: 40, // undefined | null | number of characters. If 2 cols will switch to 1 based on this
     optimalLineLength: 65, // number of characters. If auto layout, picks colCount based on this
-    pageGutter: 20 // body padding in px
+    maximalLineLength: 75, // undefined | null | number of characters.
+    pageGutter: 20, // body padding in px
+    paginationStrategy: RSPaginationStrategy.lineLength
   },
   scroll: {
     topAffordance: ScrollAffordancePref.none,

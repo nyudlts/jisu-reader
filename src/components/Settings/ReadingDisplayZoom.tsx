@@ -45,7 +45,7 @@ export const ReadingDisplayZoom = () => {
         className={ settingsStyles.readerSettingsGroupTitle }
         id="displaySizeTitle"
       >
-        { isFXL ? Locale.reader.settings.zoom.title : Locale.reader.settings.text.title }
+        { isFXL ? Locale.reader.settings.zoom.title : Locale.reader.settings.fontSize.title }
       </div>
 
       <div className={ settingsStyles.readerSettingsGroupWrapper }>
@@ -60,7 +60,7 @@ export const ReadingDisplayZoom = () => {
         >
           <Button 
             className={ readerSharedUI.icon }
-            aria-label={ isFXL ? Locale.reader.settings.zoom.decrease : Locale.reader.settings.text.decrease }
+            aria-label={ isFXL ? Locale.reader.settings.zoom.decrease : Locale.reader.settings.fontSize.decrease }
             onPress={ async() => {
               await decrementSize();
               updateSize();
@@ -77,7 +77,7 @@ export const ReadingDisplayZoom = () => {
             placement={ "bottom" } 
             offset={ RSPrefs.theming.icon.tooltipOffset || 0 }
           >
-            { isFXL ? Locale.reader.settings.zoom.decreaseTooltip : Locale.reader.settings.text.decreaseTooltip }
+            { isFXL ? Locale.reader.settings.zoom.decreaseTooltip : Locale.reader.settings.fontSize.decreaseTooltip }
           </Tooltip>
         </TooltipTrigger>
 
@@ -96,7 +96,7 @@ export const ReadingDisplayZoom = () => {
         >
           <Button 
             className={ readerSharedUI.icon }
-            aria-label={ isFXL ? Locale.reader.settings.zoom.increase : Locale.reader.settings.text.increase }
+            aria-label={ isFXL ? Locale.reader.settings.zoom.increase : Locale.reader.settings.fontSize.increase }
             onPress={ async () => {
               await incrementSize();
               updateSize();
@@ -113,7 +113,7 @@ export const ReadingDisplayZoom = () => {
             placement={ "bottom" } 
             offset={ RSPrefs.theming.icon.tooltipOffset || 0 }
           >
-            { isFXL ? Locale.reader.settings.zoom.increaseTooltip : Locale.reader.settings.text.increaseTooltip }
+            { isFXL ? Locale.reader.settings.zoom.increaseTooltip : Locale.reader.settings.fontSize.increaseTooltip }
           </Tooltip>
         </TooltipTrigger>
       </div>

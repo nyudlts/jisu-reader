@@ -82,6 +82,12 @@
   color: var(--theme-text);
 }
 
+.bottomSheetScroller {
+  /* Needed for RAC FocusScope keyboard focus scrolling */
+  position: relative;
+  scroll-padding-bottom: calc(var(--layout-spacing) * 2);
+}
+
 .dragIndicator {
   width: calc(var(--icon-size, 40px) * 1.5);
   position: absolute;
@@ -102,6 +108,8 @@
 }
 
 .dockedSheet {
+  /* We need relative positioning so that RAC FocusScope scrolls properly on tabbing */
+  position: relative;
   overflow-y: auto;
   scroll-padding-top: calc(var(--sheet-sticky-header, 80px) + var(--layout-spacing));
   scroll-padding-bottom: var(--layout-spacing);

@@ -122,12 +122,21 @@
         "decreaseTooltip": "Decrease",
         "decrease": "Decrease zoom"
       },
-      "text": {
-        "title": "Text",
+      "fontSize": {
+        "title": "Font size",
         "increaseTooltip": "Increase",
-        "increase": "Increase text size",
+        "increase": "Increase font size",
         "decreaseTooltip": "Decrease",
-        "decrease": "Decrease text size"
+        "decrease": "Decrease font size"
+      },
+      "fontFamily": {
+        "title": "Font family",
+        "publisher": "Publisher’s font",
+        "oldStyle": "Old style serif",
+        "modern": "Modern serif",
+        "sans": "Sans-serif",
+        "humanist": "Humanist sans-serif",
+        "monospace": "Monospace"
       },
       "layout": {
         "title": "Layout",
@@ -139,6 +148,15 @@
         "auto": "Auto",
         "one": "1 col",
         "two": "2 cols"
+      },
+      "paginationStrategy": {
+        "title": "Pagination strategy",
+        "margin": "Margin",
+        "lineLength": "Line length",
+        "columns": "Columns"
+      },
+      "maxChars": {
+        "label": "Disable maximal line length"
       }
     }
   }

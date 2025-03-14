@@ -17,8 +17,8 @@ export const useFirstFocusable = ({
     // WIP: Pick the fist element that is selected. 
     // Expecting this to become more complex 
     // in order to cover all possible interactive elements
-    const firstFocusable: HTMLElement | null = withinRef.current.querySelector("[data-selected]");
-        
+    const firstFocusable: HTMLElement | null = withinRef.current.querySelector("a, button, input, select, [data-selected]");
+
     if (firstFocusable) {
       firstFocusable.focus({ preventScroll: true });
       focusedElement.current = firstFocusable;

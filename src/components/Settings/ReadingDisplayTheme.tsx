@@ -64,13 +64,14 @@ export const ReadingDisplayTheme = ({ mapArrowNav }: { mapArrowNav?: number }) =
   // mapArrowNav is the number of columns. This assumption 
   // should be safe since even in vertical-writing, 
   // the layout should be horizontal (?)
-  const handleKeyboardNav = (e: React.KeyboardEvent) => {
+  const handleKeyboardNav = async (e: React.KeyboardEvent) => {
+    
     if (mapArrowNav && !isNaN(mapArrowNav)) {
-      const findNextVisualTheme = (perRow: number) => {
+      const findNextVisualTheme = async (perRow: number) => {
         const currentIdx = themeItems.current.findIndex((val) => val === theme);
         const nextIdx = currentIdx + perRow;
         if (nextIdx >= 0 && nextIdx < themeItems.current.length) {
-          dispatch(setTheme(themeItems.current[nextIdx]));
+          await handleTheme(themeItems.current[nextIdx]);
 
           // Focusing here instead of useEffect on theme change so that 
           // it doesn’t steal focus when themes is not the first radio group in the sheet
@@ -90,19 +91,19 @@ export const ReadingDisplayTheme = ({ mapArrowNav }: { mapArrowNav?: number }) =
           break;
         case "ArrowUp":
           e.preventDefault();
-          findNextVisualTheme(-mapArrowNav);
+          await findNextVisualTheme(-mapArrowNav);
           break;
         case "ArrowDown":
           e.preventDefault();
-          findNextVisualTheme(mapArrowNav);
+          await findNextVisualTheme(mapArrowNav);
           break;
         case "ArrowLeft":
           e.preventDefault();
-          isRTL ? findNextVisualTheme(1) : findNextVisualTheme(-1);
+          isRTL ? await findNextVisualTheme(1) : await findNextVisualTheme(-1);
           break;
         case "ArrowRight":
           e.preventDefault();
-          isRTL ? findNextVisualTheme(-1) : findNextVisualTheme(1);
+          isRTL ? await findNextVisualTheme(-1) : await findNextVisualTheme(1);
           break;
         default:
           break;
@@ -132,7 +133,7 @@ export const ReadingDisplayTheme = ({ mapArrowNav }: { mapArrowNav?: number }) =
             key={ t }
             style={ doStyles(t) }
             { ...(mapArrowNav && !isNaN(mapArrowNav) ? {
-              onKeyDown: handleKeyboardNav
+              onKeyDown: (async (e: React.KeyboardEvent) => await handleKeyboardNav(e))
             } : {}) }
           >
           <span>{ Locale.reader.settings.themes[t as keyof typeof ThemeKeys] } { t === theme ? <CheckIcon aria-hidden="true" focusable="false" /> : <></>}</span>

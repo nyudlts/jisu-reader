@@ -1,4 +1,3 @@
-.readerSettingsGroup,
 .readerSettingsGroup {
   margin: calc(var(--layout-spacing) * 2) 0; 
 }
@@ -93,4 +92,106 @@
 .readerSettingsSeparator {
   border: none;
   border-top: 1px solid var(--theme-subdue);
+}
+
+/* TMP?: Dropdown */
+
+.readerSettingsDropdownButton {
+  margin-top: var(--layout-spacing);
+  position: relative;
+  padding: calc(var(--layout-spacing) / 2);
+  padding-right: calc(var(--icon-size, 24px) * 6/5);
+  border-radius: var(--layout-radius);
+  box-sizing: border-box;
+  border: 1px solid var(--theme-subdue);
+}
+
+.readerSettingsDropdownButton svg {
+  width: calc(var(--icon-size, 24px) * 5/6);
+  height: calc(var(--icon-size, 24px) * 5/6);
+  position: absolute;
+  right: calc(var(--layout-spacing) / 4);
+  top: calc(var(--layout-spacing) / 2);
+  fill: currentColor;
+}
+
+.readerSettingsDropdownPopover {
+  background-color: var(--theme-background);
+  color: var(--theme-text);
+  padding: calc(var(--layout-spacing) / 2);
+  border-radius: var(--layout-radius);
+  border: 1px solid var(--theme-subdue);
+  filter: drop-shadow(var(--theme-elevate));
+  box-sizing: border-box;
+  width: max-content;
+  /* TMP: Needs to be higher than bottom sheet, which requires hack for Safari iOS */
+  z-index: 1000000 !important;
+}
+
+.readerSettingsDropdownListbox {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--layout-spacing) / 2);
+}
+
+.readerSettingsDropdownListboxItem {
+  padding: calc(var(--layout-spacing) / 4);
+}
+
+.readerSettingsDropdownListboxItem[data-selected] {
+  color: var(--theme-subdue);
+}
+
+.readerSettingsDropdownListboxItem[data-focus-visible] {
+  outline: 2px solid var(--theme-focus);
+}
+
+.readerSettingsDropdownListboxItem[data-disabled] {
+  color: var(--theme-disable);
+}
+
+/* TMP: maxChars switch */
+
+.readerSettingsSwitch {
+  display: flex;
+  align-items: center;
+  gap: 0.571rem;
+  font-size: 1.143rem;
+  color: var(--theme-text);
+}
+
+.readerSettingsSwitchIndicator {
+    width: 2rem;
+    height: 1.143rem;
+    border: 2px solid var(--theme-subdue);
+    background: var(--theme-background);
+    border-radius: 1.143rem;
+    transition: all 200ms;
+}
+
+.readerSettingsSwitchIndicator:before {
+  content: '';
+  display: block;
+  margin: 0.143rem;
+  width: 0.857rem;
+  height: 0.857rem;
+  background: var(--theme-text);
+  border-radius: 16px;
+  transition: all 200ms;
+}
+
+.readerSettingsSwitch[data-selected] .readerSettingsSwitchIndicator:before {
+  transform: translateX(100%);
+}
+
+.readerSettingsSwitch[data-focus-visible] .readerSettingsSwitchIndicator {
+  outline: 2px solid var(--theme-focus);
+}
+
+.readerSettingsSwitch[data-disabled] {
+  color: var(--theme-disable);
+}
+
+.readerSettingsSwitch[data-disabled] .readerSettingsSwitchIndicator:before {
+  background: var(--theme-disable);
 }

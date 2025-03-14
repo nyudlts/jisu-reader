@@ -1,6 +1,6 @@
 import { IActionPref } from "./actions";
 import { IDockingPref } from "./docking";
-import { Constraints, ILayoutDefaults, LayoutDirection } from "./layout";
+import { Constraints, ILayoutDefaults, LayoutDirection, RSPaginationStrategy } from "./layout";
 import { ShortcutRepresentation } from "./shortcut";
 import { StaticBreakpoints } from "./staticBreakpoints";
 import { IThemeTokens, ThemeKeys } from "./theme";
@@ -22,8 +22,10 @@ export interface IRSPrefs {
   direction?: LayoutDirection,
   typography: {
     minimalLineLength?: number | null;
+    maximalLineLength?: number | null;
     optimalLineLength: number;
     pageGutter: number;
+    paginationStrategy?: RSPaginationStrategy | null;
   };
   scroll: {
     topAffordance: ScrollAffordancePref;

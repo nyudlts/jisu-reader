@@ -34,10 +34,6 @@
   margin-inline-end: calc(var(--layout-spacing) / 2);
 }
 
-.tocTreeItemButton + .tocTreeItemText {
-  flex: 0 0 auto;
-}
-
 .tocTreeItem[data-href] {
   cursor: pointer;
 }
