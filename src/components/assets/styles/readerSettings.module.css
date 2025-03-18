@@ -75,7 +75,8 @@
 }
 
 .readerSettingsThemeRadio {
-  padding: 5px 25px;
+  padding-block: 5px;
+  padding-inline: 25px;
   position: relative;
 }
 
@@ -83,8 +84,8 @@
   width: calc(var(--icon-size, 24px) * 5/6);
   height: calc(var(--icon-size, 24px) * 5/6);
   position: absolute;
-  right: 5px;
-  top: 5px;
+  inset-inline-end: 5px;
+  inset-block-start: 5px;
   /* So that it’s the same color as text w/o having to expose a custom prop globally */
   fill: currentColor;
 }
@@ -99,19 +100,24 @@
 .readerSettingsDropdownButton {
   margin-top: var(--layout-spacing);
   position: relative;
-  padding: calc(var(--layout-spacing) / 2);
-  padding-right: calc(var(--icon-size, 24px) * 6/5);
+  padding-block: calc(var(--layout-spacing) / 2);
+  padding-inline: calc(var(--layout-spacing) / 2) calc(var(--icon-size, 24px) * 6/5);
   border-radius: var(--layout-radius);
   box-sizing: border-box;
   border: 1px solid var(--theme-subdue);
+  max-width: 100%;
+}
+
+.readerSettingsDropdownButton[data-focus-visible] {
+  outline: 2px solid var(--theme-focus);
 }
 
 .readerSettingsDropdownButton svg {
   width: calc(var(--icon-size, 24px) * 5/6);
   height: calc(var(--icon-size, 24px) * 5/6);
   position: absolute;
-  right: calc(var(--layout-spacing) / 4);
-  top: calc(var(--layout-spacing) / 2);
+  inset-inline-end: calc(var(--layout-spacing) / 4);
+  inset-block-start: calc(var(--layout-spacing) / 2);
   fill: currentColor;
 }
 
@@ -155,18 +161,17 @@
 .readerSettingsSwitch {
   display: flex;
   align-items: center;
-  gap: 0.571rem;
-  font-size: 1.143rem;
+  gap: 5px;
   color: var(--theme-text);
 }
 
 .readerSettingsSwitchIndicator {
-    width: 2rem;
-    height: 1.143rem;
-    border: 2px solid var(--theme-subdue);
-    background: var(--theme-background);
-    border-radius: 1.143rem;
-    transition: all 200ms;
+  width: 2rem;
+  height: 1.143rem;
+  border: 2px solid var(--theme-subdue);
+  background: var(--theme-background);
+  border-radius: 1.143rem;
+  transition: all 200ms;
 }
 
 .readerSettingsSwitchIndicator:before {
@@ -175,13 +180,19 @@
   margin: 0.143rem;
   width: 0.857rem;
   height: 0.857rem;
-  background: var(--theme-text);
+  background: var(--theme-subdue);
   border-radius: 16px;
   transition: all 200ms;
 }
 
 .readerSettingsSwitch[data-selected] .readerSettingsSwitchIndicator:before {
+  background: var(--theme-text);
   transform: translateX(100%);
+}
+
+:dir(rtl) .readerSettingsSwitch[data-selected] .readerSettingsSwitchIndicator:before {
+  background: var(--theme-text);
+  transform: translateX(-100%);
 }
 
 .readerSettingsSwitch[data-focus-visible] .readerSettingsSwitchIndicator {
@@ -193,5 +204,5 @@
 }
 
 .readerSettingsSwitch[data-disabled] .readerSettingsSwitchIndicator:before {
-  background: var(--theme-disable);
+  background: var(--theme-disable) !important;
 }

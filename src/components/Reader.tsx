@@ -16,11 +16,13 @@ import { ActionKeys } from "@/models/actions";
 import { ThemeKeys } from "@/models/theme";
 import { ICache } from "@/models/reader";
 
+import { I18nProvider } from "react-aria";
+
 import {
   BasicTextSelection,
   FrameClickEvent,
 } from "@readium/navigator-html-injectables";
-import { EpubNavigatorListeners, FrameManager, FXLFrameManager, PaginationStrategy } from "@readium/navigator";
+import { EpubNavigatorListeners, FrameManager, FXLFrameManager, LayoutStrategy } from "@readium/navigator";
 import { Locator, Manifest, Publication, Fetcher, HttpFetcher, EPUBLayout, ReadingProgression } from "@readium/shared";
 
 import { ReaderWithDock } from "./ReaderWithPanels";
@@ -54,8 +56,11 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   const arrowsWidth = useRef(2 * ((RSPrefs.theming.arrow.size || 40) + (RSPrefs.theming.arrow.offset || 0)));
 
   const isPaged = useAppSelector(state => state.reader.isPaged);
-  const colCount = useAppSelector(state => state.reader.colCount);
-  const paginationStrategy = useAppSelector(state => state.reader.paginationStrategy);
+  const colCount = useAppSelector(state => state.settings.colCount);
+  const fontSize = useAppSelector(state => state.settings.fontSize);
+  const fontFamily = useAppSelector(state => state.settings.fontFamily);
+  const lineHeight = useAppSelector(state => state.settings.lineHeight);
+  const layoutStrategy = useAppSelector(state => state.settings.layoutStrategy);
   const theme = useAppSelector(state => state.theming.theme);
   const previousTheme = usePrevious(theme);
   const colorScheme = useAppSelector(state => state.theming.colorScheme);
@@ -75,7 +80,10 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
     settings: {
       paginated: isPaged,
       colCount: colCount,
-      paginationStrategy: paginationStrategy,
+      fontSize: fontSize,
+      fontFamily: fontFamily,
+      lineHeight: lineHeight,
+      layoutStrategy: layoutStrategy,
       theme: theme
     },
     colorScheme: colorScheme,
@@ -288,15 +296,39 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
 
   useEffect(() => {
     cache.current.settings.paginated = isPaged;
-  }, [isPaged]);
+
+    const handleConstraint = async (value: number) => {
+      await applyConstraint(value)
+    }
+
+    if (isPaged) {
+      handleConstraint(arrowsOccupySpace ? arrowsWidth.current : 0)
+        .catch(console.error);
+    } else {
+      handleConstraint(0)
+        .catch(console.error);
+    }
+  }, [isPaged, arrowsOccupySpace, applyConstraint]);
 
   useEffect(() => {
     cache.current.settings.colCount = colCount;
   }, [colCount]);
 
   useEffect(() => {
-    cache.current.settings.paginationStrategy = paginationStrategy;
-  }, [paginationStrategy]);
+    cache.current.settings.fontSize = fontSize;
+  }, [fontSize]);
+
+  useEffect(() => {
+    cache.current.settings.fontFamily = fontFamily;
+  }, [fontFamily]);
+
+  useEffect(() => {
+    cache.current.settings.lineHeight = lineHeight;
+  }, [lineHeight]);
+
+  useEffect(() => {
+    cache.current.settings.layoutStrategy = layoutStrategy;
+  }, [layoutStrategy]);
 
   // Handling side effects on Navigator
   useEffect(() => {
@@ -401,7 +433,7 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
               maximalLineLength: RSPrefs.typography.maximalLineLength,
               fontFamily: fontStacks.RS__oldStyleTf,
               constraint: initialConstraint,
-              paginationStrategy: RSPrefs.typography.paginationStrategy as unknown as PaginationStrategy,
+              layoutStrategy: RSPrefs.typography.layoutStrategy as unknown as LayoutStrategy,
               ...themeProps
             },
             localDataKey: localDataKey.current,
@@ -422,7 +454,7 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
               maximalLineLength: RSPrefs.typography.maximalLineLength,
               fontFamily: fontStacks.RS__oldStyleTf,
               constraint: initialConstraint,
-              paginationStrategy: RSPrefs.typography.paginationStrategy as unknown as PaginationStrategy,
+              layoutStrategy: RSPrefs.typography.layoutStrategy as unknown as LayoutStrategy,
               ...themeProps
             },
             localDataKey: localDataKey.current,
@@ -450,6 +482,7 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
 
   return (
     <>
+    <I18nProvider locale={  RSPrefs.locale  }>
     <main>
       <ReaderWithDock>
         <div id="reader-main">
@@ -485,5 +518,6 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
         </div>
     </ReaderWithDock>
   </main>
+  </I18nProvider>
   </>
 )};

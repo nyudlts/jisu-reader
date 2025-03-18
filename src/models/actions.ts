@@ -9,6 +9,7 @@ import { ActionsStateKeys } from "./state/actionsState";
 export enum ActionKeys {
   fullscreen = "fullscreen",
   jumpToPosition = "jumpToPosition",
+  layoutStrategy = "layoutStrategy",
   settings = "settings",
   toc = "toc",
   nyuSearch = "nyuSearch"
@@ -74,6 +75,7 @@ export interface IActionIconProps {
 export interface IOverflowMenu {
   id: string;
   actionItems: IActionsItem[];
+  triggerRef: RefObject<HTMLElement | null>;
   className?: string;
   actionFallback?: boolean;
   display: boolean;

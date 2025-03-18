@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 
 import Locale from "../../resources/locales/en.json";
 
-import { ReadingDisplayLayoutOption } from "@/models/layout";
+import { ReadingDisplayLayoutOptions } from "@/models/layout";
 
 import settingsStyles from "../assets/styles/readerSettings.module.css";
 
@@ -22,7 +22,7 @@ export const ReadingDisplayLayout = () => {
   const { applyScroll } = useEpubNavigator();
 
   const handleChange = useCallback(async (value: string) => {
-    if (value === ReadingDisplayLayoutOption.paginated) {
+    if (value === ReadingDisplayLayoutOptions.paginated) {
       await applyScroll(false);
     } else {
       await applyScroll(true);
@@ -33,7 +33,7 @@ export const ReadingDisplayLayout = () => {
     <>
     <RadioGroup 
       orientation="horizontal" 
-      value={ isPaged ? ReadingDisplayLayoutOption.paginated : ReadingDisplayLayoutOption.scroll } 
+      value={ isPaged ? ReadingDisplayLayoutOptions.paginated : ReadingDisplayLayoutOptions.scroll } 
       onChange={ async (val: string) => await handleChange(val) } 
       className={ settingsStyles.readerSettingsGroup }
     >
@@ -41,8 +41,8 @@ export const ReadingDisplayLayout = () => {
       <div className={ settingsStyles.readerSettingsRadioWrapper }>
         <Radio 
           className={ settingsStyles.readerSettingsRadio } 
-          value={ ReadingDisplayLayoutOption.paginated } 
-          id={ ReadingDisplayLayoutOption.paginated } 
+          value={ ReadingDisplayLayoutOptions.paginated } 
+          id={ ReadingDisplayLayoutOptions.paginated } 
           isDisabled={ false }
         >
           <PaginatedIcon aria-hidden="true" focusable="false" />
@@ -50,8 +50,8 @@ export const ReadingDisplayLayout = () => {
         </Radio>
         <Radio 
           className={ settingsStyles.readerSettingsRadio } 
-          value={ ReadingDisplayLayoutOption.scroll } 
-          id={ ReadingDisplayLayoutOption.scroll } 
+          value={ ReadingDisplayLayoutOptions.scroll } 
+          id={ ReadingDisplayLayoutOptions.scroll } 
           isDisabled={ isFXL }
         >
           <ScrollableIcon aria-hidden="true" focusable="false" />

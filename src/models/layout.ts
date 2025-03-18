@@ -14,12 +14,12 @@ export interface ILayoutDefaults {
 
 export type Constraints = Extract<SheetTypes, SheetTypes.bottomSheet | SheetTypes.popover>;
 
-export enum ReadingDisplayLayoutOption { 
+export enum ReadingDisplayLayoutOptions { 
   scroll = "scroll_option",
   paginated = "page_option"
 }
 
-export enum RSPaginationStrategy {
+export enum RSLayoutStrategy {
   margin = "margin",
   lineLength = "lineLength",
   columns = "columns"
@@ -32,6 +32,12 @@ export const ReadingDisplayFontFamilyOptions = {
   sans: fontStacks.RS__sansTf,
   humanist: fontStacks.RS__humanistTf,
   monospace: fontStacks.RS__monospaceTf
+}
+
+export enum ReadingDisplayLineHeightOptions {
+  small = "small",
+  medium = "medium",
+  large = "large"
 }
 
 export interface IReaderArrow {

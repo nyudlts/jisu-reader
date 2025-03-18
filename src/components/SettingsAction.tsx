@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useRef } from "react";
 
 import { RSPrefs } from "@/preferences";
 import Locale from "../resources/locales/en.json";
 
 import { ActionComponentVariant, ActionKeys, IActionComponentContainer, IActionComponentTrigger } from "@/models/actions";
+import { SettingsKeys } from "@/models/settings";
 
 import settingsStyles from "./assets/styles/readerSettings.module.css";
 
@@ -15,20 +16,46 @@ import { OverflowMenuItem } from "./ActionTriggers/OverflowMenuItem";
 import { ReadingDisplayCol } from "./Settings/ReadingDisplayCol";
 import { ReadingDisplayLayout } from "./Settings/ReadingDisplayLayout";
 import { ReadingDisplayTheme } from "./Settings/ReadingDisplayTheme";
+import { ReadingDisplayZoom } from "./Settings/ReadingDisplayZoom";
+import { ReadingDisplayFontFamily } from "./Settings/ReadingDisplayFontFamily";
+import { ReadingDisplayLineHeight } from "./Settings/ReadingDisplayLineHeight";
 
 import { useDocking } from "@/hooks/useDocking";
 
 import { setHovering } from "@/lib/readerReducer";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setActionOpen } from "@/lib/actionsReducer";
-import { ReadingDisplayZoom } from "./Settings/ReadingDisplayZoom";
-import { ReadingDisplayPaginationStrategy } from "./Settings/ReadingDisplayPaginationStrategy";
-import { ReadingDisplayFontFamily } from "./Settings/ReadingDisplayFontFamily";
+
+const SettingsMap = {
+  [SettingsKeys.columns]: {
+    comp: ReadingDisplayCol
+  },
+  [SettingsKeys.fontFamily]: {
+    comp: ReadingDisplayFontFamily
+  },
+  [SettingsKeys.layout]: {
+    comp: ReadingDisplayLayout
+  },
+  [SettingsKeys.lineHeight]: {
+    comp: ReadingDisplayLineHeight
+  },
+  [SettingsKeys.theme]: {
+    comp: ReadingDisplayTheme,
+    props: {
+      mapArrowNav: 2
+    }
+  },
+  [SettingsKeys.zoom]: {
+    comp: ReadingDisplayZoom
+  }
+}
 
 export const SettingsActionContainer: React.FC<IActionComponentContainer> = ({ triggerRef }) => {
   const isFXL = useAppSelector(state => state.publication.isFXL);
   const actionState = useAppSelector(state => state.actions.keys[ActionKeys.settings]);
   const dispatch = useAppDispatch();
+
+  const settingItems = useRef(isFXL ? RSPrefs.settings.fxlOrder : RSPrefs.settings.reflowOrder);
   
   const docking = useDocking(ActionKeys.settings);
   const sheetType = docking.sheetType;
@@ -59,12 +86,12 @@ export const SettingsActionContainer: React.FC<IActionComponentContainer> = ({ t
         docker: docking.getDocker()
       } }
     >
-      { !isFXL && <ReadingDisplayZoom /> }
-      { !isFXL && <ReadingDisplayFontFamily />}
-      <ReadingDisplayTheme mapArrowNav={ 2 } />
-      <ReadingDisplayLayout />
-      <ReadingDisplayCol />
-      { !isFXL && <ReadingDisplayPaginationStrategy /> }
+      { 
+        settingItems.current.map((key: SettingsKeys) => {
+          const setting = SettingsMap[key];
+          return <setting.comp key={ key } { ...("props" in setting ? setting.props : {}) } />;
+        })
+      }
     </SheetWithType>
     </>
   )

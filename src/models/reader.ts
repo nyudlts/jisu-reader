@@ -1,4 +1,4 @@
-import { IRCSSSettings } from "./rcss-settings";
+import { IRCSSSettings } from "./settings";
 import { ColorScheme } from "./theme";
 
 export interface ICache {

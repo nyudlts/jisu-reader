@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 
 import Locale from "../../resources/locales/en.json";
 
@@ -16,7 +16,7 @@ import { useAppSelector } from "@/lib/hooks";
 
 export const ReadingDisplayCol = () => {
   const isPaged = useAppSelector(state => state.reader.isPaged);
-  const colCount = useAppSelector(state => state.reader.colCount) || "auto";
+  const colCount = useAppSelector(state => state.settings.colCount) || "auto";
   const scrollable = !isPaged;
 
   const { applyColCount } = useEpubNavigator();

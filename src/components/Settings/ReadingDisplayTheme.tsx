@@ -17,7 +17,6 @@ import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setActionOpen } from "@/lib/actionsReducer";
-import { setTheme } from "@/lib/themeReducer";
 
 import classNames from "classnames";
 

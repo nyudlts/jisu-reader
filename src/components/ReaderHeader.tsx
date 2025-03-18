@@ -10,6 +10,7 @@ import readerHeaderStyles from "./assets/styles/readerHeader.module.css";
 
 import { FullscreenAction } from "./FullscreenAction";
 import { JumpToPositionAction } from "./JumpToPositionAction";
+import { LayoutStrategyAction, LayoutStrategiesActionContainer } from "./LayoutStrategyAction";
 import { SettingsAction, SettingsActionContainer } from "./SettingsAction";
 import { TocAction, TocActionContainer } from "./TocAction";
 import { NYUSearchAction, NYUSearchContainer } from "./NYUSearchAction";
@@ -28,6 +29,10 @@ const ActionsMap: { [key in ActionKeys]: IActionsMapObject } = {
   [ActionKeys.jumpToPosition]: {
     trigger: JumpToPositionAction
   },
+  [ActionKeys.layoutStrategy]: {
+    trigger: LayoutStrategyAction,
+    container: LayoutStrategiesActionContainer
+  },
   [ActionKeys.settings]: {
     trigger: SettingsAction,
     container: SettingsActionContainer
@@ -43,6 +48,7 @@ const ActionsMap: { [key in ActionKeys]: IActionsMapObject } = {
 }
 
 export const ReaderHeader = () => {
+  const isFXL = useAppSelector(state => state.publication.isFXL);
   const actionsOrder = useRef(RSPrefs.actions.displayOrder);
   const isImmersive = useAppSelector(state => state.reader.isImmersive);
   const isHovering = useAppSelector(state => state.reader.isHovering);
@@ -71,15 +77,17 @@ export const ReaderHeader = () => {
     const actionsItems: IActionsItem[] = [];
 
     actionsOrder.current.map((key: ActionKeys) => {
-      actionsItems.push({
-        Trigger: ActionsMap[key].trigger,
-        Container: ActionsMap[key].container,
-        key: key
-      });
+      if (key !== ActionKeys.layoutStrategy || !isFXL) {
+        actionsItems.push({
+          Trigger: ActionsMap[key].trigger,
+          Container: ActionsMap[key].container,
+          key: key
+        });
+      }
     });
     
     return actionsItems;
-  }, []);
+  }, [isFXL]);
 
   return (
     <>

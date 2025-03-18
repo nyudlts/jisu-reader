@@ -20,10 +20,9 @@ export const OverflowMenu = ({
   className, 
   actionFallback,
   display,
-  actionItems 
+  actionItems,
+  triggerRef
 }: IOverflowMenu) => {
-  const ref = useRef<HTMLDivElement | null>(null);
-
   const dispatch = useAppDispatch();
 
   const toggleMenuState = (value: boolean) => {
@@ -50,7 +49,6 @@ export const OverflowMenu = ({
           className={ overflowMenuStyles.overflowPopover }
         >
           <Menu 
-            ref={ ref }
             id={ id }
             selectionMode="none" 
             className={ overflowMenuStyles.overflowMenu }
@@ -68,7 +66,7 @@ export const OverflowMenu = ({
         </Popover>
       </MenuTrigger>
       { actionItems.map(({ Container, key }) => 
-        Container && <Container key={ `${ key }-container` } triggerRef={ ref } />
+        Container && <Container key={ `${ key }-container` } triggerRef={ triggerRef } />
       )}
       </>
     )

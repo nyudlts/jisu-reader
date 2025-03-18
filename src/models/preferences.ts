@@ -1,6 +1,7 @@
 import { IActionPref } from "./actions";
 import { IDockingPref } from "./docking";
-import { Constraints, ILayoutDefaults, LayoutDirection, RSPaginationStrategy } from "./layout";
+import { Constraints, ILayoutDefaults, LayoutDirection, ReadingDisplayLineHeightOptions, RSLayoutStrategy } from "./layout";
+import { SettingsKeys } from "./settings";
 import { ShortcutRepresentation } from "./shortcut";
 import { StaticBreakpoints } from "./staticBreakpoints";
 import { IThemeTokens, ThemeKeys } from "./theme";
@@ -20,12 +21,13 @@ export enum ScrollBackTo {
 
 export interface IRSPrefs {
   direction?: LayoutDirection,
+  locale?: string;
   typography: {
     minimalLineLength?: number | null;
     maximalLineLength?: number | null;
     optimalLineLength: number;
     pageGutter: number;
-    paginationStrategy?: RSPaginationStrategy | null;
+    layoutStrategy?: RSLayoutStrategy | null;
   };
   scroll: {
     topAffordance: ScrollAffordancePref;
@@ -68,4 +70,11 @@ export interface IRSPrefs {
   };
   actions: IActionPref;
   docking: IDockingPref;
+  settings: {
+    reflowOrder: SettingsKeys[],
+    fxlOrder: SettingsKeys[],
+    spacing?: {
+      [key in ReadingDisplayLineHeightOptions]: number
+    }
+  }
 }

@@ -2,7 +2,7 @@ import { useCallback, useEffect } from "react";
 
 import Locale from "../../resources/locales/en.json";
 
-import { RSPaginationStrategy } from "@/models/layout";
+import { RSLayoutStrategy } from "@/models/layout";
 
 import settingsStyles from "../assets/styles/readerSettings.module.css";
 
@@ -16,59 +16,57 @@ import { ReadingDisplayMaxChars } from "./ReadingDisplayMaxChars";
 import { useAppSelector } from "@/lib/hooks";
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
-export const ReadingDisplayPaginationStrategy = () => {
-  const paginationStrategy = useAppSelector(state => state.reader.paginationStrategy);
+export const ReadingDisplayLayoutStrategy = () => {
+  const layoutStrategy = useAppSelector(state => state.settings.layoutStrategy);
   const isPaged = useAppSelector(state => state.reader.isPaged);
-  const colCount = useAppSelector(state => state.reader.colCount);
+  const colCount = useAppSelector(state => state.settings.colCount);
 
-  const { applyPaginationStrategy } = useEpubNavigator();
+  const { applyLayoutStrategy } = useEpubNavigator();
 
   const handleChange = useCallback(async (value: string) => {
-    await applyPaginationStrategy(value as RSPaginationStrategy);
-  }, [applyPaginationStrategy]);
+    await applyLayoutStrategy(value as RSLayoutStrategy);
+  }, [applyLayoutStrategy]);
 
   useEffect(() => {
-    if (colCount !== "auto" && paginationStrategy === RSPaginationStrategy.columns) {
-      handleChange(RSPaginationStrategy.lineLength);
+    if (colCount !== "auto" && layoutStrategy === RSLayoutStrategy.columns) {
+      handleChange(RSLayoutStrategy.lineLength);
     }
-  }, [colCount, paginationStrategy, handleChange]);
+  }, [colCount, layoutStrategy, handleChange]);
 
   return(
     <>
     <RadioGroup 
       orientation="horizontal" 
-      value={ paginationStrategy } 
+      value={ layoutStrategy } 
       onChange={ async (val: string) => await handleChange(val) } 
       className={ settingsStyles.readerSettingsGroup }
     >
-      <Label className={ settingsStyles.readerSettingsLabel }>{ Locale.reader.settings.paginationStrategy.title }</Label>
+      <Label className={ settingsStyles.readerSettingsLabel }>{ Locale.reader.layoutStrategy.title }</Label>
       <div className={ settingsStyles.readerSettingsRadioWrapper }>
         <Radio 
           className={ settingsStyles.readerSettingsRadio } 
-          value={ RSPaginationStrategy.margin } 
-          id={ RSPaginationStrategy.margin } 
-          isDisabled={ !isPaged }
+          value={ RSLayoutStrategy.margin } 
+          id={ RSLayoutStrategy.margin } 
         >
           <FitIcon aria-hidden="true" focusable="false" />
-          <span>{ Locale.reader.settings.paginationStrategy.margin }</span>
+          <span>{ Locale.reader.layoutStrategy.margin }</span>
         </Radio>
         <Radio 
           className={ settingsStyles.readerSettingsRadio } 
-          value={ RSPaginationStrategy.lineLength } 
-          id={ RSPaginationStrategy.lineLength } 
-          isDisabled={ !isPaged }
+          value={ RSLayoutStrategy.lineLength } 
+          id={ RSLayoutStrategy.lineLength } 
         >
           <RangeIcon aria-hidden="true" focusable="false" />
-          <span>{ Locale.reader.settings.paginationStrategy.lineLength }</span>
+          <span>{ Locale.reader.layoutStrategy.lineLength }</span>
         </Radio>
         <Radio 
           className={ settingsStyles.readerSettingsRadio } 
-          value={ RSPaginationStrategy.columns } 
-          id={ RSPaginationStrategy.columns } 
+          value={ RSLayoutStrategy.columns } 
+          id={ RSLayoutStrategy.columns } 
           isDisabled={ !isPaged || colCount !== "auto" } 
         >
           <AddColumnIcon aria-hidden="true" focusable="false" />
-          <span>{ Locale.reader.settings.paginationStrategy.columns }</span>
+          <span>{ Locale.reader.layoutStrategy.columns }</span>
         </Radio>
       </div>
     </RadioGroup>

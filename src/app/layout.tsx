@@ -20,8 +20,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" { ...(RSPrefs.direction && RSPrefs.direction === LayoutDirection.rtl ? { dir: RSPrefs.direction } : {}) }>
-      <body className={inter.className}>
-        {children}
+      <body className={ inter.className }>
+        { children  }
       </body>
     </html>
   );

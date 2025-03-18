@@ -8,13 +8,19 @@ The App UI supports both Left-to-Right (LTR) and Right-to-Left (RTL) languages t
 
 Values can be `ltr` or `rtl` and a `LayoutDirection` enum is available as well. 
 
+## Locale
+
+For direction to work properly, the `locale` has to be set as well, since React Aria Components require this locale to derive the correct direction. If you don’t set it, then the user’s system/browser locale will be used, with the risk of resulting to a conflicting `dir` being used. 
+
 ## Typography
 
 The `typography` object can be used to set the following properties:
 
 - `pageGutter`;
 - `optimalLineLength`; 
-- `minimalLineLength`.
+- `minimalLineLength`;
+- `maximalLineLength`;
+- `layoutStrategy`.
 
 For instance: 
 
@@ -22,7 +28,9 @@ For instance:
 typography: {
   minimalLineLength: 35,
   optimalLineLength: 65,
-  pageGutter: 20
+  maximalLineLength: 75,
+  pageGutter: 20,
+  layoutStrategy: RSLayoutStrategy.margin
 }
 ```
 
@@ -38,11 +46,31 @@ This will be used to switch from one to two columns, taking page gutter into acc
 
 ### Minimal Line Length (optional)
 
-The minimal line length a column of text can never go below, even when 2 columns are set by the user, in `ch`. 
+The minimal line length a column of text can never go below when `n >= 2` columns are set by the user, in `ch`. 
 
 If the value is `undefined`, then optimal line length is the minimal line length. The algorithm will also check this value is not higher than the optimal line length and apply the same logic.
 
-If it’s `null` then this means it is disabled entirely, and there is no lower limit. This can be used to enforce 2 columns, even on smaller screens.
+If it’s `null` then this means it is disabled entirely, and there is no lower limit. This can be used to enforce `n` columns, even on smaller screens.
+
+### Maximal Line Length (optional)
+
+The maximal line length a column of text can reach in `ch`. 
+
+If the value is `undefined`, then optimal line length is the maximal line length. The algorithm will also check this value is higher than the optimal line length and apply the same logic.
+
+If it’s `null` then this means it is disabled entirely, and there is no upper limit. This can be used to enforce the line of text is as long as its container or column when the count is set by the user.
+
+### Layout Strategy (optional)
+
+The strategy that should be used to lay out reflowable contents. 
+
+It is using the `RSLayoutStrategy` enum (`margin`, `lineLength`, `columns`).
+
+- `margin` prioritizes optimal line length and whitespace; 
+- `lineLength` prioritizes maximal line length and uses optimal as a floor to add some fluidity;
+- `columns` prioritizes minimal line length and the number of columns. This is only compatible with `colCount: "auto"`
+
+These strategies are part of the Preferences API and can be switched dynamically if needed.
 
 ## Scroll
 
@@ -126,6 +154,7 @@ Enum `ActionKeys` is provided to keep things consistent across the entire codeba
 
 For instance:
 
+```
 actions: {
   ...
   displayOrder: [
@@ -134,6 +163,7 @@ actions: {
     ActionKeys.fullscreen
   ]
 }
+```
 
 ### Collapsibility and Visibility
 
@@ -205,3 +235,48 @@ Note `ShortcutMetaKeywords.platform` is provided as an alias mapping to the Comm
 Docking is partly similar to actions in the sense it has its own special docking actions you can configure: display order, collapsibility and visibility.
 
 See the [dedicated Docking doc](./Docking.md) for more details.
+
+## Settings
+
+Settings can be set in a specific order for both reflowable and Fixed-Layout EPUB. Some settings’ values can also be customized.
+
+### Display Order
+
+You can customize the order of the actions in the `reflowOrder` or `fxlOrder` arrays, and remove them as well if you don’t want to expose some. 
+
+Enum `SettingKeys` is provided to keep things consistent across the entire codebase.
+
+For instance:
+
+```
+settings: {
+  ...
+  reflowOrder: [
+    SettingsKeys.zoom,
+    SettingsKeys.fontFamily,
+    SettingsKeys.theme,
+    SettingsKeys.lineHeight,
+    SettingsKeys.layout,
+    SettingsKeys.columns
+  ],
+  fxlOrder: [
+    SettingsKeys.zoom,
+    SettingsKeys.theme,
+    SettingsKeys.columns
+  ]
+}
+```
+
+### Spacing (optional)
+
+This allows to customize the value for line-heights. It must be a ratio (`number`).
+
+For instance:
+
+```
+spacing: {
+  [ReadingDisplayLineHeightOptions.small]: 1.3,
+  [ReadingDisplayLineHeightOptions.medium]: 1.5,
+  [ReadingDisplayLineHeightOptions.large]: 1.75
+}
+```

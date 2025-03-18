@@ -99,6 +99,17 @@
         "trigger": "Display actions"
       }
     },
+    "layoutStrategy": {
+      "tooltip": "Layout",
+      "trigger": "Layout strategy",
+      "close": "Close layout strategy menu",
+      "heading": "Layout strategy",
+      "title": "Strategy",
+      "margin": "Margin",
+      "lineLength": "Line length",
+      "columns": "Columns",
+      "maxChars": "Disable maximal line length"
+    },
     "settings": {
       "tooltip": "Settings",
       "trigger": "Settings menu",
@@ -138,6 +149,12 @@
         "humanist": "Humanist sans-serif",
         "monospace": "Monospace"
       },
+      "lineHeight": {
+        "title": "Spacing",
+        "small": "Tight",
+        "medium": "Balanced",
+        "large": "Loose"
+      },
       "layout": {
         "title": "Layout",
         "scrolled": "Scrollable",
@@ -148,15 +165,6 @@
         "auto": "Auto",
         "one": "1 col",
         "two": "2 cols"
-      },
-      "paginationStrategy": {
-        "title": "Pagination strategy",
-        "margin": "Margin",
-        "lineLength": "Line length",
-        "columns": "Columns"
-      },
-      "maxChars": {
-        "label": "Disable maximal line length"
       }
     }
   }

@@ -5,7 +5,8 @@ import { ActionKeys, ActionVisibility } from "./models/actions";
 import { SheetTypes } from "./models/sheets";
 import { DockTypes, DockingKeys } from "./models/docking";
 import { ThemeKeys } from "./models/theme";
-import { LayoutDirection, RSPaginationStrategy } from "./models/layout";
+import { LayoutDirection, ReadingDisplayLineHeightOptions, RSLayoutStrategy } from "./models/layout";
+import { SettingsKeys } from "./models/settings";
 
 import dayMode from "@readium/css/css/vars/day.json";
 import sepiaMode from "@readium/css/css/vars/sepia.json";
@@ -13,12 +14,13 @@ import nightMode from "@readium/css/css/vars/night.json";
 
 export const RSPrefs: IRSPrefs = {
   direction: LayoutDirection.ltr,
+  locale: "en",
   typography: {
-    minimalLineLength: 40, // undefined | null | number of characters. If 2 cols will switch to 1 based on this
+    minimalLineLength: 45, // undefined | null | number of characters. If 2 cols will switch to 1 based on this
     optimalLineLength: 65, // number of characters. If auto layout, picks colCount based on this
     maximalLineLength: 75, // undefined | null | number of characters.
     pageGutter: 20, // body padding in px
-    paginationStrategy: RSPaginationStrategy.lineLength
+    layoutStrategy: RSLayoutStrategy.lineLength
   },
   scroll: {
     topAffordance: ScrollAffordancePref.none,
@@ -189,6 +191,7 @@ export const RSPrefs: IRSPrefs = {
       ActionKeys.settings,
       ActionKeys.toc,
       ActionKeys.fullscreen,
+      ActionKeys.layoutStrategy
     //  ActionKeys.jumpToPosition
     ],
     collapse: {
@@ -259,6 +262,23 @@ export const RSPrefs: IRSPrefs = {
           maxWidth: 450
         }
       },
+      [ActionKeys.layoutStrategy]: {
+        visibility: ActionVisibility.overflow,
+        shortcut: null,
+        sheet: {
+          defaultSheet: SheetTypes.popover,
+          breakpoints: {
+            [StaticBreakpoints.compact]: SheetTypes.bottomSheet
+          }
+        },
+        docked: {
+          dockable: DockTypes.none
+        },
+        snapped: {
+          scrim: true,
+          minHeight: "content-height"
+        }
+      },
       [ActionKeys.jumpToPosition]: {
         visibility: ActionVisibility.overflow,
         shortcut: null, // `${ ShortcutMetaKeywords.shift }+${ ShortcutMetaKeywords.alt }+J`,
@@ -295,6 +315,25 @@ export const RSPrefs: IRSPrefs = {
         visibility: ActionVisibility.overflow,
         shortcut: null
       }
+    }
+  },
+  settings: {
+    reflowOrder: [
+      SettingsKeys.zoom,
+      SettingsKeys.fontFamily,
+      SettingsKeys.theme,
+      SettingsKeys.lineHeight,
+      SettingsKeys.layout,
+      SettingsKeys.columns
+    ],
+    fxlOrder: [
+      SettingsKeys.theme,
+      SettingsKeys.columns
+    ],
+    spacing: {
+      [ReadingDisplayLineHeightOptions.small]: 1.3,
+      [ReadingDisplayLineHeightOptions.medium]: 1.5,
+      [ReadingDisplayLineHeightOptions.large]: 1.75
     }
   }
 }

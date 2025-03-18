@@ -17,24 +17,14 @@ import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 import { useAppSelector } from "@/lib/hooks";
 
 export const ReadingDisplayZoom = () => {
-  const [currentSize, setCurrentSize] = React.useState<number | null>(null);
+  const fontSize = useAppSelector((state) => state.settings.fontSize);
   const isFXL = useAppSelector((state) => state.publication.isFXL);
   
   const { 
     incrementSize, 
     decrementSize,
-    getCurrentSize,
     getSizeRange 
   } = useEpubNavigator();
-
-  const updateSize = () => {
-    const size = getCurrentSize();
-    size && setCurrentSize(size);
-  };
-
-  React.useEffect(() => {
-    updateSize();
-  });
 
   return (
     <Group 
@@ -63,9 +53,8 @@ export const ReadingDisplayZoom = () => {
             aria-label={ isFXL ? Locale.reader.settings.zoom.decrease : Locale.reader.settings.fontSize.decrease }
             onPress={ async() => {
               await decrementSize();
-              updateSize();
             } }
-            isDisabled={ getSizeRange() !== null && currentSize === getSizeRange()?.[0] }
+            isDisabled={ getSizeRange() !== null && fontSize === getSizeRange()?.[0] }
           >
             { isFXL 
               ? <ZoomOut aria-hidden="true" focusable="false" /> 
@@ -82,7 +71,7 @@ export const ReadingDisplayZoom = () => {
         </TooltipTrigger>
 
         <span className={ settingsStyles.readerSettingsGroupValue }>
-          { `${Math.round((currentSize ?? 1) * 100)}%` }
+          { `${Math.round((fontSize ?? 1) * 100)}%` }
         </span>
 
         <TooltipTrigger
@@ -99,9 +88,8 @@ export const ReadingDisplayZoom = () => {
             aria-label={ isFXL ? Locale.reader.settings.zoom.increase : Locale.reader.settings.fontSize.increase }
             onPress={ async () => {
               await incrementSize();
-              updateSize();
             } }
-            isDisabled={ getSizeRange() !== null && currentSize === getSizeRange()?.[1] }
+            isDisabled={ getSizeRange() !== null && fontSize === getSizeRange()?.[1] }
           >
             { isFXL 
               ? <ZoomIn aria-hidden="true" focusable="false" /> 
