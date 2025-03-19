@@ -34,6 +34,11 @@ export const ReadingDisplayFontFamilyOptions = {
   monospace: fontStacks.RS__monospaceTf
 }
 
+export enum ReadingDisplayAlignOptions {
+  start = "start",
+  justify = "justify"
+}
+
 export enum ReadingDisplayLineHeightOptions {
   small = "small",
   medium = "medium",

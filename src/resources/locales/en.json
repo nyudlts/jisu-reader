@@ -128,26 +128,32 @@
       },
       "zoom": {
         "title": "Zoom",
-        "increaseTooltip": "Increase",
         "increase": "Increase zoom",
-        "decreaseTooltip": "Decrease",
         "decrease": "Decrease zoom"
       },
       "fontSize": {
         "title": "Font size",
-        "increaseTooltip": "Increase",
         "increase": "Increase font size",
-        "decreaseTooltip": "Decrease",
-        "decrease": "Decrease font size"
+        "decrease": "Decrease font size",
+        "advanced": {
+          "tooltip": "More options",
+          "trigger": "More options"
+        }
       },
       "fontFamily": {
         "title": "Font family",
-        "publisher": "Publisher’s font",
-        "oldStyle": "Old style serif",
-        "modern": "Modern serif",
-        "sans": "Sans-serif",
-        "humanist": "Humanist sans-serif",
-        "monospace": "Monospace"
+        "labels": {
+          "publisher": "Publisher’s font",
+          "oldStyle": "Old style serif",
+          "modern": "Modern serif",
+          "sans": "Sans-serif",
+          "humanist": "Humanist sans-serif",
+          "monospace": "Monospace" 
+        },
+        "advanced": {
+          "tooltip": "More options",
+          "trigger": "More options"
+        }
       },
       "lineHeight": {
         "title": "Spacing",
@@ -165,6 +171,16 @@
         "auto": "Auto",
         "one": "1 col",
         "two": "2 cols"
+      },
+      "align": {
+        "title": "Text alignment",
+        "left": "Left",
+        "justify": "Justify",
+        "right": "Right"
+      },
+      "hyphens": {
+        "title": "Hyphenation",
+        "label": "Enable hyphens"
       }
     }
   }

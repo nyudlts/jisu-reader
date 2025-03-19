@@ -4,11 +4,11 @@ import Locale from "../resources/locales/en.json";
 import { RSPrefs } from "@/preferences";
 
 import { ScrollBackTo } from "@/models/preferences";
-import { ReadingDisplayFontFamilyOptions, ReadingDisplayLineHeightOptions, RSLayoutStrategy } from "@/models/layout";
+import { ReadingDisplayAlignOptions, ReadingDisplayFontFamilyOptions, ReadingDisplayLineHeightOptions, RSLayoutStrategy } from "@/models/layout";
 import { ColorScheme, ThemeKeys } from "@/models/theme";
 
 import { EPUBLayout, Link, Locator, Publication } from "@readium/shared";
-import { EpubNavigator, EpubNavigatorListeners, EpubPreferences, FrameManager, FXLFrameManager, IEpubDefaults, IEpubPreferences, LayoutStrategy, Theme } from "@readium/navigator";
+import { EpubNavigator, EpubNavigatorListeners, EpubPreferences, FrameManager, FXLFrameManager, IEpubDefaults, IEpubPreferences, LayoutStrategy, TextAlignment, Theme } from "@readium/navigator";
 
 import { ScrollAffordance } from "@/helpers/scrollAffordance";
 import { localData } from "@/helpers/localData";
@@ -16,7 +16,7 @@ import { localData } from "@/helpers/localData";
 import { useAppDispatch } from "@/lib/hooks";
 import { setProgression } from "@/lib/publicationReducer";
 import { setPaged } from "@/lib/readerReducer";
-import { setColCount, setFontFamily, setFontSize, setLayoutStrategy, setLineHeight } from "@/lib/settingsReducer";
+import { setAlign, setColCount, setFontFamily, setFontSize, setHyphens, setLayoutStrategy, setLineHeight } from "@/lib/settingsReducer";
 import { setTheme } from "@/lib/themeReducer";
 
 type cbb = (ok: boolean) => void;
@@ -173,29 +173,20 @@ export const useEpubNavigator = () => {
     }));
   }, []);
 
-  const incrementSize = useCallback(async () => {
-    const editor = navigatorInstance?.preferencesEditor;
-    if (editor) {
-      if (!editor.fontSize.value) {
-        editor.fontSize.value = 1;
-      }
-      editor.fontSize.increment();
-      await navigatorInstance?.submitPreferences(editor.preferences);
-      dispatch(setFontSize(navigatorInstance?.settings.fontSize));
-    }
+  const applyZoom = useCallback(async (value: number) => {
+    await navigatorInstance?.submitPreferences(new EpubPreferences({
+      fontSize: value
+    }));
+    dispatch(setFontSize(navigatorInstance?.settings.fontSize));
   }, [dispatch]);
 
-  const decrementSize = useCallback(async () => {
+  const getSizeStep = useCallback(() => {
     const editor = navigatorInstance?.preferencesEditor;
     if (editor) {
-      if (!editor.fontSize.value) {
-        editor.fontSize.value = 1;
-      }
-      editor.fontSize.decrement();
-      await navigatorInstance?.submitPreferences(editor.preferences);
-      dispatch(setFontSize(navigatorInstance?.settings.fontSize));
+      return editor.fontSize.step;
     }
-  }, [dispatch]);
+    return null;
+  }, []);
 
   const getSizeRange = useCallback(() => {
     const editor = navigatorInstance?.preferencesEditor;
@@ -232,6 +223,28 @@ export const useEpubNavigator = () => {
       lineHeight: computedValue
     }));
     dispatch(setLineHeight(value));
+  }, [dispatch]);
+
+  const applyTextAlign = useCallback(async (value: ReadingDisplayAlignOptions) => {
+    const textAlign: TextAlignment | null = value === ReadingDisplayAlignOptions.start 
+      ? TextAlignment.start 
+      : value === ReadingDisplayAlignOptions.justify 
+        ? TextAlignment.justify 
+        : TextAlignment.start;
+
+    await navigatorInstance?.submitPreferences(new EpubPreferences({
+      publisherStyles: false,
+      textAlign: textAlign
+    }));
+    dispatch(setAlign(value));
+  }, [dispatch]);
+
+  const applyHyphens = useCallback(async (value: boolean) => {
+    await navigatorInstance?.submitPreferences(new EpubPreferences({
+      publisherStyles: false,
+      hyphens: value
+    }));
+    dispatch(setHyphens(value));
   }, [dispatch]);
 
   // Warning: this is using an internal member that will become private, do not rely on it
@@ -368,10 +381,12 @@ export const useEpubNavigator = () => {
     applyColCount, 
     applyLayoutStrategy,
     applyFontFamily, 
-    applyLineHeight, 
+    applyLineHeight,
+    applyTextAlign, 
+    applyHyphens, 
     nullifyMaxChars,
-    incrementSize,
-    decrementSize,
+    applyZoom,
+    getSizeStep, 
     getSizeRange,
     handleProgression,
     navLayout, 

@@ -10,10 +10,24 @@
   margin-bottom: 0;
 }
 
-.readerSettingsLabel,
-.readerSettingsGroupTitle {
+.readerSettingsGroupFlex {
+  display: flex;
+  gap: calc(var(--layout-spacing) / 2);
+}
+
+.readerSettingsNumberField {
+  width: fit-content;
+}
+
+.readerSettingsAdvancedIcon {
+  align-self: flex-start;
+  margin-inline-start: auto;
+}
+
+.readerSettingsLabel {
   display: block;
   font-weight: bold;
+  font-size: 1rem;
 }
 
 .readerSettingsRadioWrapper,
@@ -22,13 +36,23 @@
   gap: var(--layout-spacing);
   margin: var(--layout-spacing) 0;
   text-align: center;
+  border-radius: var(--layout-radius);
 }
 
-.readerSettingsGroupValue {
-  padding-inline: calc(var(--layout-spacing) / 2);
+.readerSettingsGroupWrapper {
+  width: fit-content;
+}
+
+.readerSettingsGroupWrapper[data-focus-within]:has(input[data-focus-visible]) {
+  outline: 2px solid var(--theme-focus);
+}
+
+.readerSettingsInput {
+  background-color: var(--theme-background);
   color: var(--theme-text);
   font-weight: bold;
   align-self: center;
+  max-width: 10ch;
 }
 
 .readerSettingsRadio {

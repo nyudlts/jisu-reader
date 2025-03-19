@@ -146,6 +146,21 @@ button {
   -webkit-tap-highlight-color: transparent;
 }
 
+input {
+  font-size: 1rem;
+  border-radius: 0;
+  text-align: inherit;
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  cursor: text;
+  border: none;
+  color: inherit;
+  font: inherit;
+  /* Focus no outline */
+  outline: none;
+}
+
 ::selection {
   background-color: var(--theme-select);
   color: var(--theme-onSelect);

@@ -29,7 +29,7 @@ export const ReadingDisplayCol = () => {
     <>
     <RadioGroup 
       orientation="horizontal" 
-      value={`${ colCount }`} 
+      value={ colCount } 
       onChange={ async (val: string) => await handleChange(val) }
       className={ settingsStyles.readerSettingsGroup }
       isDisabled={ scrollable }
