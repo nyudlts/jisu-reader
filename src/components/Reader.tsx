@@ -27,7 +27,7 @@ import { Locator, Manifest, Publication, Fetcher, HttpFetcher, EPUBLayout, Readi
 
 import { ReaderWithDock } from "./ReaderWithPanels";
 
-import { ReaderHeader } from "./NYUReaderHeader";
+import { ReaderHeader } from "./ReaderHeader";
 import { ArrowButton } from "./ArrowButton";
 import { ReaderFooter } from "./NYUReaderFooter";
 
