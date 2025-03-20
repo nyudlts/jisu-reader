@@ -10,6 +10,7 @@ import { Button, Group, Input, Label, NumberField, NumberFieldProps } from "reac
 import classNames from "classnames";
 
 export const NumberFieldWrapper: React.FC<NumberFieldProps & ISettingsNumberFieldProps> = ({
+  standalone, 
   className,
   label,
   defaultValue,
@@ -40,11 +41,13 @@ export const NumberFieldWrapper: React.FC<NumberFieldProps & ISettingsNumberFiel
       incrementAriaLabel={ steppers.incrementLabel }
       isDisabled={ disabled }
       isWheelDisabled={ wheelDisabled }
+      { ...(!standalone ? { "aria-label": label } : {}) }
       { ...props }
     >
-      <Label className={ settingsStyles.readerSettingsLabel }>
-        { label}
-      </Label>
+      { standalone && <Label className={ settingsStyles.readerSettingsLabel }>
+          { label }
+        </Label>
+      }
 
       <Group className={ settingsStyles.readerSettingsGroupWrapper }>
         <Button 

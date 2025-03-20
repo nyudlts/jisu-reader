@@ -6,7 +6,7 @@ import { SheetTypes } from "./models/sheets";
 import { DockTypes, DockingKeys } from "./models/docking";
 import { ThemeKeys } from "./models/theme";
 import { LayoutDirection, ReadingDisplayLineHeightOptions, RSLayoutStrategy } from "./models/layout";
-import { SettingsKeys } from "./models/settings";
+import { SettingsKeys, TextSettingsKeys } from "./models/settings";
 
 import dayMode from "@readium/css/css/vars/day.json";
 import sepiaMode from "@readium/css/css/vars/sepia.json";
@@ -320,9 +320,9 @@ export const RSPrefs: IRSPrefs = {
   settings: {
     reflowOrder: [
       SettingsKeys.zoom,
-      SettingsKeys.fontFamily,
+      SettingsKeys.text,
       SettingsKeys.theme,
-      SettingsKeys.lineHeight,
+      SettingsKeys.spacing,
       SettingsKeys.layout,
       SettingsKeys.columns
     ],
@@ -330,10 +330,20 @@ export const RSPrefs: IRSPrefs = {
       SettingsKeys.theme,
       SettingsKeys.columns
     ],
+    text: {
+      displayOrder: [
+        TextSettingsKeys.fontFamily,
+        TextSettingsKeys.fontWeight,
+        TextSettingsKeys.align,
+        TextSettingsKeys.hyphens
+      ]
+    },
     spacing: {
-      [ReadingDisplayLineHeightOptions.small]: 1.3,
-      [ReadingDisplayLineHeightOptions.medium]: 1.5,
-      [ReadingDisplayLineHeightOptions.large]: 1.75
+      lineHeight: {
+        [ReadingDisplayLineHeightOptions.small]: 1.3,
+        [ReadingDisplayLineHeightOptions.medium]: 1.5,
+        [ReadingDisplayLineHeightOptions.large]: 1.75
+      }
     }
   }
 }

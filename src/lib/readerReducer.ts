@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { IReaderState } from "@/models/state/readerState";
 import { defaultPlatformModifier } from "@/helpers/keyboard/getMetaKeys";
 import { LayoutDirection } from "@/models/layout";
+import { SettingsContainerKeys } from "@/models/settings";
 
 const initialState: IReaderState = {
   direction: LayoutDirection.ltr,
@@ -11,6 +12,7 @@ const initialState: IReaderState = {
   hasArrows: true,
   isFullscreen: false,
   isPaged: true,
+  settingsContainer: SettingsContainerKeys.initial,
   platformModifier: defaultPlatformModifier
 }
 
@@ -41,6 +43,9 @@ export const readerSlice = createSlice({
     },
     setPaged: (state, action) => {
       state.isPaged = action.payload
+    },
+    setSettingsContainer: (state, action) => {
+      state.settingsContainer = action.payload
     }
   }
 })
@@ -54,7 +59,8 @@ export const {
   setHovering, 
   setArrows, 
   setFullscreen, 
-  setPaged
+  setPaged,
+  setSettingsContainer
 } = readerSlice.actions;
 
 export default readerSlice.reducer;

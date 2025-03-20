@@ -238,45 +238,6 @@ See the [dedicated Docking doc](./Docking.md) for more details.
 
 ## Settings
 
-Settings can be set in a specific order for both reflowable and Fixed-Layout EPUB. Some settings’ values can also be customized.
+Settings can be set and or nested in a specific order for both reflowable and Fixed-Layout EPUB. Some settings’ values can also be customized.
 
-### Display Order
-
-You can customize the order of the actions in the `reflowOrder` or `fxlOrder` arrays, and remove them as well if you don’t want to expose some. 
-
-Enum `SettingKeys` is provided to keep things consistent across the entire codebase.
-
-For instance:
-
-```
-settings: {
-  ...
-  reflowOrder: [
-    SettingsKeys.zoom,
-    SettingsKeys.fontFamily,
-    SettingsKeys.theme,
-    SettingsKeys.lineHeight,
-    SettingsKeys.layout,
-    SettingsKeys.columns
-  ],
-  fxlOrder: [
-    SettingsKeys.zoom,
-    SettingsKeys.theme,
-    SettingsKeys.columns
-  ]
-}
-```
-
-### Spacing (optional)
-
-This allows to customize the value for line-heights. It must be a ratio (`number`).
-
-For instance:
-
-```
-spacing: {
-  [ReadingDisplayLineHeightOptions.small]: 1.3,
-  [ReadingDisplayLineHeightOptions.medium]: 1.5,
-  [ReadingDisplayLineHeightOptions.large]: 1.75
-}
-```
+See [Settings doc](./Settings.md) for more details.

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from "react";
+import { use, useCallback, useMemo, useRef } from "react";
 
 import Locale from "../resources/locales/en.json";
 import { RSPrefs } from "@/preferences";
@@ -6,6 +6,7 @@ import { RSPrefs } from "@/preferences";
 import { ScrollBackTo } from "@/models/preferences";
 import { ReadingDisplayAlignOptions, ReadingDisplayFontFamilyOptions, ReadingDisplayLineHeightOptions, RSLayoutStrategy } from "@/models/layout";
 import { ColorScheme, ThemeKeys } from "@/models/theme";
+import { defaultLineHeights } from "@/models/settings";
 
 import { EPUBLayout, Link, Locator, Publication } from "@readium/shared";
 import { EpubNavigator, EpubNavigatorListeners, EpubPreferences, FrameManager, FXLFrameManager, IEpubDefaults, IEpubPreferences, LayoutStrategy, TextAlignment, Theme } from "@readium/navigator";
@@ -16,7 +17,7 @@ import { localData } from "@/helpers/localData";
 import { useAppDispatch } from "@/lib/hooks";
 import { setProgression } from "@/lib/publicationReducer";
 import { setPaged } from "@/lib/readerReducer";
-import { setAlign, setColCount, setFontFamily, setFontSize, setHyphens, setLayoutStrategy, setLineHeight } from "@/lib/settingsReducer";
+import { setAlign, setColCount, setFontFamily, setFontSize, setFontWeight, setHyphens, setLayoutStrategy, setLineHeight } from "@/lib/settingsReducer";
 import { setTheme } from "@/lib/themeReducer";
 
 type cbb = (ok: boolean) => void;
@@ -196,6 +197,13 @@ export const useEpubNavigator = () => {
     return null;
   }, []);
 
+  const applyFontWeight = useCallback(async (value: number) => {
+    await navigatorInstance?.submitPreferences(new EpubPreferences({
+      fontWeight: value
+    }));
+    dispatch(setFontWeight(value));
+  }, [dispatch]);
+
   const applyFontFamily = useCallback(async (fontFamily: { id: keyof typeof ReadingDisplayFontFamilyOptions, value: string | null }) => {
     await navigatorInstance?.submitPreferences(new EpubPreferences({
       fontFamily: fontFamily.value
@@ -210,12 +218,12 @@ export const useEpubNavigator = () => {
   }, [dispatch]);
 
   const applyLineHeight = useCallback(async (value: string) => {
-    const computedValue: number = RSPrefs.settings.spacing?.[value as ReadingDisplayLineHeightOptions] ?? 
+    const computedValue: number = RSPrefs.settings.spacing?.lineHeight?.[value as ReadingDisplayLineHeightOptions] ?? 
           (value === ReadingDisplayLineHeightOptions.small 
-            ? 1.3 
+            ? defaultLineHeights[ReadingDisplayLineHeightOptions.small] 
             : value === ReadingDisplayLineHeightOptions.medium 
-              ? 1.5 
-              : 1.75
+              ? defaultLineHeights[ReadingDisplayLineHeightOptions.medium] 
+              : defaultLineHeights[ReadingDisplayLineHeightOptions.large]
           );
 
     await navigatorInstance?.submitPreferences(new EpubPreferences({
@@ -226,17 +234,23 @@ export const useEpubNavigator = () => {
   }, [dispatch]);
 
   const applyTextAlign = useCallback(async (value: ReadingDisplayAlignOptions) => {
-    const textAlign: TextAlignment | null = value === ReadingDisplayAlignOptions.start 
-      ? TextAlignment.start 
-      : value === ReadingDisplayAlignOptions.justify 
-        ? TextAlignment.justify 
-        : TextAlignment.start;
+    const textAlign: TextAlignment | null = value === ReadingDisplayAlignOptions.publisher 
+      ? null 
+      : value === ReadingDisplayAlignOptions.start 
+        ? TextAlignment.start 
+        : TextAlignment.justify;
+
+    const hyphens = textAlign === null 
+      ? null 
+      : (navigatorInstance?.settings.hyphens ?? textAlign === TextAlignment.justify);
 
     await navigatorInstance?.submitPreferences(new EpubPreferences({
       publisherStyles: false,
-      textAlign: textAlign
+      textAlign: textAlign,
+      hyphens: hyphens
     }));
     dispatch(setAlign(value));
+    dispatch(setHyphens(hyphens));
   }, [dispatch]);
 
   const applyHyphens = useCallback(async (value: boolean) => {
@@ -380,6 +394,7 @@ export const useEpubNavigator = () => {
     applyConstraint, 
     applyColCount, 
     applyLayoutStrategy,
+    applyFontWeight,
     applyFontFamily, 
     applyLineHeight,
     applyTextAlign, 

@@ -35,6 +35,7 @@ export const ReadingDisplayFontFamilyOptions = {
 }
 
 export enum ReadingDisplayAlignOptions {
+  publisher = "publisher",
   start = "start",
   justify = "justify"
 }

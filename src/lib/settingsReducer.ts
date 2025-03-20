@@ -6,9 +6,10 @@ import { ISettingsState } from "@/models/state/settingsState";
 const initialState: ISettingsState = {
   colCount: "auto",
   fontSize: 1,
+  fontWeight: 400,
   fontFamily: "publisher",
   lineHeight: ReadingDisplayLineHeightOptions.medium,
-  align: null,
+  align: ReadingDisplayAlignOptions.publisher,
   hyphens: null,
   layoutStrategy: RSLayoutStrategy.lineLength,
 }
@@ -22,6 +23,9 @@ export const settingsSlice = createSlice({
     },
     setFontSize: (state, action) => {
       state.fontSize = action.payload
+    },
+    setFontWeight: (state, action) => {
+      state.fontWeight = action.payload
     },
     setFontFamily: (state, action) => {
       state.fontFamily = action.payload
@@ -45,6 +49,7 @@ export const settingsSlice = createSlice({
 export const { 
   setColCount,
   setFontSize,
+  setFontWeight, 
   setFontFamily,
   setLineHeight,
   setAlign, 

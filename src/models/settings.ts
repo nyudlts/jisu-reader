@@ -3,13 +3,61 @@ import { ReadingDisplayAlignOptions, ReadingDisplayLineHeightOptions, RSLayoutSt
 import { ThemeKeys } from "./theme";
 import { PressEvent, TooltipProps } from "react-aria-components";
 
+export enum SettingsContainerKeys {
+  initial = "initial",
+  text = "text",
+  spacing = "spacing"
+}
+
 export enum SettingsKeys {
-  zoom = "zoom",
+  align = "align",
+  columns = "columns",
   fontFamily = "fontFamily",
-  lineHeight = "lineHeight",
+  fontWeight = "fontWeight",
+  hyphens = "hyphens",
   layout = "layout",
+  lineHeight = "lineHeight",
+  spacing = "spacing",
+  text = "text",
   theme = "theme",
-  columns = "columns"
+  zoom = "zoom"
+}
+
+export enum TextSettingsKeys {
+  align = "align",
+  fontFamily = "fontFamily",
+  fontWeight = "fontWeight",
+  hyphens = "hyphens"
+}
+
+export const defaultTextSettingsMain = [TextSettingsKeys.fontFamily];
+
+export const defaultTextSettingsOrder = [
+  TextSettingsKeys.fontFamily,
+  TextSettingsKeys.fontWeight,
+  TextSettingsKeys.align,
+  TextSettingsKeys.hyphens
+]
+
+export enum SpacingSettingsKeys {
+  lineHeight = "lineHeight"
+}
+
+export const defaultSpacingSettingsMain = [SpacingSettingsKeys.lineHeight];
+
+export const defaultSpacingSettingsOrder = [
+  SpacingSettingsKeys.lineHeight
+]
+
+export const defaultLineHeights = {
+  [ReadingDisplayLineHeightOptions.small]: 1.25,
+  [ReadingDisplayLineHeightOptions.medium]: 1.5,
+  [ReadingDisplayLineHeightOptions.large]: 1.75
+}
+
+export interface ISettingsMapObject {
+  Comp: React.FC<IAdvancedDisplayProps> | React.ComponentType<any>;
+  props?: any;
 }
 
 export interface IAdvancedIconProps {
@@ -21,6 +69,10 @@ export interface IAdvancedIconProps {
   isDisabled?: boolean;
 }
 
+export interface IAdvancedDisplayProps {
+  standalone?: boolean;
+}
+
 export interface ISettingsSteppersProps {
   decrementIcon: ComponentType<SVGProps<SVGElement>>;
   decrementLabel: string;
@@ -29,6 +81,7 @@ export interface ISettingsSteppersProps {
 }
 
 export interface ISettingsNumberFieldProps {
+  standalone?: boolean;
   className?: string;
   label: string;
   defaultValue?: number;
@@ -37,7 +90,7 @@ export interface ISettingsNumberFieldProps {
   range: [number, number];
   step: number;
   steppers: ISettingsSteppersProps;
-  format: Intl.NumberFormatOptions;
+  format?: Intl.NumberFormatOptions;
   disabled?: boolean;
   wheelDisabled?: boolean;
   virtualKeyboardDisabled?: boolean;
@@ -59,6 +112,7 @@ export interface IRCSSSettings {
   paginated: boolean;
   colCount: string;
   fontSize: number;
+  fontWeight: number;
   fontFamily: string;
   lineHeight: ReadingDisplayLineHeightOptions;
   align: ReadingDisplayAlignOptions | null;

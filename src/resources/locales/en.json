@@ -134,11 +134,7 @@
       "fontSize": {
         "title": "Font size",
         "increase": "Increase font size",
-        "decrease": "Decrease font size",
-        "advanced": {
-          "tooltip": "More options",
-          "trigger": "More options"
-        }
+        "decrease": "Decrease font size"
       },
       "fontFamily": {
         "title": "Font family",
@@ -149,17 +145,32 @@
           "sans": "Sans-serif",
           "humanist": "Humanist sans-serif",
           "monospace": "Monospace" 
-        },
+        }
+      },
+      "fontWeight": {
+        "title": "Font weight",
+        "increase": "Increase font weight",
+        "decrease": "Decrease font weight"
+      },
+      "text": {
+        "title": "Text",
         "advanced": {
           "tooltip": "More options",
-          "trigger": "More options"
+          "trigger": "More formatting options"
         }
       },
       "lineHeight": {
-        "title": "Spacing",
+        "title": "Line height",
         "small": "Tight",
         "medium": "Balanced",
         "large": "Loose"
+      },
+      "spacing": {
+        "title": "Spacing",
+        "advanced": {
+          "tooltip": "More options",
+          "trigger": "More spacing options"
+        }
       },
       "layout": {
         "title": "Layout",
@@ -174,6 +185,7 @@
       },
       "align": {
         "title": "Text alignment",
+        "publisher": "Default",
         "left": "Left",
         "justify": "Justify",
         "right": "Right"

@@ -8,9 +8,10 @@ import {
 export interface ISettingsState {
   colCount: string;
   fontSize: number;
+  fontWeight: number;
   fontFamily: keyof typeof ReadingDisplayFontFamilyOptions;
   lineHeight: ReadingDisplayLineHeightOptions;
-  align: ReadingDisplayAlignOptions | null;
+  align: ReadingDisplayAlignOptions;
   hyphens: boolean | null;
   layoutStrategy: RSLayoutStrategy;
 }

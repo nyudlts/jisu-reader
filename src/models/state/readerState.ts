@@ -1,5 +1,5 @@
-import { LayoutDirection, ReadingDisplayFontFamilyOptions } from "../layout";
-import { RSLayoutStrategy } from "../layout";
+import { LayoutDirection } from "../layout";
+import { SettingsContainerKeys } from "../settings";
 import { IPlatformModifier } from "../shortcut";
 
 export interface IReaderState {
@@ -9,5 +9,6 @@ export interface IReaderState {
   hasArrows: boolean;
   isFullscreen: boolean;
   isPaged: boolean;
+  settingsContainer: SettingsContainerKeys;
   platformModifier: IPlatformModifier;
 }

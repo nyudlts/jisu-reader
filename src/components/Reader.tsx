@@ -58,6 +58,7 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   const isPaged = useAppSelector(state => state.reader.isPaged);
   const colCount = useAppSelector(state => state.settings.colCount);
   const fontSize = useAppSelector(state => state.settings.fontSize);
+  const fontWeight = useAppSelector(state => state.settings.fontWeight);
   const fontFamily = useAppSelector(state => state.settings.fontFamily);
   const lineHeight = useAppSelector(state => state.settings.lineHeight);
   const align = useAppSelector(state => state.settings.align);
@@ -83,6 +84,7 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
       paginated: isPaged,
       colCount: colCount,
       fontSize: fontSize,
+      fontWeight: fontWeight,
       fontFamily: fontFamily,
       lineHeight: lineHeight,
       align: align,
@@ -323,6 +325,10 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   useEffect(() => {
     cache.current.settings.fontSize = fontSize;
   }, [fontSize]);
+
+  useEffect(() => {
+    cache.current.settings.fontWeight = fontWeight;
+  }, [fontWeight]);
 
   useEffect(() => {
     cache.current.settings.fontFamily = fontFamily;

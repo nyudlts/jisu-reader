@@ -36,6 +36,7 @@ const BottomSheetContainer = ({
   sheetState,
   className,
   heading,
+  onClosePressCallback,
   onDragPressCallback,
   onDragKeyCallback,
   isDraggable, 
@@ -149,7 +150,7 @@ const BottomSheetContainer = ({
             ref={ bottomSheetCloseRef }
             className={ readerSharedUI.closeButton } 
             label={ Locale.reader.app.docker.close.trigger } 
-            onPressCallback={ sheetState.close }
+            onPressCallback={ onClosePressCallback }
             { ...closeButton.buttonProps }
           />
         </div>
