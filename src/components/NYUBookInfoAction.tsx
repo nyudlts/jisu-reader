@@ -86,6 +86,9 @@ export const NYUBookInfoActionContainer: React.FC<IActionComponentContainer> = (
       } }
     >
       Book Info
+      <div >
+        <img src="http://localhost:15080/OTc4MTQ3OTgxOTQ1NC5lcHVi/ops/images/9781479819447.jpg" alt="NYU Libraries Logo" width={200} height={300} />
+      </div>
     </SheetWithType>
     </>
   )
