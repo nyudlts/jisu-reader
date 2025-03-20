@@ -22,6 +22,10 @@ const initialState: IActionsState = {
       isOpen: null,
       docking: null
     },
+    [ActionKeys.nyuBookInfo]: {
+      isOpen: null,
+      docking: null
+    },
     [ActionKeys.toc]: {
       isOpen: null,
       docking: null
@@ -51,6 +55,7 @@ export const actionsSlice = createSlice({
         case ActionKeys.jumpToPosition:
         case ActionKeys.toc:
         case ActionKeys.nyuSearch:
+        case ActionKeys.nyuBookInfo:
         case ActionKeys.settings:
         case ActionKeys.layoutStrategy:
           // The user should be able to override the dock slot
@@ -146,6 +151,7 @@ export const actionsSlice = createSlice({
         case ActionKeys.jumpToPosition:
         case ActionKeys.toc:
         case ActionKeys.nyuSearch:
+        case ActionKeys.nyuBookInfo:
         case ActionKeys.settings:
         case ActionKeys.layoutStrategy:
           // If the action is docked and set Open, we must take care of 
@@ -181,6 +187,7 @@ export const actionsSlice = createSlice({
         case ActionKeys.jumpToPosition:
         case ActionKeys.toc:
         case ActionKeys.nyuSearch:
+        case ActionKeys.nyuBookInfo:
         case ActionKeys.settings:
           const payload = {
             key: action.payload.key,

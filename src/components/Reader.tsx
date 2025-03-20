@@ -496,7 +496,7 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
       if (deepLinkLocator) {
         go(deepLinkLocator! , true, () => {});
       }
-    }, 265);
+    }, 300);
   }
 
   return (

@@ -12,7 +12,8 @@ export enum ActionKeys {
   layoutStrategy = "layoutStrategy",
   settings = "settings",
   toc = "toc",
-  nyuSearch = "nyuSearch"
+  nyuSearch = "nyuSearch",
+  nyuBookInfo = "nyuBookInfo",
 }
 
 export enum ActionVisibility {

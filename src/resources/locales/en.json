@@ -85,6 +85,12 @@
       "close": "Close Search",
       "heading": "Search"
     },
+    "nyuBookInfo": {
+      "tooltip": "Book Info",
+      "trigger": "Book Info",
+      "close": "Close Book Info",
+      "heading": "Book Info"
+    },
     "jumpToPosition": {
       "tooltip": "Jump to…",
       "trigger": "Jump to position"

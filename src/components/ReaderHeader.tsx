@@ -14,6 +14,7 @@ import { LayoutStrategyAction, LayoutStrategiesActionContainer } from "./LayoutS
 import { SettingsAction, SettingsActionContainer } from "./SettingsAction";
 import { TocAction, TocActionContainer } from "./TocAction";
 import { NYUSearchAction, NYUSearchContainer } from "./NYUSearchAction";
+import { NYUBookInfoAction, NYUBookInfoActionContainer } from "./NYUBookInfoAction";
 import { RunningHead } from "./RunningHead";
 import { ActionsWithCollapsibility } from "./ActionsWithCollapsibility";
 
@@ -44,6 +45,10 @@ const ActionsMap: { [key in ActionKeys]: IActionsMapObject } = {
   [ActionKeys.nyuSearch]: {
     trigger: NYUSearchAction,
     container: NYUSearchContainer
+  },
+  [ActionKeys.nyuBookInfo]: {
+    trigger: NYUBookInfoAction,
+    container: NYUBookInfoActionContainer
   }
 }
 
