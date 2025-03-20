@@ -106,8 +106,6 @@ export const NYUSearchContainer: React.FC<IActionComponentContainer> = ({ trigge
     const title = searchResult?.bookTitle || "";
     const bookID = searchResult?.bookID || "";
 
-    console.log("PK Navigating to:", title, href, bookID, before, after, highlight);
-
     //create locator to find the highligh in the book
     const locatorData = {
       href: href,
@@ -126,13 +124,10 @@ export const NYUSearchContainer: React.FC<IActionComponentContainer> = ({ trigge
     const bookParam = searchParams.get("book");
     const urlBookID = getBookIDFromUrl(bookParam!);
 
-    console.log("PK BookID", bookID, urlBookID);
-
     //TODO Switch to bookID instead of title
     if (bookID === urlBookID) {
       // If the title is the same as the current title just go to the locator
       const myLocator = Locator.deserialize(locatorData);
-      console.log("PK Navigating to locator", myLocator);
       go(myLocator! , true, () => {});
     } else {
       const host = typeof window !== "undefined" ? `${window.location.origin}${pathname}` : "";
@@ -141,7 +136,6 @@ export const NYUSearchContainer: React.FC<IActionComponentContainer> = ({ trigge
       const encodedLocator = encodeURIComponent(JSON.stringify(locatorData));
 
       const deepLink = `${host}?book=${newBookUrl}&locator=${encodedLocator}&search=${searchTerm}`;
-      console.log("PK DeepLink", deepLink);
 
       //router.push(deepLink);
       //window.open(deepLink, "_blank");

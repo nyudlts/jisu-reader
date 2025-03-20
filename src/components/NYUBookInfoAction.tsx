@@ -35,6 +35,12 @@ export const NYUBookInfoActionContainer: React.FC<IActionComponentContainer> = (
   const direction = useAppSelector(state => state.reader.direction);
   const isRTL = direction === LayoutDirection.rtl;
 
+  const title = useAppSelector(state => state.publication.runningHead);
+  const authors = useAppSelector(state => state.publication.authors);
+  const publishers = useAppSelector(state => state.publication.publishers);
+  const identifier = useAppSelector(state => state.publication.identifier);
+  const coverUrl = useAppSelector(state => state.publication.coverUrl);
+
   const actionState = useAppSelector(state => state.actions.keys[ActionKeys.nyuBookInfo]);
   const dispatch = useAppDispatch();
 
@@ -85,9 +91,12 @@ export const NYUBookInfoActionContainer: React.FC<IActionComponentContainer> = (
         docker: docking.getDocker()
       } }
     >
-      Book Info
+      {title && <h3>{title}</h3>}
+      {authors && <p>Author: {authors}</p>}
+      {publishers && <p>Publisher: {publishers}</p>}
+      {identifier && <p>Identifier: {identifier}</p>}
       <div >
-        <img src="http://localhost:15080/OTc4MTQ3OTgxOTQ1NC5lcHVi/ops/images/9781479819447.jpg" alt="NYU Libraries Logo" width={200} height={300} />
+        <img src={coverUrl} alt="NYU Libraries Logo" width={200} height={300} />
       </div>
     </SheetWithType>
     </>

@@ -23,7 +23,7 @@ import {
   FrameClickEvent,
 } from "@readium/navigator-html-injectables";
 import { EpubNavigatorListeners, FrameManager, FXLFrameManager, LayoutStrategy } from "@readium/navigator";
-import { Locator, Manifest, Publication, Fetcher, HttpFetcher, EPUBLayout, ReadingProgression } from "@readium/shared";
+import { Link, Locator, Manifest, Publication, Fetcher, HttpFetcher, EPUBLayout, ReadingProgression } from "@readium/shared";
 
 import { ReaderWithDock } from "./ReaderWithPanels";
 
@@ -43,7 +43,7 @@ import { getPlatformModifier } from "@/helpers/keyboard/getMetaKeys";
 import { createTocTree } from "@/helpers/toc/createTocTree";
 
 import { setImmersive, setHovering, toggleImmersive, setPlatformModifier, setDirection, setArrows } from "@/lib/readerReducer";
-import { setFXL, setRTL, setProgression, setRunningHead, setTocTree, setChapterHref } from "@/lib/publicationReducer";
+import { setFXL, setRTL, setProgression, setRunningHead, setTocTree, setPublishers, setAuthors, setIdentifier, setCoverUrl, setChapterHref } from "@/lib/publicationReducer";
 import { toggleActionOpen } from "@/lib/actionsReducer";
 import { useAppSelector, useAppDispatch, useAppStore } from "@/lib/hooks";
 
@@ -409,10 +409,29 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
     dispatch(setFXL(publication.current.metadata.getPresentation()?.layout === EPUBLayout.fixed));
 
     const pubTitle = publication.current.metadata.title.getTranslation("en");
+    const author = publication.current.metadata.authors?.items[0].name.getTranslation("en");
+    console.log("PK A11y Data", publication.current);
+    const publisher = publication.current.metadata.publishers?.items[0].name.getTranslation("en");
+    const identifier = publication.current.metadata.identifier;
+    const coverLink = publication.current.manifest.resources?.findWithRel("cover") as Link | undefined;
+
+    const fetchCoverUrl = async () => {
+      const coverRes = await publication.current!.get(coverLink!);
+      const plainCoverRes = JSON.parse(JSON.stringify(coverRes));
+      const coverUrl = plainCoverRes.url;
+      return coverUrl;
+    };
+
+    fetchCoverUrl().then((coverUrl) => {
+      console.log("PK Cover URL2:", coverUrl); // resolved value
+      dispatch(setCoverUrl(coverUrl));
+    });
 
     dispatch(setRunningHead(pubTitle));
     dispatch(setProgression({ currentPublication: pubTitle }));
-
+    dispatch(setPublishers(publisher));
+    dispatch(setAuthors(author));
+    dispatch(setIdentifier(identifier));
     let positionsList: Locator[] | undefined;
 
     // Create a heirarchical tree structure for the table of contents

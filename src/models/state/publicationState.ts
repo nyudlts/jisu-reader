@@ -10,4 +10,8 @@ export interface IPublicationState {
   atPublicationEnd: boolean;
   tocTree?: TocItem[];
   chapterHref?: string;
+  authors?: string[];
+  publishers?: string[];
+  identifier?: string;
+  coverUrl?: string;
 }
