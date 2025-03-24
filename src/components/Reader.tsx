@@ -521,42 +521,40 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   
           EpubNavigatorLoad({
             container: container.current, 
-            publication: publication.current!,
-            listeners: listeners, 
-            positionsList: positionsList,
-            initialPosition: initialPosition,
-            preferences: {
-              pageGutter: RSPrefs.typography.pageGutter,
-              optimalLineLength: RSPrefs.typography.optimalLineLength,
-              minimalLineLength: RSPrefs.typography.minimalLineLength,
-              maximalLineLength: RSPrefs.typography.maximalLineLength,
-              fontFamily: fontStacks.RS__oldStyleTf,
-              constraint: initialConstraint,
-              layoutStrategy: RSPrefs.typography.layoutStrategy as unknown as LayoutStrategy,
-              ...themeProps
-            },
-            localDataKey: localDataKey.current,
+          publication: publication.current!,
+          listeners: listeners, 
+          positionsList: positionsList,
+          initialPosition: initialPosition,
+          preferences: {
+            pageGutter: RSPrefs.typography.pageGutter,
+            optimalLineLength: RSPrefs.typography.optimalLineLength,
+            minimalLineLength: RSPrefs.typography.minimalLineLength,
+            maximalLineLength: RSPrefs.typography.maximalLineLength,
+            constraint: initialConstraint,
+            layoutStrategy: RSPrefs.typography.layoutStrategy as unknown as LayoutStrategy,
+            ...themeProps
+          },
+          localDataKey: localDataKey.current,
             }, () =>  goDeepLink(deepLinkLocator));
       
         } else {
   
           EpubNavigatorLoad({
             container: container.current, 
-            publication: publication.current!,
-            listeners: listeners, 
-            positionsList: positionsList,
-            initialPosition: initialPosition,
-            preferences: {
-              pageGutter: RSPrefs.typography.pageGutter,
-              optimalLineLength: RSPrefs.typography.optimalLineLength,
-              minimalLineLength: RSPrefs.typography.minimalLineLength,
-              maximalLineLength: RSPrefs.typography.maximalLineLength,
-              fontFamily: fontStacks.RS__oldStyleTf,
-              constraint: initialConstraint,
-              layoutStrategy: RSPrefs.typography.layoutStrategy as unknown as LayoutStrategy,
-              ...themeProps
-            },
-            localDataKey: localDataKey.current,
+          publication: publication.current!,
+          listeners: listeners, 
+          positionsList: positionsList,
+          initialPosition: initialPosition,
+          preferences: {
+            pageGutter: RSPrefs.typography.pageGutter,
+            optimalLineLength: RSPrefs.typography.optimalLineLength,
+            minimalLineLength: RSPrefs.typography.minimalLineLength,
+            maximalLineLength: RSPrefs.typography.maximalLineLength,
+            constraint: initialConstraint,
+            layoutStrategy: RSPrefs.typography.layoutStrategy as unknown as LayoutStrategy,
+            ...themeProps
+          },
+          localDataKey: localDataKey.current,
           }, () => p.observe(window));
 
           //NYU Press fixes init position bug TODO: remove when fixed in navigator
