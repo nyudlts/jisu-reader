@@ -1,7 +1,7 @@
 import { IActionPref } from "./actions";
 import { IDockingPref } from "./docking";
 import { Constraints, ILayoutDefaults, LayoutDirection, ReadingDisplayLineHeightOptions, RSLayoutStrategy } from "./layout";
-import { SettingsKeys, SpacingSettingsKeys, TextSettingsKeys } from "./settings";
+import { ISettingsRangePref, ISettingsSpacingPref, ISettingsTextPref, SettingsKeys, SettingsRangeVariant, SpacingSettingsKeys, TextSettingsKeys } from "./settings";
 import { ShortcutRepresentation } from "./shortcut";
 import { StaticBreakpoints } from "./staticBreakpoints";
 import { IThemeTokens, ThemeKeys } from "./theme";
@@ -73,16 +73,10 @@ export interface IRSPrefs {
   settings: {
     reflowOrder: SettingsKeys[];
     fxlOrder: SettingsKeys[];
-    text?: {
-      main?: TextSettingsKeys[];
-      displayOrder?: TextSettingsKeys[];
+    zoom?: {
+      variant?: SettingsRangeVariant;
     };
-    spacing?: {
-      main?: SpacingSettingsKeys[];
-      displayOrder?: SpacingSettingsKeys[];
-      lineHeight?: {
-        [key in ReadingDisplayLineHeightOptions]: number
-      }
-    };
+    text?: ISettingsTextPref;
+    spacing?: ISettingsSpacingPref;
   };
 }

@@ -10,21 +10,21 @@ import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 import { useAppSelector } from "@/lib/hooks";
 
 // TMP Component that is not meant to be implemented AS-IS, for testing purposes
-export const ReadingDisplayHyphens: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
-  const hyphens = useAppSelector(state => state.settings.hyphens);
+export const ReadingDisplayNormalizeText: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
+  const normalizeText = useAppSelector(state => state.settings.normalizeText);
 
-  const { applyHyphens } = useEpubNavigator();
+  const { applyNormalizeText } = useEpubNavigator();
 
   return(
     <>
     <SwitchWrapper 
       { ...(standalone ? { 
         className: settingsStyles.readerSettingsGroup, 
-        heading: Locale.reader.settings.hyphens.title 
+        heading: Locale.reader.settings.normalizeText.title 
       } : {}) }
-      label={ Locale.reader.settings.hyphens.label }
-      onChangeCallback={ async (isSelected: boolean) => await applyHyphens(isSelected) }
-      isSelected={ hyphens ?? false }
+      label={ Locale.reader.settings.normalizeText.label }
+      onChangeCallback={ async (isSelected: boolean) => await applyNormalizeText(isSelected) }
+      isSelected={ normalizeText ?? false }
     />
     </>
   )

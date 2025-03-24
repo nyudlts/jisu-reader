@@ -29,7 +29,7 @@ export const ReadingDisplayMaxChars = () => {
         <SwitchWrapper 
           label={ Locale.reader.layoutStrategy.maxChars }
           onChangeCallback={ setSelected }
-          selected={ selected }
+          isSelected={ selected }
         />
       </div>
     }

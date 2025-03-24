@@ -9,6 +9,8 @@ import readerSharedUI from "../../assets/styles/readerSharedUI.module.css";
 import { DockingKeys, IDocker } from "@/models/docking";
 import { IActionsItem, IActionsMapObject } from "@/models/actions";
 
+import { Toolbar } from "react-aria-components";
+
 import { CloseButton } from "../../CloseButton";
 import { ActionsWithCollapsibility } from "@/components/ActionsWithCollapsibility";
 import { DockStartAction } from "./DockStartAction";
@@ -50,7 +52,7 @@ export const Docker = ({
 
   return(
     <>
-    <div className={ dockerStyles.dockerWrapper }>
+    <Toolbar className={ dockerStyles.dockerWrapper }>
       <ActionsWithCollapsibility 
         id={ `${ id }-docker-overflowMenu` }
         items={ listActionItems() }
@@ -67,7 +69,7 @@ export const Docker = ({
         onPressCallback={ onCloseCallback }
         withTooltip={ Locale.reader.app.docker.close.tooltip }
       />
-    </div>
+    </Toolbar>
     </>
   )
 }

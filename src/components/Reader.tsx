@@ -1,11 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { use, useCallback, useEffect, useRef } from "react";
 
 import { RSPrefs } from "@/preferences";
 import Locale from "../resources/locales/en.json";
-
-import fontStacks from "@readium/css/css/vars/fontStacks.json";
 
 import "./assets/styles/reader.css";
 import arrowStyles from "./assets/styles/arrowButton.module.css";
@@ -22,8 +20,21 @@ import {
   BasicTextSelection,
   FrameClickEvent,
 } from "@readium/navigator-html-injectables";
-import { EpubNavigatorListeners, FrameManager, FXLFrameManager, LayoutStrategy } from "@readium/navigator";
-import { Link, Locator, Manifest, Publication, Fetcher, HttpFetcher, EPUBLayout, ReadingProgression } from "@readium/shared";
+import { 
+  EpubNavigatorListeners, 
+  FrameManager, 
+  FXLFrameManager, 
+  LayoutStrategy 
+} from "@readium/navigator";
+import { 
+  Locator, 
+  Manifest, 
+  Publication, 
+  Fetcher, 
+  HttpFetcher, 
+  EPUBLayout, 
+  ReadingProgression 
+} from "@readium/shared";
 
 import { ReaderWithDock } from "./ReaderWithPanels";
 
@@ -42,12 +53,26 @@ import { localData } from "@/helpers/localData";
 import { getPlatformModifier } from "@/helpers/keyboard/getMetaKeys";
 import { createTocTree } from "@/helpers/toc/createTocTree";
 
-import { setImmersive, setHovering, toggleImmersive, setPlatformModifier, setDirection, setArrows } from "@/lib/readerReducer";
-import { setFXL, setRTL, setProgression, setRunningHead, setTocTree, setPublishers, setAuthors, setIdentifier, setCoverUrl, setChapterHref } from "@/lib/publicationReducer";
+import { 
+  setImmersive, 
+  setHovering, 
+  toggleImmersive, 
+  setPlatformModifier, 
+  setDirection, 
+  setArrows 
+} from "@/lib/readerReducer";
+import { 
+  setFXL, 
+  setRTL, 
+  setProgression, 
+  setRunningHead, 
+  setTocTree, setPublishers, setAuthors, setIdentifier, setCoverUrl, setChapterHref 
+} from "@/lib/publicationReducer";
 import { toggleActionOpen } from "@/lib/actionsReducer";
 import { useAppSelector, useAppDispatch, useAppStore } from "@/lib/hooks";
 
 import debounce from "debounce";
+import { li } from "motion/react-client";
 
 export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: object, selfHref: string, locatorParam: string }) => {
   const container = useRef<HTMLDivElement>(null);
@@ -63,7 +88,13 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   const lineHeight = useAppSelector(state => state.settings.lineHeight);
   const align = useAppSelector(state => state.settings.align);
   const hyphens = useAppSelector(state => state.settings.hyphens);
+  const paraIndent = useAppSelector(state => state.settings.paraIndent);
+  const paraSpacing = useAppSelector(state => state.settings.paraSpacing);
+  const lineLength = useAppSelector(state => state.settings.lineLength);
+  const letterSpacing = useAppSelector(state => state.settings.letterSpacing);
+  const wordSpacing = useAppSelector(state => state.settings.wordSpacing);
   const layoutStrategy = useAppSelector(state => state.settings.layoutStrategy);
+  const normalizeText = useAppSelector(state => state.settings.normalizeText);
   const theme = useAppSelector(state => state.theming.theme);
   const previousTheme = usePrevious(theme);
   const colorScheme = useAppSelector(state => state.theming.colorScheme);
@@ -89,8 +120,14 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
       lineHeight: lineHeight,
       align: align,
       hyphens: hyphens,
+      paraIndent: paraIndent,
+      paraSpacing: paraSpacing,
+      lineLength: lineLength,
+      letterSpacing: letterSpacing,
+      wordSpacing: wordSpacing,
       layoutStrategy: layoutStrategy,
-      theme: theme
+      theme: theme,
+      normalizeText: normalizeText
     },
     colorScheme: colorScheme,
     reducedMotion: reducedMotion
@@ -245,7 +282,6 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
       if (navLayout() === EPUBLayout.reflowable) {
         // Due to the lack of injection API we need to force scroll 
         // to mount/unmount scroll affordances ATM
-        const currentLocator = localData.get(localDataKey.current);
         
         const debouncedHandleProgression = debounce(
           async () => {
@@ -253,6 +289,7 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
             // We need to debounce because of swipe, which has a 150ms animation in Column Snapper, 
             // otherwise the iframe will stay hidden since we must change the ReadingProgression,
             // that requires re-loading the frame pool
+            const currentLocator = localData.get(localDataKey.current);
             if (currentLocator?.href !== locator.href) {
               await applyScroll(!cache.current.settings.paginated);
             }
@@ -347,12 +384,36 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   }, [hyphens]);
 
   useEffect(() => {
+    cache.current.settings.paraIndent = paraIndent;
+  }, [paraIndent]);
+
+  useEffect(() => {
+    cache.current.settings.paraSpacing = paraSpacing;
+  }, [paraSpacing]);
+
+  useEffect(() => {
+    cache.current.settings.lineLength = lineLength;
+  }, [lineLength]);
+
+  useEffect(() => {
+    cache.current.settings.letterSpacing = letterSpacing;
+  }, [letterSpacing]);
+
+  useEffect(() => {
+    cache.current.settings.wordSpacing = wordSpacing;
+  }, [wordSpacing]);
+
+  useEffect(() => {
     cache.current.settings.layoutStrategy = layoutStrategy;
   }, [layoutStrategy]);
 
   useEffect(() => {
     cache.current.settings.theme = theme;
   }, [theme]);
+
+  useEffect(() => {
+    cache.current.settings.normalizeText = normalizeText;
+  }, [normalizeText]);
 
   useEffect(() => {
     cache.current.arrowsOccupySpace = arrowsOccupySpace || false;

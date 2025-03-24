@@ -8,9 +8,16 @@ const initialState: ISettingsState = {
   fontSize: 1,
   fontWeight: 400,
   fontFamily: "publisher",
-  lineHeight: ReadingDisplayLineHeightOptions.medium,
+  lineHeight: ReadingDisplayLineHeightOptions.publisher,
   align: ReadingDisplayAlignOptions.publisher,
   hyphens: null,
+  paraIndent: null,
+  paraSpacing: null,
+  lineLength: null,
+  letterSpacing: null,
+  wordSpacing: null,
+  publisherStyles: true,
+  normalizeText: false,
   layoutStrategy: RSLayoutStrategy.lineLength,
 }
 
@@ -39,6 +46,27 @@ export const settingsSlice = createSlice({
     setHyphens: (state, action) => {
       state.hyphens = action.payload
     },
+    setParaIndent: (state, action) => {
+      state.paraIndent = action.payload
+    },
+    setParaSpacing: (state, action) => {
+      state.paraSpacing = action.payload
+    },
+    setLineLength: (state, action) => {
+      state.lineLength = action.payload
+    },
+    setLetterSpacing: (state, action) => {
+      state.letterSpacing = action.payload
+    },
+    setWordSpacing: (state, action) => {
+      state.wordSpacing = action.payload
+    },
+    setPublisherStyles: (state, action) => {
+      state.publisherStyles = action.payload
+    },
+    setNormalizeText: (state, action) => {
+      state.normalizeText = action.payload
+    },
     setLayoutStrategy: (state, action) => {
       state.layoutStrategy = action.payload
     }
@@ -54,7 +82,14 @@ export const {
   setLineHeight,
   setAlign, 
   setHyphens, 
-  setLayoutStrategy,
+  setParaIndent,
+  setParaSpacing,
+  setLineLength,
+  setLetterSpacing,
+  setWordSpacing,
+  setPublisherStyles,
+  setNormalizeText,
+  setLayoutStrategy
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

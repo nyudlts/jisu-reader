@@ -23,7 +23,8 @@ export const FullScreenSheet: React.FC<IFullScreenSheet> = ({
     isOpen,
     onOpenChangeCallback, 
     onClosePressCallback,
-    children 
+    children,
+    resetFocus
   }) => {
   const fullScreenHeaderRef = useRef<HTMLDivElement | null>(null);
   const fullScreenBodyRef = useRef<HTMLDivElement | null>(null);
@@ -32,7 +33,8 @@ export const FullScreenSheet: React.FC<IFullScreenSheet> = ({
   const firstFocusable = useFirstFocusable({
     withinRef: fullScreenBodyRef, 
     trackedState: isOpen, 
-    fallbackRef: fullScreenCloseRef
+    fallbackRef: fullScreenCloseRef,
+    updateState: resetFocus
   });
 
   return (

@@ -158,6 +158,21 @@
         "increase": "Increase font weight",
         "decrease": "Decrease font weight"
       },
+      "normalizeText": {
+        "title": "Text normalization",
+        "label": "Remove all text formatting"
+      },
+      "align": {
+        "title": "Text alignment",
+        "publisher": "Default",
+        "left": "Left",
+        "justify": "Justify",
+        "right": "Right"
+      },
+      "hyphens": {
+        "title": "Hyphenation",
+        "label": "Enable hyphens"
+      },
       "text": {
         "title": "Text",
         "advanced": {
@@ -167,9 +182,33 @@
       },
       "lineHeight": {
         "title": "Line height",
+        "publisher": "Default",
         "small": "Tight",
         "medium": "Balanced",
         "large": "Loose"
+      },
+      "paraSpacing": {
+        "title": "Paragraph spacing",
+        "increase": "Increase paragraph spacing",
+        "decrease": "Decrease paragraph spacing"
+      },
+      "paraIndent": {
+        "title": "Paragraph indent",
+        "increase": "Increase paragraph indent",
+        "decrease": "Decrease paragraph indent"
+      },
+      "wordSpacing": {
+        "title": "Word spacing",
+        "increase": "Increase word spacing",
+        "decrease": "Decrease word spacing"
+      },
+      "letterSpacing": {
+        "title": "Letter spacing",
+        "increase": "Increase letter spacing",
+        "decrease": "Decrease letter spacing"
+      },
+      "publisherStyles": {
+        "label": "Use original formatting"
       },
       "spacing": {
         "title": "Spacing",
@@ -188,17 +227,6 @@
         "auto": "Auto",
         "one": "1 col",
         "two": "2 cols"
-      },
-      "align": {
-        "title": "Text alignment",
-        "publisher": "Default",
-        "left": "Left",
-        "justify": "Justify",
-        "right": "Right"
-      },
-      "hyphens": {
-        "title": "Hyphenation",
-        "label": "Enable hyphens"
       }
     }
   }

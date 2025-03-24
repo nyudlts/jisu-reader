@@ -43,6 +43,10 @@ Enums `TextSettingsKeys` and `SpacingSettingsKeys` list which components can be 
 
 When used, a button will be added to access the nested components.
 
+## Zoom (optional)
+
+The zoom object is responsible for the zoom/font-size Component. It accepts a `variant` from enum `SettingsRangeVariant`.
+
 ## Text (optional)
 
 The text object is responsible for the advanced Text Component, which provides an extra container to display more options.
@@ -53,9 +57,9 @@ The `main` property accepts an array of `TextSettingsKeys`. These components wil
 
 If all nestable components are listed in `main`, then the Text component behaves as if all its nested components are standalone, and will not create a button to access them – as they are already accessible.
 
-### DisplayOrder (optional)
+### SubPanel (optional)
 
-The components to display in the “sub-panel”, and their order. Note components listed in `main` will not automatically be added to this array.
+The `subPanel` property accepts and array of the keys for components to display in the “sub-panel”, and their order. Note components listed in `main` will not automatically be added to this array.
 
 ## Spacing (optional)
 
@@ -67,9 +71,28 @@ The `main` property accepts an array of `SpacingSettingsKeys`. These components 
 
 If all nestable components are listed in `main`, then the Spacing component behaves as if all its nested components are standalone, and will not create a button to access them – as they are already accessible.
 
-### DisplayOrder (optional)
+### SubPanel (optional)
 
-The components to display in the “sub-panel”, and their order. Note components listed in `main` will not automatically be added to this array.
+The `subPanel` property accepts and array of the keys for components to display in the “sub-panel”, and their order. Note components listed in `main` will not automatically be added to this array.
+
+### LetterSpacing (optional)
+
+This allows to customize the range for letter spacing and its variant.
+
+For instance: 
+
+```
+spacing: {
+  ...
+  letterSpacing: {
+    variant: SettingsRangeVariant.slider,
+    range: [0, 0.5],
+    step: 0.125
+  }
+}
+```
+
+**Warning:** Please make sure to verify the NumberField variant is working properly with your step as the React Aria Component used may encounter issues when rounding values, resulting in a broken setting.
 
 ### LineHeight (optional)
 
@@ -78,8 +101,8 @@ This allows to customize the value for line-heights. It must be a ratio (`number
 For instance:
 
 ```
-spacing:
-  ... 
+spacing: {
+  ...
   lineHeight: {
     [ReadingDisplayLineHeightOptions.small]: 1.3,
     [ReadingDisplayLineHeightOptions.medium]: 1.5,
@@ -87,3 +110,60 @@ spacing:
   }
 }
 ```
+
+### ParaIndent (optional)
+
+This allows to customize the range for paragraph indents and its variant.
+
+For instance: 
+
+```
+spacing: {
+  ...
+  paraIndent: {
+    variant: SettingsRangeVariant.numberField,
+    range: [0, 3],
+    step: 0.5
+  }
+}
+```
+
+**Warning:** Please make sure to verify the NumberField variant is working properly with your step as the React Aria Component used may encounter issues when rounding values, resulting in a broken setting.
+
+### ParaSpacing (optional)
+
+This allows to customize the range for paragraph spacing/margins and its variant.
+
+For instance: 
+
+```
+spacing: {
+  ...
+  paraSpacing: {
+    variant: SettingsRangeVariant.numberField,
+    range: [0, 2],
+    step: 0.5
+  }
+}
+```
+
+**Warning:** Please make sure to verify the NumberField variant is working properly with your step as the React Aria Component used may encounter issues when rounding values, resulting in a broken setting.
+
+### wordSpacing (optional)
+
+This allows to customize the range for word spacing and its variant.
+
+For instance: 
+
+```
+spacing: {
+  ...
+  wordSpacing: {
+    variant: SettingsRangeVariant.slider,
+    range: [0, 1],
+    step: 0.125
+  }
+}
+```
+
+**Warning:** Please make sure to verify the NumberField variant is working properly with your step as the React Aria Component used may encounter issues when rounding values, resulting in a broken setting.

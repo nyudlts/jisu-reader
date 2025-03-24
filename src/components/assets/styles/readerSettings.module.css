@@ -31,10 +31,14 @@
   margin: 0;
 }
 
+.readerSettingsGroupLabel {
+  padding-top: calc(var(--icon-size, 24px) * (1/3));
+}
+
 .readerSettingsRadioWrapper,
 .readerSettingsGroupWrapper {
   display: flex;
-  gap: var(--layout-spacing);
+  gap: var(--layout-spacing) calc(var(--layout-spacing) / 2);
   margin: var(--layout-spacing) 0;
   text-align: center;
   border-radius: var(--layout-radius);
@@ -128,6 +132,76 @@
   border-top: 1px solid var(--theme-subdue);
 }
 
+/* Slider */
+
+.readerSettingsSlider {
+  display: grid;
+  grid-template-areas: "label output"
+                       "track track";
+  grid-template-columns: 1fr auto;
+  gap: calc(var(--layout-spacing) / 2);
+  max-width: 100%;
+  color: var(--theme-text);
+  flex-direction: column;
+  width: 250px;
+}
+
+.readerSettingsSliderLabel {
+  grid-area: label;
+}
+
+.readerSettingsSliderOutput {
+  grid-area: output;
+}
+
+.readerSettingsSlider[data-disabled] .readerSettingsSliderLabel,
+.readerSettingsSlider[data-disabled] .readerSettingsSliderOutput {
+  color: var(--theme-disable);
+}
+
+.readerSettingsSliderTrack {
+  grid-area: track;
+  position: relative;
+  height: 30px;
+  width: auto;
+  box-sizing: border-box;
+  margin-inline: calc(var(--layout-spacing) / 2);
+}
+
+.readerSettingsSliderTrack::before {
+  content: "";
+  display: block;
+  position: absolute;
+  background: var(--theme-subdue);
+  height: 3px;
+  width: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.readerSettingsSliderThumb {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: var(--theme-text);
+  border: 2px solid var(--theme-subdue);
+  top: 50%;
+}
+
+.readerSettingsSlider[data-disabled] .readerSettingsSliderThumb {
+  background: var(--theme-disable);
+  border: 2px solid var(--theme-disable);
+}
+
+.readerSettingsSliderThumb[data-dragging] {
+  background: var(--theme-subdue);
+}
+
+.readerSettingsSliderThumb[data-focus-visible] {
+  outline: 2px solid var(--theme-focus);
+  border: 2px solid var(--theme-focus);
+}
+
 /* TMP?: Dropdown */
 
 .readerSettingsDropdownButton {
@@ -208,7 +282,7 @@
   transition: all 200ms;
 }
 
-.readerSettingsSwitchIndicator:before {
+.readerSettingsSwitchIndicator::before {
   content: '';
   display: block;
   margin: 0.143rem;
@@ -219,12 +293,12 @@
   transition: all 200ms;
 }
 
-.readerSettingsSwitch[data-selected] .readerSettingsSwitchIndicator:before {
+.readerSettingsSwitch[data-selected] .readerSettingsSwitchIndicator::before {
   background: var(--theme-text);
   transform: translateX(100%);
 }
 
-:dir(rtl) .readerSettingsSwitch[data-selected] .readerSettingsSwitchIndicator:before {
+:dir(rtl) .readerSettingsSwitch[data-selected] .readerSettingsSwitchIndicator::before {
   background: var(--theme-text);
   transform: translateX(-100%);
 }
@@ -237,6 +311,6 @@
   color: var(--theme-disable);
 }
 
-.readerSettingsSwitch[data-disabled] .readerSettingsSwitchIndicator:before {
+.readerSettingsSwitch[data-disabled] .readerSettingsSwitchIndicator::before {
   background: var(--theme-disable) !important;
 }

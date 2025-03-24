@@ -1,29 +1,27 @@
+import { useCallback } from "react";
+
 import { RSPrefs } from "@/preferences";
 
 import Locale from "../../resources/locales/en.json";
 
 import { 
   defaultTextSettingsMain, 
-  defaultTextSettingsOrder, 
+  defaultTextSettingsSubpanel, 
   ISettingsMapObject, 
   SettingsContainerKeys, 
   TextSettingsKeys 
 } from "@/models/settings";
 
-import settingsStyles from "../assets/styles/readerSettings.module.css";
-
-import { Heading } from "react-aria-components";
-import { AdvancedIcon } from "./Wrappers/AdvancedIcon";
+import { ReadingDisplayGroupWrapper } from "./Wrappers/ReadingDisplayGroupWrapper";
 
 import { ReadingDisplayAlign } from "./ReadingDisplayAlign";
 import { ReadingDisplayFontFamily } from "./ReadingDisplayFontFamily";
 import { ReadingDisplayFontWeight } from "./ReadingDisplayFontWeight";
 import { ReadingDisplayHyphens } from "./ReadingDisplayHyphens";
+import { ReadingDisplayNormalizeText } from "./ReadingDisplayNormalizeText";
 
 import { useAppDispatch } from "@/lib/hooks";
 import { setSettingsContainer } from "@/lib/readerReducer";
-
-import classNames from "classnames";
 
 const TextSettingsMap: { [key in TextSettingsKeys]: ISettingsMapObject } = {
   [TextSettingsKeys.align]: {
@@ -37,46 +35,39 @@ const TextSettingsMap: { [key in TextSettingsKeys]: ISettingsMapObject } = {
   },
   [TextSettingsKeys.hyphens]: {
     Comp: ReadingDisplayHyphens
+  },
+  [TextSettingsKeys.normalizeText]: {
+    Comp: ReadingDisplayNormalizeText
   }
 }
 
 export const ReadingDisplayText = () => {
-  const main = RSPrefs.settings.text?.main || defaultTextSettingsMain;
-  const isAdvanced = main.length < Object.keys(TextSettingsMap).length;
-
   const dispatch = useAppDispatch();
 
-  const setTextContainer = () => {
+  const setTextContainer = useCallback(() => {
     dispatch(setSettingsContainer(SettingsContainerKeys.text));
-  }
+  }, [dispatch]);
 
   return(
     <>
-    <div className={ classNames(settingsStyles.readerSettingsGroup, settingsStyles.readerSettingsAdvancedGroup) }>
-      { isAdvanced && 
-        <Heading className={ settingsStyles.readerSettingsLabel }>
-          { Locale.reader.settings.text.title }
-        </Heading> }
-      { main.map((key: TextSettingsKeys, index) => {
-        const { Comp } = TextSettingsMap[key];
-        return <Comp key={ key } standalone={ !isAdvanced || index !== 0 } />;
-      }) }
-      { isAdvanced && (
-        <AdvancedIcon
-          className={ settingsStyles.readerSettingsAdvancedIcon }
-          ariaLabel={ Locale.reader.settings.text.advanced.trigger }
-          placement="top"
-          tooltipLabel={ Locale.reader.settings.text.advanced.tooltip }
-          onPressCallback={ setTextContainer }
-        />
-      ) }
-    </div>
+    <ReadingDisplayGroupWrapper 
+      heading={ Locale.reader.settings.text.title }
+      moreLabel={ Locale.reader.settings.text.advanced.trigger }
+      moreTooltip={ Locale.reader.settings.text.advanced.tooltip }
+      onMorePressCallback={ setTextContainer }
+      settingsMap={ TextSettingsMap }
+      prefs={ RSPrefs.settings.text }
+      defaultPrefs={ {
+        main: defaultTextSettingsMain, 
+        subPanel: defaultTextSettingsSubpanel
+      }}
+    />
     </>
   )
 }
 
 export const ReadingDisplayTextContainer = () => {
-  const displayOrder = RSPrefs.settings.text?.displayOrder || defaultTextSettingsOrder;
+  const displayOrder = RSPrefs.settings.text?.subPanel || defaultTextSettingsSubpanel;
 
   return(
     <>

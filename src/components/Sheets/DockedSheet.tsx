@@ -29,7 +29,8 @@ export const DockedSheet: React.FC<IDockedSheet> = ({
     onClosePressCallback,
     docker, 
     flow,
-    children 
+    children,
+    resetFocus
   }) => {
   const dockPortal = flow && document.getElementById(flow);
   const dockedSheetHeaderRef = useRef<HTMLDivElement | null>(null);
@@ -41,7 +42,8 @@ export const DockedSheet: React.FC<IDockedSheet> = ({
   const firstFocusable = useFirstFocusable({
     withinRef: dockedSheetBodyRef, 
     trackedState: isOpen, 
-    fallbackRef: dockedSheetCloseRef
+    fallbackRef: dockedSheetCloseRef,
+    updateState: resetFocus
   }); 
 
   const classFromFlow = useCallback(() => {

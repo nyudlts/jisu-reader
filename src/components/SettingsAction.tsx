@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 
 import { RSPrefs } from "@/preferences";
 import Locale from "../resources/locales/en.json";
@@ -11,9 +11,9 @@ import {
 } from "@/models/actions";
 import { 
   defaultSpacingSettingsMain, 
-  defaultSpacingSettingsOrder, 
+  defaultSpacingSettingsSubpanel, 
   defaultTextSettingsMain, 
-  defaultTextSettingsOrder, 
+  defaultTextSettingsSubpanel, 
   ISettingsMapObject, 
   SettingsContainerKeys, 
   SettingsKeys, 
@@ -35,10 +35,16 @@ import { ReadingDisplayFontFamily } from "./Settings/ReadingDisplayFontFamily";
 import { ReadingDisplayFontWeight } from "./Settings/ReadingDisplayFontWeight";
 import { ReadingDisplayHyphens } from "./Settings/ReadingDisplayHyphens";
 import { ReadingDisplayLayout } from "./Settings/ReadingDisplayLayout";
+import { ReadingDisplayLetterSpacing } from "./Settings/ReadingDisplayLetterSpacing";
 import { ReadingDisplayLineHeight } from "./Settings/ReadingDisplayLineHeight";
-import { ReadingDisplaySpacing } from "./Settings/ReadingDisplaySpacing";
+import { ReadingDisplayParaIndent } from "./Settings/ReadingDisplayParaIndent";
+import { ReadingDisplayParaSpacing } from "./Settings/ReadingDisplayParaSpacing";
+import { ReadingDisplayPublisherStyles } from "./Settings/ReadingDisplayPublisherStyles";
+import { ReadingDisplaySpacing, ReadingDisplaySpacingContainer } from "./Settings/ReadingDisplaySpacing";
 import { ReadingDisplayText, ReadingDisplayTextContainer } from "./Settings/ReadingDisplayText";
+import { ReadingDisplayNormalizeText } from "./Settings/ReadingDisplayNormalizeText";
 import { ReadingDisplayTheme } from "./Settings/ReadingDisplayTheme";
+import { ReadingDisplayWordSpacing } from "./Settings/ReadingDisplayWordSpacing";
 import { ReadingDisplayZoom } from "./Settings/ReadingDisplayZoom";
 
 import { useDocking } from "@/hooks/useDocking";
@@ -66,8 +72,20 @@ const SettingsMap: { [key in SettingsKeys]: ISettingsMapObject } = {
   [SettingsKeys.layout]: {
     Comp: ReadingDisplayLayout
   },
+  [SettingsKeys.letterSpacing]: {
+    Comp: ReadingDisplayLetterSpacing
+  },
   [SettingsKeys.lineHeight]: {
     Comp: ReadingDisplayLineHeight
+  },
+  [SettingsKeys.paraIndent]: {
+    Comp: ReadingDisplayParaIndent
+  },
+  [SettingsKeys.paraSpacing]: {
+    Comp: ReadingDisplayParaSpacing
+  },
+  [SettingsKeys.publisherStyles]: {
+    Comp: ReadingDisplayPublisherStyles
   },
   [SettingsKeys.spacing]: {
     Comp: ReadingDisplaySpacing
@@ -75,11 +93,17 @@ const SettingsMap: { [key in SettingsKeys]: ISettingsMapObject } = {
   [SettingsKeys.text]: {
     Comp: ReadingDisplayText
   },
+  [SettingsKeys.normalizeText]: {
+    Comp: ReadingDisplayNormalizeText
+  },
   [SettingsKeys.theme]: {
     Comp: ReadingDisplayTheme,
     props: {
       mapArrowNav: 2
     }
+  },
+  [SettingsKeys.wordSpacing]: {
+    Comp: ReadingDisplayWordSpacing
   },
   [SettingsKeys.zoom]: {
     Comp: ReadingDisplayZoom
@@ -114,14 +138,14 @@ export const SettingsActionContainer: React.FC<IActionComponentContainer> = ({ t
   const isTextNested = (key: SettingsKeys) => {
     return [
       RSPrefs.settings.text?.main || defaultTextSettingsMain,
-      RSPrefs.settings.text?.displayOrder || defaultTextSettingsOrder,
+      RSPrefs.settings.text?.subPanel || defaultTextSettingsSubpanel,
     ].some(arr => arr.includes(key as unknown as TextSettingsKeys));
   };
 
   const isSpacingNested = (key: SettingsKeys) => {
     return [
       RSPrefs.settings.spacing?.main || defaultSpacingSettingsMain,
-      RSPrefs.settings.spacing?.displayOrder || defaultSpacingSettingsOrder,
+      RSPrefs.settings.spacing?.subPanel || defaultSpacingSettingsSubpanel,
     ].some(arr => arr.includes(key as unknown as SpacingSettingsKeys));
   };
 
@@ -129,6 +153,9 @@ export const SettingsActionContainer: React.FC<IActionComponentContainer> = ({ t
     switch (contains) {
       case SettingsContainerKeys.text:
         return <ReadingDisplayTextContainer />;
+      
+      case SettingsContainerKeys.spacing:
+        return <ReadingDisplaySpacingContainer />;
 
       case SettingsContainerKeys.initial:
       default:
@@ -147,6 +174,20 @@ export const SettingsActionContainer: React.FC<IActionComponentContainer> = ({ t
     }
   }, [contains]);
 
+  const getHeading = useCallback(() => {
+    switch (contains) {
+      case SettingsContainerKeys.text:
+        return Locale.reader.settings.text.title;
+
+      case SettingsContainerKeys.spacing:
+        return Locale.reader.settings.spacing.title;
+
+      case SettingsContainerKeys.initial:
+      default:
+        return Locale.reader.settings.heading;
+    }
+  }, [contains]);
+
   // Reset when closed
   useEffect(() => {
     if (!actionState.isOpen) setInitial();
@@ -159,15 +200,14 @@ export const SettingsActionContainer: React.FC<IActionComponentContainer> = ({ t
       sheetProps={ {
         id: ActionKeys.settings,
         triggerRef: triggerRef,
-        heading: contains === SettingsContainerKeys.initial 
-          ? Locale.reader.settings.heading 
-          : Locale.reader.settings.text.title,
+        heading: getHeading(),
         className: settingsStyles.readerSettings,
         placement: "bottom", 
         isOpen: actionState.isOpen || false,
         onOpenChangeCallback: setOpen, 
         onClosePressCallback: () => { contains === SettingsContainerKeys.initial ? setOpen(false) : setInitial() },
-        docker: docking.getDocker()
+        docker: docking.getDocker(),
+        resetFocus: contains
       } }
     >
       { renderSettings() }

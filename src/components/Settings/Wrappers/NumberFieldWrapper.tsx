@@ -5,6 +5,9 @@ import { ISettingsNumberFieldProps } from "@/models/settings";
 import readerSharedUI from "../../assets/styles/readerSharedUI.module.css";
 import settingsStyles from "../../assets/styles/readerSettings.module.css";
 
+import PlusIcon from "../../assets/icons/add.svg";
+import MinusIcon from "../../assets/icons/remove.svg";
+
 import { Button, Group, Input, Label, NumberField, NumberFieldProps } from "react-aria-components";
 
 import classNames from "classnames";
@@ -20,8 +23,6 @@ export const NumberFieldWrapper: React.FC<NumberFieldProps & ISettingsNumberFiel
   step,
   steppers,
   format,
-  disabled,
-  wheelDisabled,
   virtualKeyboardDisabled,
   readOnly,
   ...props
@@ -39,8 +40,6 @@ export const NumberFieldWrapper: React.FC<NumberFieldProps & ISettingsNumberFiel
       onChange={ onChangeCallback }
       decrementAriaLabel={ steppers.decrementLabel }
       incrementAriaLabel={ steppers.incrementLabel }
-      isDisabled={ disabled }
-      isWheelDisabled={ wheelDisabled }
       { ...(!standalone ? { "aria-label": label } : {}) }
       { ...props }
     >
@@ -54,7 +53,9 @@ export const NumberFieldWrapper: React.FC<NumberFieldProps & ISettingsNumberFiel
           slot="decrement" 
           className={ readerSharedUI.icon }
         >
-          <steppers.decrementIcon aria-hidden="true" focusable="false" /> 
+          { steppers.decrementIcon 
+            ? <steppers.decrementIcon aria-hidden="true" focusable="false" /> 
+            : <MinusIcon aria-hidden="true" focusable="false" /> }
         </Button>
 
         <Input 
@@ -67,7 +68,9 @@ export const NumberFieldWrapper: React.FC<NumberFieldProps & ISettingsNumberFiel
           slot="increment" 
           className={ readerSharedUI.icon }
         >
-          <steppers.incrementIcon aria-hidden="true" focusable="false" /> 
+          { steppers.incrementIcon 
+            ? <steppers.incrementIcon aria-hidden="true" focusable="false" /> 
+            : <PlusIcon aria-hidden="true" focusable="false" /> }
         </Button>
       </Group>
     </NumberField>

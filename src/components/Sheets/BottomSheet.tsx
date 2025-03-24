@@ -1,6 +1,6 @@
 import React, { KeyboardEvent, ReactNode, RefObject, useCallback, useEffect, useRef, useState } from "react";
 
-import {OverlayTriggerState, useOverlayTriggerState} from "react-stately";
+import { OverlayTriggerState, useOverlayTriggerState } from "react-stately";
 
 import { RSPrefs } from "@/preferences";
 
@@ -161,15 +161,11 @@ const BottomSheetContainer = ({
         { ...(isDraggable ? { style: { paddingBottom: sheetRef.current?.y }} : {} )}
       >
         <Sheet.Scroller 
+          ref={ bottomSheetBodyRef }
           draggable={ false }
-          className={ sheetStyles.bottomSheetScroller }
+          className={ classNames(sheetStyles.bottomSheetScroller, sheetStyles.sheetBody) }
         >
-          <div 
-            ref={ bottomSheetBodyRef } 
-            className={ sheetStyles.sheetBody }
-          >
-            { children }
-          </div>
+          { children }
         </Sheet.Scroller>
       </Sheet.Content>
     </Sheet.Container>
@@ -188,7 +184,8 @@ export const BottomSheet: React.FC<IBottomSheet> = ({
   isOpen,
   onOpenChangeCallback, 
   onClosePressCallback,
-  children 
+  children,
+  resetFocus
 }) => {
   const reducedMotion = useAppSelector(state => state.theming.prefersReducedMotion);
 
@@ -375,7 +372,8 @@ export const BottomSheet: React.FC<IBottomSheet> = ({
   const firstFocusable = useFirstFocusable({
     withinRef: bottomSheetBodyRef, 
     trackedState: isOpen, 
-    fallbackRef: bottomSheetCloseRef
+    fallbackRef: bottomSheetCloseRef,
+    updateState: resetFocus
   });
 
   let sheetState = useOverlayTriggerState({

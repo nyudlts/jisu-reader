@@ -41,6 +41,7 @@ export enum ReadingDisplayAlignOptions {
 }
 
 export enum ReadingDisplayLineHeightOptions {
+  publisher = "publisher",
   small = "small",
   medium = "medium",
   large = "large"
