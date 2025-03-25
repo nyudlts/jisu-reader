@@ -1,3 +1,4 @@
+import { AccessibilityInfo } from "@/helpers/a11y/a11yInfo";
 import { IProgression } from "../progression";
 import { TocItem } from "../toc";
 
@@ -14,4 +15,5 @@ export interface IPublicationState {
   publishers?: string[];
   identifier?: string;
   coverUrl?: string;
+  a11yInfo?: AccessibilityInfo;
 }

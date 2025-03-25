@@ -14,6 +14,7 @@ const initialState: IPublicationState = {
   publishers: undefined,
   identifier: undefined,
   coverUrl: undefined,
+  a11yInfo: undefined,
 }
 
 export const publicationSlice = createSlice({
@@ -56,6 +57,9 @@ export const publicationSlice = createSlice({
     setChapterHref: (state, action) => {
       state.chapterHref = action.payload
     },
+    setA11yInfo: (state, action) => {
+      state.a11yInfo = action.payload
+    },
   }
 });
 
@@ -72,7 +76,8 @@ export const {
   setAuthors,
   setIdentifier,
   setCoverUrl,
-  setChapterHref, 
+  setChapterHref,
+  setA11yInfo, 
 } = publicationSlice.actions;
 
 export default publicationSlice.reducer;

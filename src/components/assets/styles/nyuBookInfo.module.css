@@ -1,0 +1,81 @@
+.bookInfoPanel {
+  width: 340px;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.title {
+  align-self: center;
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.bookCover {
+  align-self: center;
+  width: 200px;
+  height: 300px;
+  object-fit: cover;
+  align-self: center;
+  border: 1px solid #ccc;
+}
+
+.info {
+  font-size: 1.0rem;
+}
+
+.sectionSeparator {
+  margin: 10px 0;
+  height: 1px;
+  background-color: #ddd;
+  border: none;
+}
+
+.accessibilitySection {
+  font-size: 0.9rem;
+}
+
+.sectionHeading {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+
+.accessibilitySubsection {
+  margin-bottom: 10px;
+}
+
+.subheading {
+  font-weight: bold;
+}
+
+.accessibilitySubsection ul {
+  padding-left: 20px;
+  margin: 4px 0;
+}
+
+.accessibilitySubsection p {
+  margin: 4px 0;
+}
+
+.infoGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.infoRow {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  font-size: 1.0rem;
+}
+
+.infoLabel {
+  font-weight: bold;
+}
+
+.infoValue {
+  overflow-wrap: break-word;
+}

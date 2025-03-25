@@ -11,14 +11,14 @@ import { ActionComponentVariant, ActionKeys, IActionComponentContainer, IActionC
 import { SheetTypes } from "@/models/sheets";
 import { LayoutDirection } from "@/models/layout";
 
-import tocStyles from "./assets/styles/toc.module.css";
+import bookInfoStyles from "./assets/styles/nyuBookInfo.module.css";
 
 import TocIcon from "./assets/icons/toc.svg";
 
 import { ActionIcon } from "./ActionTriggers/ActionIcon";
 import { SheetWithType } from "./Sheets/SheetWithType";
 import { OverflowMenuItem } from "./ActionTriggers/OverflowMenuItem";
-import { Button, Collection, Key } from "react-aria-components";
+import { Heading, Text, Separator, Key } from "react-aria-components";
 import {
   Tree,
   TreeItem,
@@ -31,6 +31,14 @@ import { useDocking } from "@/hooks/useDocking";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setActionOpen } from "@/lib/actionsReducer";
 
+interface AccessibilityInfo {
+  waysOfReading: string[];
+  navigation: string[];
+  hazards: string[];
+  summary: string;
+}
+
+
 export const NYUBookInfoActionContainer: React.FC<IActionComponentContainer> = ({ triggerRef }) => {
   const direction = useAppSelector(state => state.reader.direction);
   const isRTL = direction === LayoutDirection.rtl;
@@ -40,6 +48,7 @@ export const NYUBookInfoActionContainer: React.FC<IActionComponentContainer> = (
   const publishers = useAppSelector(state => state.publication.publishers);
   const identifier = useAppSelector(state => state.publication.identifier);
   const coverUrl = useAppSelector(state => state.publication.coverUrl);
+  const accessibilityInfo = useAppSelector(state => state.publication.a11yInfo);
 
   const actionState = useAppSelector(state => state.actions.keys[ActionKeys.nyuBookInfo]);
   const dispatch = useAppDispatch();
@@ -83,7 +92,7 @@ export const NYUBookInfoActionContainer: React.FC<IActionComponentContainer> = (
         id: ActionKeys.nyuBookInfo,
         triggerRef: triggerRef, 
         heading: Locale.reader.nyuBookInfo.heading,
-        className: tocStyles.toc,
+        className: bookInfoStyles.toc,
         placement: "bottom",
         isOpen: actionState.isOpen || false,
         onOpenChangeCallback: setOpen,
@@ -91,13 +100,67 @@ export const NYUBookInfoActionContainer: React.FC<IActionComponentContainer> = (
         docker: docking.getDocker()
       } }
     >
-      {title && <h3>{title}</h3>}
-      {authors && <p>Author: {authors}</p>}
-      {publishers && <p>Publisher: {publishers}</p>}
-      {identifier && <p>Identifier: {identifier}</p>}
-      <div >
-        <img src={coverUrl} alt="NYU Libraries Logo" width={200} height={300} />
+      <div className={bookInfoStyles.bookInfoPanel}>
+      <Heading level={2} className={bookInfoStyles.title}>{ title }</Heading>
+      <img
+        src={coverUrl}
+        alt="Book cover"
+        className={bookInfoStyles.bookCover}
+      />
+      <div className={bookInfoStyles.infoGroup}>
+        <div className={bookInfoStyles.infoRow}>
+          <span className={bookInfoStyles.infoLabel}>Author:</span>
+          <span className={bookInfoStyles.infoValue}>{authors}</span>
+        </div>
+        <div className={bookInfoStyles.infoRow}>
+          <span className={bookInfoStyles.infoLabel}>Publisher:</span>
+          <span className="info-value">{publishers}</span>
+        </div>
+        <div className={bookInfoStyles.infoRow}>
+          <span className={bookInfoStyles.infoLabel}>Identifier:</span>
+          <span className={bookInfoStyles.infoValue}>{identifier}</span>
+        </div>
       </div>
+
+      <Separator className={bookInfoStyles.sectionSeparator} />
+
+      <section className="accessibility-section">
+        <Heading level={3} className="section-heading">Book Accessibility</Heading>
+
+        <div className={bookInfoStyles.accessibilitySubsection}>
+          <Text className={bookInfoStyles.subheading}>Ways of reading:</Text>
+          <ul>
+            {accessibilityInfo.waysOfReading.map((item, index) => (
+              <li key={`reading-${index}`}>{item}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className={bookInfoStyles.accessibilitySubsection}>
+          <Text className={bookInfoStyles.subheading}>Navigation:</Text>
+          <ul>
+          {accessibilityInfo.navigation.map((item, index) => (
+              <li key={`nav-${index}`}>{item}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className={bookInfoStyles.accessibilitySubsection}>
+          <Text className={bookInfoStyles.subheading}>Hazards:</Text>
+          <ul>
+          {accessibilityInfo.hazards.map((item, index) => (
+              <li key={`hazard-${index}`}>{item}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className={bookInfoStyles.accessibilitySubsection}>
+          <Text className={bookInfoStyles.subheading}>Accessibility summary:</Text>
+          <p>{accessibilityInfo.summary}</p>
+        </div>
+      </section>
+    </div>
+      
     </SheetWithType>
     </>
   )

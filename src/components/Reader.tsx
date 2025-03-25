@@ -27,6 +27,7 @@ import {
   LayoutStrategy 
 } from "@readium/navigator";
 import { 
+  Link,
   Locator, 
   Manifest, 
   Publication, 
@@ -52,6 +53,7 @@ import { CUSTOM_SCHEME, ScrollActions } from "@/helpers/scrollAffordance";
 import { localData } from "@/helpers/localData";
 import { getPlatformModifier } from "@/helpers/keyboard/getMetaKeys";
 import { createTocTree } from "@/helpers/toc/createTocTree";
+import { extractAccessibilityInfo } from "@/helpers/a11y/a11yInfo";
 
 import { 
   setImmersive, 
@@ -66,7 +68,7 @@ import {
   setRTL, 
   setProgression, 
   setRunningHead, 
-  setTocTree, setPublishers, setAuthors, setIdentifier, setCoverUrl, setChapterHref 
+  setTocTree, setPublishers, setAuthors, setIdentifier, setCoverUrl, setChapterHref, setA11yInfo 
 } from "@/lib/publicationReducer";
 import { toggleActionOpen } from "@/lib/actionsReducer";
 import { useAppSelector, useAppDispatch, useAppStore } from "@/lib/hooks";
@@ -472,10 +474,10 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
 
     const pubTitle = publication.current.metadata.title.getTranslation("en");
     const author = publication.current.metadata.authors?.items[0].name.getTranslation("en");
-    console.log("PK A11y Data", publication.current);
     const publisher = publication.current.metadata.publishers?.items[0].name.getTranslation("en");
     const identifier = publication.current.metadata.identifier;
     const coverLink = publication.current.manifest.resources?.findWithRel("cover") as Link | undefined;
+    const a11yInfo = extractAccessibilityInfo(publication.current);
 
     const fetchCoverUrl = async () => {
       const coverRes = await publication.current!.get(coverLink!);
@@ -485,7 +487,6 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
     };
 
     fetchCoverUrl().then((coverUrl) => {
-      console.log("PK Cover URL2:", coverUrl); // resolved value
       dispatch(setCoverUrl(coverUrl));
     });
 
@@ -494,6 +495,7 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
     dispatch(setPublishers(publisher));
     dispatch(setAuthors(author));
     dispatch(setIdentifier(identifier));
+    dispatch(setA11yInfo(a11yInfo));
     let positionsList: Locator[] | undefined;
 
     // Create a heirarchical tree structure for the table of contents
