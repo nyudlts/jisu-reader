@@ -22,7 +22,6 @@ import { useAppSelector } from "@/lib/hooks";
 export const ReadingDisplayZoom = () => {
   const fontSize = useAppSelector((state) => state.settings.fontSize);
   const isFXL = useAppSelector((state) => state.publication.isFXL);
-  const variant = RSPrefs.settings.zoom?.variant || SettingsRangeVariant.numberField;
   
   const { 
     applyZoom, 
@@ -31,13 +30,14 @@ export const ReadingDisplayZoom = () => {
   } = useEpubNavigator();
 
   const zoomRangeConfig = {
+    variant: RSPrefs.settings.zoom?.variant || SettingsRangeVariant.numberField,
     range: getSizeRange() || [0.7, 2.5],
     step: getSizeStep() || 0.1
   }
 
   return (
     <>
-    { variant === SettingsRangeVariant.numberField 
+    { zoomRangeConfig.variant === SettingsRangeVariant.numberField 
       ? <NumberFieldWrapper
         standalone={ true }
         className={ settingsStyles.readerSettingsGroup }

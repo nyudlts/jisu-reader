@@ -2,6 +2,7 @@ import { ComponentType, SVGProps } from "react";
 import { ReadingDisplayAlignOptions, ReadingDisplayLineHeightOptions, RSLayoutStrategy } from "./layout";
 import { ThemeKeys } from "./theme";
 import { PressEvent, TooltipProps } from "react-aria-components";
+import { SheetHeaderVariant } from "./sheets";
 
 export enum SettingsContainerKeys {
   initial = "initial",
@@ -18,6 +19,7 @@ export enum SettingsKeys {
   layout = "layout",
   letterSpacing = "letterSpacing",
   lineHeight = "lineHeight",
+  lineLength = "lineLength",
   normalizeText = "normalizeText",
   paraIndent = "paraIndent",
   paraSpacing = "paraSpacing",
@@ -48,19 +50,24 @@ export const defaultTextSettingsSubpanel = [
 ]
 
 export enum SpacingSettingsKeys {
-  lineHeight = "lineHeight",
   letterSpacing = "letterSpacing",
+  lineHeight = "lineHeight",
+  lineLength = "lineLength",
   paraIndent = "paraIndent",
   paraSpacing = "paraSpacing",
   publisherStyles = "publisherStyles",
   wordSpacing = "wordSpacing"
 }
 
-export const defaultSpacingSettingsMain = [SpacingSettingsKeys.lineHeight];
+export const defaultSpacingSettingsMain = [
+  SpacingSettingsKeys.lineHeight,
+  SpacingSettingsKeys.lineLength
+];
 
 export const defaultSpacingSettingsSubpanel = [
   SpacingSettingsKeys.publisherStyles,
   SpacingSettingsKeys.lineHeight,
+  SpacingSettingsKeys.lineLength,
   SpacingSettingsKeys.paraSpacing,
   SpacingSettingsKeys.paraIndent,
   SpacingSettingsKeys.wordSpacing,
@@ -75,11 +82,13 @@ export enum SettingsRangeVariant {
 export interface ISettingsTextPref {
   main?: TextSettingsKeys[];
   subPanel?: TextSettingsKeys[] | null;
+  header?: SheetHeaderVariant;
 }
 
 export interface ISettingsSpacingPref {
   main?: SpacingSettingsKeys[];
   subPanel?: SpacingSettingsKeys[] | null;
+  header?: SheetHeaderVariant;
   letterSpacing?: ISettingsRangePref;
   lineHeight?: {
     [key in Exclude<ReadingDisplayLineHeightOptions, ReadingDisplayLineHeightOptions.publisher>]: number
@@ -167,7 +176,7 @@ interface ISettingsRangeProps {
   standalone?: boolean;
   className?: string;
   label: string;
-  defaultValue?: number;
+  defaultValue: number;
   value: number;
   onChangeCallback: (value: number) => void;
   range: [number, number];
@@ -183,6 +192,18 @@ export interface ISettingsNumberFieldProps extends ISettingsRangeProps {
 
 export interface ISettingsSliderProps extends ISettingsRangeProps {}
 
+export interface ISettingsRangeSliderProps {
+  standalone?: boolean;
+  className?: string;
+  label: string;
+  thumbLabels: string[];
+  defaultValue: number[];
+  value: number[];
+  onChangeCallback: (value: number[]) => void;
+  range: number[];
+  step: number;
+}
+
 export interface ISettingsSwitchProps {
   name?: string;
   className?: string;
@@ -193,20 +214,21 @@ export interface ISettingsSwitchProps {
 }
 
 export interface IRCSSSettings {
-  paginated: boolean;
+  align: ReadingDisplayAlignOptions | null;
   colCount: string;
+  fontFamily: string | null;
   fontSize: number;
   fontWeight: number;
-  fontFamily: string | null;
-  lineHeight: ReadingDisplayLineHeightOptions | null;
-  align: ReadingDisplayAlignOptions | null;
   hyphens: boolean | null;
+  letterSpacing: number | null;
+  lineLength: number[] | null;
+  lineHeight: ReadingDisplayLineHeightOptions | null;
+  layoutStrategy: RSLayoutStrategy;
+  normalizeText: boolean;
+  paginated: boolean;
   paraIndent: number | null;
   paraSpacing: number | null;
-  lineLength: number | null;
-  letterSpacing: number | null;
-  wordSpacing: number | null;
-  layoutStrategy: RSLayoutStrategy;
+  publisherStyles: boolean;
   theme: ThemeKeys;
-  normalizeText: boolean;
+  wordSpacing: number | null;
 }

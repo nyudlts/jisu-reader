@@ -17,9 +17,7 @@ import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
 import { useAppSelector } from "@/lib/hooks";
 
-export const ReadingDisplayLetterSpacing: React.FC<IAdvancedDisplayProps> = ({ 
-  standalone = true
-}) => {
+export const ReadingDisplayLetterSpacing: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
   const letterSpacing = useAppSelector(state => state.settings.letterSpacing);
   const letterSpacingRangeConfig = {
       variant: RSPrefs.settings.spacing?.letterSpacing?.variant ?? defaultLetterSpacing.variant,

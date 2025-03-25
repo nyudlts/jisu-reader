@@ -20,6 +20,7 @@ import {
   SpacingSettingsKeys, 
   TextSettingsKeys 
 } from "@/models/settings";
+import { SheetHeaderVariant } from "@/models/sheets";
 
 import settingsStyles from "./assets/styles/readerSettings.module.css";
 
@@ -37,6 +38,7 @@ import { ReadingDisplayHyphens } from "./Settings/ReadingDisplayHyphens";
 import { ReadingDisplayLayout } from "./Settings/ReadingDisplayLayout";
 import { ReadingDisplayLetterSpacing } from "./Settings/ReadingDisplayLetterSpacing";
 import { ReadingDisplayLineHeight } from "./Settings/ReadingDisplayLineHeight";
+import { ReadingDisplayLineLength } from "./Settings/ReadingDisplayLineLength";
 import { ReadingDisplayParaIndent } from "./Settings/ReadingDisplayParaIndent";
 import { ReadingDisplayParaSpacing } from "./Settings/ReadingDisplayParaSpacing";
 import { ReadingDisplayPublisherStyles } from "./Settings/ReadingDisplayPublisherStyles";
@@ -77,6 +79,9 @@ const SettingsMap: { [key in SettingsKeys]: ISettingsMapObject } = {
   },
   [SettingsKeys.lineHeight]: {
     Comp: ReadingDisplayLineHeight
+  },
+  [SettingsKeys.lineLength]: {
+    Comp: ReadingDisplayLineLength
   },
   [SettingsKeys.paraIndent]: {
     Comp: ReadingDisplayParaIndent
@@ -188,6 +193,20 @@ export const SettingsActionContainer: React.FC<IActionComponentContainer> = ({ t
     }
   }, [contains]);
 
+  const getHeaderVariant = useCallback(() => {
+    switch (contains) {
+      case SettingsContainerKeys.text:
+        return RSPrefs.settings.text?.header || SheetHeaderVariant.close;
+
+      case SettingsContainerKeys.spacing:
+        return RSPrefs.settings.spacing?.header || SheetHeaderVariant.close;
+
+      case SettingsContainerKeys.initial:
+      default:
+        return SheetHeaderVariant.close;
+    }
+  }, [contains]);
+
   // Reset when closed
   useEffect(() => {
     if (!actionState.isOpen) setInitial();
@@ -201,6 +220,7 @@ export const SettingsActionContainer: React.FC<IActionComponentContainer> = ({ t
         id: ActionKeys.settings,
         triggerRef: triggerRef,
         heading: getHeading(),
+        headerVariant: getHeaderVariant(),
         className: settingsStyles.readerSettings,
         placement: "bottom", 
         isOpen: actionState.isOpen || false,

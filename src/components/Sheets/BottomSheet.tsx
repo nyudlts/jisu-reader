@@ -6,7 +6,7 @@ import { RSPrefs } from "@/preferences";
 
 import Locale from "../../resources/locales/en.json";
 
-import { BottomSheetDetent, IScrimPref, ISheet } from "@/models/sheets";
+import { BottomSheetDetent, IScrimPref, ISheet, SheetHeaderVariant } from "@/models/sheets";
 
 import sheetStyles from "../assets/styles/sheet.module.css";
 import readerSharedUI from "../assets/styles/readerSharedUI.module.css";
@@ -14,6 +14,7 @@ import readerSharedUI from "../assets/styles/readerSharedUI.module.css";
 import { Sheet, SheetRef } from "react-modal-sheet";
 import { DragIndicatorButton } from "./DragIndicator";
 import { Heading } from "react-aria-components";
+import { BackButton } from "../BackButton";
 import { CloseButton } from "../CloseButton";
 
 import { FocusScope, OverlayProvider, useButton, useDialog, useModal, useOverlay } from "react-aria";
@@ -36,6 +37,7 @@ const BottomSheetContainer = ({
   sheetState,
   className,
   heading,
+  headerVariant, 
   onClosePressCallback,
   onDragPressCallback,
   onDragKeyCallback,
@@ -52,6 +54,7 @@ const BottomSheetContainer = ({
   sheetState: OverlayTriggerState;
   className: string;
   heading: string;
+  headerVariant?: SheetHeaderVariant;
   onClosePressCallback: () => void;
   onDragPressCallback: () => void;
   onDragKeyCallback: (event: KeyboardEvent) => void;
@@ -139,6 +142,14 @@ const BottomSheetContainer = ({
           /> 
         }
         <div className={ sheetStyles.bottomSheetHeader }>
+          { headerVariant === SheetHeaderVariant.previous && 
+            <BackButton 
+              ref={ bottomSheetCloseRef }
+              className={ sheetStyles.sheetHeaderBackButton }
+              onPressCallback={ onClosePressCallback }
+            /> 
+          }
+
           <Heading 
             slot="title" 
             className={ sheetStyles.sheetHeading }
@@ -146,13 +157,16 @@ const BottomSheetContainer = ({
           >
             { heading }
           </Heading>
-          <CloseButton
-            ref={ bottomSheetCloseRef }
-            className={ readerSharedUI.closeButton } 
-            label={ Locale.reader.app.docker.close.trigger } 
-            onPressCallback={ onClosePressCallback }
-            { ...closeButton.buttonProps }
-          />
+
+          { headerVariant !== SheetHeaderVariant.previous &&
+            <CloseButton
+              ref={ bottomSheetCloseRef }
+              className={ readerSharedUI.closeButton } 
+              label={ Locale.reader.app.docker.close.trigger } 
+              onPressCallback={ onClosePressCallback }
+              { ...closeButton.buttonProps }
+            />
+          }
         </div>
       </Sheet.Header>
       <Sheet.Content 
@@ -180,6 +194,7 @@ const BottomSheetContainer = ({
 export const BottomSheet: React.FC<IBottomSheet> = ({
   id,
   heading,
+  headerVariant,
   className, 
   isOpen,
   onOpenChangeCallback, 
@@ -419,6 +434,7 @@ export const BottomSheet: React.FC<IBottomSheet> = ({
               sheetState={ sheetState } 
               className={ className }
               heading={ heading }
+              headerVariant={ headerVariant }
               onClosePressCallback={ onClosePressCallback }
               onDragPressCallback={ onDragPressCallback }
               onDragKeyCallback={ onDragKeyCallback }

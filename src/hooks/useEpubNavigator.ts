@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from "react";
+import { use, useCallback, useMemo, useRef } from "react";
 
 import Locale from "../resources/locales/en.json";
 import { RSPrefs } from "@/preferences";
@@ -48,6 +48,7 @@ import {
   setLayoutStrategy, 
   setLetterSpacing, 
   setLineHeight, 
+  setLineLength, 
   setNormalizeText, 
   setParaIndent, 
   setParaSpacing, 
@@ -231,6 +232,100 @@ export const useEpubNavigator = () => {
       return editor.fontSize.supportedRange;
     }
     return null;
+  }, []);
+
+  const applyLineLength = useCallback(async (value: number[]) => {
+    const editor = navigatorInstance?.preferencesEditor;
+    if (editor) {
+      const strategy = editor.layoutStrategy.value;
+
+      let minimalLineLength = navigatorInstance?.settings.minimalLineLength;
+      let lineLength = navigatorInstance?.settings.lineLength;
+      let maximalLineLength = navigatorInstance?.settings.maximalLineLength;
+
+      if (strategy === LayoutStrategy.columns) {
+        minimalLineLength = value[0];
+        lineLength = value[1];
+        if (maximalLineLength && lineLength >= maximalLineLength) {
+          maximalLineLength = value[1];
+        }
+      } else if (strategy === LayoutStrategy.margin) {
+        lineLength = value[0];
+        if (minimalLineLength && lineLength <= minimalLineLength) {
+          minimalLineLength = value[0];
+        }
+        if (maximalLineLength && lineLength >= maximalLineLength) {
+          maximalLineLength = value[0];
+        }
+      } else if (strategy === LayoutStrategy.lineLength) {
+        if (editor.columnCount.value === null) {
+          lineLength = value[0];
+          maximalLineLength = value[1];
+          if (minimalLineLength && lineLength <= minimalLineLength) {
+            minimalLineLength = value[0];
+          }
+        } else {
+          lineLength = value[0];
+          maximalLineLength = value[0];          
+        }
+      }
+
+      await navigatorInstance?.submitPreferences(new EpubPreferences({
+        minimalLineLength: minimalLineLength,
+        lineLength: lineLength,
+        maximalLineLength: maximalLineLength
+      }));
+      dispatch(setLineLength(value));
+    }
+  }, [dispatch]);
+
+  const getLengthStep = useCallback(() => {
+    const editor = navigatorInstance?.preferencesEditor;
+    if (editor) {
+      return editor.lineLength.step;
+    }
+    return null;
+  }, []);
+
+  const getLengthRange = useCallback(() => {
+    const editor = navigatorInstance?.preferencesEditor;
+    if (editor) {
+      return editor.lineLength.supportedRange;
+    }
+    return null;
+  }, []);
+
+  const getBaseLength = useCallback(() => {
+    const editor = navigatorInstance?.preferencesEditor;
+    if (editor) {
+      if (editor.columnCount.value === null) {
+        if (editor.layoutStrategy.value === LayoutStrategy.columns) {
+          const minimal = editor.minimalLineLength.value || RSPrefs.typography.minimalLineLength || 20;
+          const lineLength = editor.lineLength.value || editor.optimalLineLength.value || RSPrefs.typography.optimalLineLength;
+          if (minimal === lineLength) {
+            return [minimal, lineLength + 1];
+          }
+          return [minimal, lineLength];
+        } else if (editor.layoutStrategy.value === LayoutStrategy.lineLength) {
+          const lineLength = editor.lineLength.value || editor.optimalLineLength.value || RSPrefs.typography.optimalLineLength;
+          const maximal = editor.maximalLineLength.value || RSPrefs.typography.maximalLineLength || 100;
+          if (lineLength === maximal) {
+            return [lineLength - 1, maximal];
+          }
+          return [lineLength, maximal]; 
+        } 
+
+        return [editor.lineLength.value || editor.optimalLineLength.value || RSPrefs.typography.optimalLineLength];
+      } else {
+        if (editor.layoutStrategy.value === LayoutStrategy.lineLength) {
+          return [editor.maximalLineLength.value || RSPrefs.typography.maximalLineLength || 100]
+        } else {
+          return [editor.lineLength.value || editor.optimalLineLength.value || RSPrefs.typography.optimalLineLength];
+        }
+      }
+    }
+
+    return [RSPrefs.typography.optimalLineLength];
   }, []);
 
   const applyFontFamily = useCallback(async (fontFamily: { id: keyof typeof ReadingDisplayFontFamilyOptions, value: string | null }) => {
@@ -509,6 +604,10 @@ export const useEpubNavigator = () => {
     applyZoom,
     getSizeStep, 
     getSizeRange,
+    applyLineLength,
+    getLengthStep,
+    getLengthRange,
+    getBaseLength,
     handleProgression,
     navLayout, 
     currentLocator,

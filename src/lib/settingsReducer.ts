@@ -4,29 +4,35 @@ import { ReadingDisplayAlignOptions, ReadingDisplayLineHeightOptions, RSLayoutSt
 import { ISettingsState } from "@/models/state/settingsState";
 
 const initialState: ISettingsState = {
+  align: ReadingDisplayAlignOptions.publisher,
   colCount: "auto",
+  fontFamily: "publisher",
   fontSize: 1,
   fontWeight: 400,
-  fontFamily: "publisher",
-  lineHeight: ReadingDisplayLineHeightOptions.publisher,
-  align: ReadingDisplayAlignOptions.publisher,
   hyphens: null,
+  layoutStrategy: RSLayoutStrategy.lineLength,
+  letterSpacing: null,
+  lineHeight: ReadingDisplayLineHeightOptions.publisher,
+  lineLength: null,
+  normalizeText: false,
   paraIndent: null,
   paraSpacing: null,
-  lineLength: null,
-  letterSpacing: null,
-  wordSpacing: null,
   publisherStyles: true,
-  normalizeText: false,
-  layoutStrategy: RSLayoutStrategy.lineLength,
+  wordSpacing: null
 }
 
 export const settingsSlice = createSlice({
   name: "settings",
   initialState,
   reducers: {
+    setAlign: (state, action) => {
+      state.align = action.payload
+    },
     setColCount: (state, action) => {
       state.colCount = action.payload
+    },
+    setFontFamily: (state, action) => {
+      state.fontFamily = action.payload
     },
     setFontSize: (state, action) => {
       state.fontSize = action.payload
@@ -34,17 +40,23 @@ export const settingsSlice = createSlice({
     setFontWeight: (state, action) => {
       state.fontWeight = action.payload
     },
-    setFontFamily: (state, action) => {
-      state.fontFamily = action.payload
+    setHyphens: (state, action) => {
+      state.hyphens = action.payload
+    },
+    setLayoutStrategy: (state, action) => {
+      state.layoutStrategy = action.payload
+    },
+    setLetterSpacing: (state, action) => {
+      state.letterSpacing = action.payload
     },
     setLineHeight: (state, action) => {
       state.lineHeight = action.payload
     },
-    setAlign: (state, action) => {
-      state.align = action.payload
+    setLineLength: (state, action) => {
+      state.lineLength = action.payload
     },
-    setHyphens: (state, action) => {
-      state.hyphens = action.payload
+    setNormalizeText: (state, action) => {
+      state.normalizeText = action.payload
     },
     setParaIndent: (state, action) => {
       state.paraIndent = action.payload
@@ -52,44 +64,32 @@ export const settingsSlice = createSlice({
     setParaSpacing: (state, action) => {
       state.paraSpacing = action.payload
     },
-    setLineLength: (state, action) => {
-      state.lineLength = action.payload
-    },
-    setLetterSpacing: (state, action) => {
-      state.letterSpacing = action.payload
-    },
-    setWordSpacing: (state, action) => {
-      state.wordSpacing = action.payload
-    },
     setPublisherStyles: (state, action) => {
       state.publisherStyles = action.payload
     },
-    setNormalizeText: (state, action) => {
-      state.normalizeText = action.payload
-    },
-    setLayoutStrategy: (state, action) => {
-      state.layoutStrategy = action.payload
+    setWordSpacing: (state, action) => {
+      state.wordSpacing = action.payload
     }
   }
 })
 
 // Action creators are generated for each case reducer function
 export const { 
+  setAlign, 
   setColCount,
   setFontSize,
   setFontWeight, 
   setFontFamily,
-  setLineHeight,
-  setAlign, 
   setHyphens, 
+  setLayoutStrategy,
+  setLetterSpacing,
+  setLineHeight,
+  setLineLength,
+  setNormalizeText,
   setParaIndent,
   setParaSpacing,
-  setLineLength,
-  setLetterSpacing,
-  setWordSpacing,
   setPublisherStyles,
-  setNormalizeText,
-  setLayoutStrategy
+  setWordSpacing
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

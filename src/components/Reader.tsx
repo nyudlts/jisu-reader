@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 import { RSPrefs } from "@/preferences";
 import Locale from "../resources/locales/en.json";
@@ -72,7 +72,6 @@ import { toggleActionOpen } from "@/lib/actionsReducer";
 import { useAppSelector, useAppDispatch, useAppStore } from "@/lib/hooks";
 
 import debounce from "debounce";
-import { li } from "motion/react-client";
 
 export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: object, selfHref: string, locatorParam: string }) => {
   const container = useRef<HTMLDivElement>(null);
@@ -80,21 +79,22 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   const localDataKey = useRef(`${selfHref}-current-location`);
   const arrowsWidth = useRef(2 * ((RSPrefs.theming.arrow.size || 40) + (RSPrefs.theming.arrow.offset || 0)));
 
-  const isPaged = useAppSelector(state => state.reader.isPaged);
+  const align = useAppSelector(state => state.settings.align);
   const colCount = useAppSelector(state => state.settings.colCount);
+  const fontFamily = useAppSelector(state => state.settings.fontFamily);
   const fontSize = useAppSelector(state => state.settings.fontSize);
   const fontWeight = useAppSelector(state => state.settings.fontWeight);
-  const fontFamily = useAppSelector(state => state.settings.fontFamily);
-  const lineHeight = useAppSelector(state => state.settings.lineHeight);
-  const align = useAppSelector(state => state.settings.align);
   const hyphens = useAppSelector(state => state.settings.hyphens);
+  const isPaged = useAppSelector(state => state.reader.isPaged);
+  const layoutStrategy = useAppSelector(state => state.settings.layoutStrategy);
+  const letterSpacing = useAppSelector(state => state.settings.letterSpacing);
+  const lineLength = useAppSelector(state => state.settings.lineLength);
+  const lineHeight = useAppSelector(state => state.settings.lineHeight);
+  const normalizeText = useAppSelector(state => state.settings.normalizeText);
   const paraIndent = useAppSelector(state => state.settings.paraIndent);
   const paraSpacing = useAppSelector(state => state.settings.paraSpacing);
-  const lineLength = useAppSelector(state => state.settings.lineLength);
-  const letterSpacing = useAppSelector(state => state.settings.letterSpacing);
+  const publisherStyles = useAppSelector(state => state.settings.publisherStyles);
   const wordSpacing = useAppSelector(state => state.settings.wordSpacing);
-  const layoutStrategy = useAppSelector(state => state.settings.layoutStrategy);
-  const normalizeText = useAppSelector(state => state.settings.normalizeText);
   const theme = useAppSelector(state => state.theming.theme);
   const previousTheme = usePrevious(theme);
   const colorScheme = useAppSelector(state => state.theming.colorScheme);
@@ -112,22 +112,23 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
     isImmersive: isImmersive,
     arrowsOccupySpace: arrowsOccupySpace || false,
     settings: {
-      paginated: isPaged,
+      align: align,
       colCount: colCount,
+      fontFamily: fontFamily,
       fontSize: fontSize,
       fontWeight: fontWeight,
-      fontFamily: fontFamily,
-      lineHeight: lineHeight,
-      align: align,
       hyphens: hyphens,
+      layoutStrategy: layoutStrategy,
+      letterSpacing: letterSpacing,
+      lineHeight: lineHeight,
+      lineLength: lineLength,
+      normalizeText: normalizeText,
+      paginated: isPaged,
       paraIndent: paraIndent,
       paraSpacing: paraSpacing,
-      lineLength: lineLength,
-      letterSpacing: letterSpacing,
-      wordSpacing: wordSpacing,
-      layoutStrategy: layoutStrategy,
+      publisherStyles: publisherStyles,
       theme: theme,
-      normalizeText: normalizeText
+      wordSpacing: wordSpacing
     },
     colorScheme: colorScheme,
     reducedMotion: reducedMotion
@@ -356,8 +357,16 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   }, [isPaged, arrowsOccupySpace, applyConstraint]);
 
   useEffect(() => {
+    cache.current.settings.align = align;
+  }, [align]);
+
+  useEffect(() => {
     cache.current.settings.colCount = colCount;
   }, [colCount]);
+
+  useEffect(() => {
+    cache.current.settings.fontFamily = fontFamily;
+  }, [fontFamily]);
 
   useEffect(() => {
     cache.current.settings.fontSize = fontSize;
@@ -368,20 +377,28 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   }, [fontWeight]);
 
   useEffect(() => {
-    cache.current.settings.fontFamily = fontFamily;
-  }, [fontFamily]);
+    cache.current.settings.hyphens = hyphens;
+  }, [hyphens]);
+
+  useEffect(() => {
+    cache.current.settings.layoutStrategy = layoutStrategy;
+  }, [layoutStrategy]);
+
+  useEffect(() => {
+    cache.current.settings.letterSpacing = letterSpacing;
+  }, [letterSpacing]);
 
   useEffect(() => {
     cache.current.settings.lineHeight = lineHeight;
   }, [lineHeight]);
 
   useEffect(() => {
-    cache.current.settings.align = align;
-  }, [align]);
+    cache.current.settings.lineLength = lineLength;
+  }, [lineLength]);
 
   useEffect(() => {
-    cache.current.settings.hyphens = hyphens;
-  }, [hyphens]);
+    cache.current.settings.normalizeText = normalizeText;
+  }, [normalizeText]);
 
   useEffect(() => {
     cache.current.settings.paraIndent = paraIndent;
@@ -392,28 +409,12 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   }, [paraSpacing]);
 
   useEffect(() => {
-    cache.current.settings.lineLength = lineLength;
-  }, [lineLength]);
-
-  useEffect(() => {
-    cache.current.settings.letterSpacing = letterSpacing;
-  }, [letterSpacing]);
-
-  useEffect(() => {
-    cache.current.settings.wordSpacing = wordSpacing;
-  }, [wordSpacing]);
-
-  useEffect(() => {
-    cache.current.settings.layoutStrategy = layoutStrategy;
-  }, [layoutStrategy]);
-
-  useEffect(() => {
     cache.current.settings.theme = theme;
   }, [theme]);
 
   useEffect(() => {
-    cache.current.settings.normalizeText = normalizeText;
-  }, [normalizeText]);
+    cache.current.settings.wordSpacing = wordSpacing;
+  }, [wordSpacing]);
 
   useEffect(() => {
     cache.current.arrowsOccupySpace = arrowsOccupySpace || false;

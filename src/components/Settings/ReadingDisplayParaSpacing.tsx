@@ -17,9 +17,7 @@ import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
 import { useAppSelector } from "@/lib/hooks";
 
-export const ReadingDisplayParaSpacing: React.FC<IAdvancedDisplayProps> = ({ 
-  standalone = true
-}) => {
+export const ReadingDisplayParaSpacing: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
   const paraSpacing = useAppSelector(state => state.settings.paraSpacing);
   const paraSpacingRangeConfig = {
     variant: RSPrefs.settings.spacing?.paraSpacing?.variant ?? defaultParaSpacing.variant,

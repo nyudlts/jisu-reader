@@ -17,9 +17,7 @@ import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
 import { useAppSelector } from "@/lib/hooks";
 
-export const ReadingDisplayParaIndent: React.FC<IAdvancedDisplayProps> = ({ 
-  standalone = true
- }) => {
+export const ReadingDisplayParaIndent: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
   const paraIndent = useAppSelector(state => state.settings.paraIndent);
   const paraIndentRangeConfig = {
       variant: RSPrefs.settings.spacing?.paraIndent?.variant ?? defaultParaIndent.variant,

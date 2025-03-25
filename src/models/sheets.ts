@@ -15,10 +15,16 @@ export type BreakpointsSheetMap = {
   [key in StaticBreakpoints]?: SheetTypes;
 }
 
+export enum SheetHeaderVariant {
+  close = "close",
+  previous = "previous"
+}
+
 export interface ISheet {
   id: ActionsStateKeys;
   triggerRef: RefObject<HTMLElement | null>;
   heading: string;
+  headerVariant?: SheetHeaderVariant;
   className: string;
   isOpen: boolean;
   onOpenChangeCallback: (isOpen: boolean) => void;

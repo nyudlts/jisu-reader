@@ -1,10 +1,11 @@
 import React, { useCallback, useRef } from "react";
 
-import { ISheet } from "@/models/sheets";
+import { ISheet, SheetHeaderVariant } from "@/models/sheets";
 
 import sheetStyles from "../assets/styles/sheet.module.css";
 
 import { Dialog, Heading, Popover, PopoverProps } from "react-aria-components";
+import { BackButton } from "../BackButton";
 import { Docker } from "./Docking/Docker";
 
 import { useFirstFocusable } from "@/hooks/useFirstFocusable";
@@ -19,6 +20,7 @@ export const PopoverSheet: React.FC<IPopoverSheet> = ({
     id,
     triggerRef,
     heading,
+    headerVariant,
     className, 
     isOpen,
     onOpenChangeCallback, 
@@ -65,14 +67,24 @@ export const PopoverSheet: React.FC<IPopoverSheet> = ({
             ref={ popoverHeaderRef }
             className={ sheetStyles.sheetHeader }
           >
+            { headerVariant === SheetHeaderVariant.previous && 
+              <BackButton 
+                ref={ popoverCloseRef }
+                className={ sheetStyles.sheetHeaderBackButton }
+                onPressCallback={ onClosePressCallback }
+              /> 
+            }
+            
             <Heading slot="title" className={ sheetStyles.sheetHeading }>{ heading }</Heading>
             
-            <Docker 
-              id={ id }
-              keys={ docker || [] }
-              ref={ popoverCloseRef }
-              onCloseCallback={ onClosePressCallback }
-            /> 
+            { headerVariant !== SheetHeaderVariant.previous &&
+              <Docker 
+                id={ id }
+                keys={ docker || [] }
+                ref={ popoverCloseRef }
+                onCloseCallback={ onClosePressCallback }
+              />
+            } 
           </div>
 
           <div 
