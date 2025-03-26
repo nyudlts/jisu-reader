@@ -31,6 +31,7 @@ import { useDocking } from "@/hooks/useDocking";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setActionOpen } from "@/lib/actionsReducer";
 import { SheetTypes } from "@/models/sheets";
+import { DecoratorRequest } from "@/readium/ts-toolkit/navigator-html-injectables/src/modules/Decorator";
 
 interface SearchResult {
   id: string;
@@ -57,7 +58,7 @@ interface JsonResponse {
 export const NYUSearchContainer: React.FC<IActionComponentContainer> = ({ triggerRef }) => {
   const actionState = useAppSelector(state => state.actions.keys[ActionKeys.nyuSearch]);
   const dispatch = useAppDispatch();
-  const { go } = useEpubNavigator();
+  const { getCframes, go } = useEpubNavigator();
 
   const isDev = process.env.NODE_ENV === "development";
   const NYU_PRESS_API = isDev ? 'http://localhost:3001' : 'http://35.95.95.96:3001';
@@ -129,6 +130,25 @@ export const NYUSearchContainer: React.FC<IActionComponentContainer> = ({ trigge
       // If the title is the same as the current title just go to the locator
       const myLocator = Locator.deserialize(locatorData);
       go(myLocator! , true, () => {});
+
+      //highlight the search term on the page
+      const _cframes = getCframes();
+      if (_cframes)
+      {
+        _cframes.forEach((cframe) => {
+          if (cframe) {
+            cframe.msg?.send("decorate", {
+              group: "tts",
+              action: "update",
+              decoration: {
+                id: "tts",
+                locator: myLocator,
+              },
+            } as DecoratorRequest);
+          }
+        });
+      }
+
     } else {
       const host = typeof window !== "undefined" ? `${window.location.origin}${pathname}` : "";
       const bookUrl = searchParams.get("book"); // Extract "book" param from URL
@@ -142,6 +162,7 @@ export const NYUSearchContainer: React.FC<IActionComponentContainer> = ({ trigge
       window.location.href = deepLink;
     }
 
+    
   };
 
   const findResultById = (id: string, results: SearchResult[]): SearchResult | undefined => {

@@ -28,3 +28,8 @@
 .react-aria-DisclosurePanel {
   margin-left: 32px;
 }
+
+.search-highlight {
+  /** background-color: yellow; **/
+  font-weight: bold;
+}

@@ -75,6 +75,7 @@ import { useAppSelector, useAppDispatch, useAppStore } from "@/lib/hooks";
 
 import debounce from "debounce";
 import { setTheme } from "@/lib/themeReducer";
+import { DecoratorRequest } from "@/readium/ts-toolkit/navigator-html-injectables/src/modules/Decorator";
 
 export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: object, selfHref: string, locatorParam: string }) => {
   const container = useRef<HTMLDivElement>(null);
@@ -584,6 +585,24 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
     setTimeout(() => {
       if (deepLinkLocator) {
         go(deepLinkLocator! , true, () => {});
+
+        //highlight the search term on the page
+        const _cframes = getCframes();
+        if (_cframes)
+        {
+          _cframes.forEach((cframe) => {
+            if (cframe) {
+              cframe.msg?.send("decorate", {
+                group: "tts",
+                action: "update",
+                decoration: {
+                  id: "tts",
+                  locator: deepLinkLocator,
+                },
+              } as DecoratorRequest);
+            }
+          });
+        }
       }
     }, 300);
   }

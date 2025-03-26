@@ -130,7 +130,7 @@ export const NYUBookInfoActionContainer: React.FC<IActionComponentContainer> = (
         <div className={bookInfoStyles.accessibilitySubsection}>
           <Text className={bookInfoStyles.subheading}>Ways of reading:</Text>
           <ul>
-            {accessibilityInfo.waysOfReading.map((item, index) => (
+          {accessibilityInfo?.waysOfReading.map((item, index) => (
               <li key={`reading-${index}`}>{item}</li>
             ))}
           </ul>
@@ -139,7 +139,7 @@ export const NYUBookInfoActionContainer: React.FC<IActionComponentContainer> = (
         <div className={bookInfoStyles.accessibilitySubsection}>
           <Text className={bookInfoStyles.subheading}>Navigation:</Text>
           <ul>
-          {accessibilityInfo.navigation.map((item, index) => (
+          {accessibilityInfo?.navigation.map((item, index) => (
               <li key={`nav-${index}`}>{item}</li>
             ))}
           </ul>
@@ -148,7 +148,7 @@ export const NYUBookInfoActionContainer: React.FC<IActionComponentContainer> = (
         <div className={bookInfoStyles.accessibilitySubsection}>
           <Text className={bookInfoStyles.subheading}>Hazards:</Text>
           <ul>
-          {accessibilityInfo.hazards.map((item, index) => (
+          {accessibilityInfo?.hazards.map((item, index) => (
               <li key={`hazard-${index}`}>{item}</li>
             ))}
           </ul>
@@ -156,7 +156,7 @@ export const NYUBookInfoActionContainer: React.FC<IActionComponentContainer> = (
 
         <div className={bookInfoStyles.accessibilitySubsection}>
           <Text className={bookInfoStyles.subheading}>Accessibility summary:</Text>
-          <p>{accessibilityInfo.summary}</p>
+          <p>{accessibilityInfo?.summary}</p>
         </div>
       </section>
     </div>
