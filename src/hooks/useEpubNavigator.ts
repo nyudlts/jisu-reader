@@ -23,10 +23,12 @@ import {
   EpubNavigator, 
   EpubNavigatorListeners, 
   EpubPreferences, 
+  EpubSettings, 
   FrameManager, 
   FXLFrameManager, 
   IEpubDefaults, 
   IEpubPreferences, 
+  IEpubSettings, 
   LayoutStrategy, 
   TextAlignment, 
   Theme 
@@ -48,11 +50,13 @@ import {
   setLayoutStrategy, 
   setLetterSpacing, 
   setLineHeight, 
-  setLineLength, 
   setNormalizeText, 
   setParaIndent, 
   setParaSpacing, 
   setPublisherStyles, 
+  setTmpLineLengths, 
+  setTmpMaxChars, 
+  setTmpMinChars, 
   setWordSpacing
 } from "@/lib/settingsReducer";
 import { setTheme } from "@/lib/themeReducer";
@@ -174,41 +178,12 @@ export const useEpubNavigator = () => {
     return themeProps;
   }, []);
 
-  const applyTheme = useCallback(async (t: ThemeKeys, colorScheme?: ColorScheme) => {
-    const themeProps = listThemeProps(t, colorScheme);
-    await navigatorInstance?.submitPreferences(new EpubPreferences(themeProps));
-    dispatch(setTheme(t));
-  }, [dispatch, listThemeProps]);
-
-  const applyConstraint = useCallback(async (constraint: number) => {
-    await navigatorInstance?.submitPreferences(new EpubPreferences({
-      constraint: constraint
-    }))
+  const submitPreferences = useCallback(async (preferences: IEpubPreferences) => {
+    await navigatorInstance?.submitPreferences(new EpubPreferences(preferences));
   }, []);
 
-  const applyColCount = useCallback(async (count: string) => {    
-    const colCount = count === "auto" ? null : Number(count);
-    
-    await navigatorInstance?.submitPreferences(new EpubPreferences({
-      columnCount: colCount
-    }));
-
-    dispatch(setColCount(count));
-  }, [dispatch]);
-
-  const applyLayoutStrategy = useCallback(async (strategy: RSLayoutStrategy) => {
-    await navigatorInstance?.submitPreferences(new EpubPreferences({
-      layoutStrategy: strategy as unknown as LayoutStrategy
-    }));
-
-    dispatch(setLayoutStrategy(strategy));
-  }, [dispatch]);
-
-  // TMP for testing purposes
-  const nullifyMaxChars = useCallback(async (b: boolean) => {
-    await navigatorInstance?.submitPreferences(new EpubPreferences({
-      maximalLineLength: b ? null : RSPrefs.typography.maximalLineLength
-    }));
+  const getSetting = useCallback(async (settingKey: keyof IEpubPreferences) => {
+    return navigatorInstance?.settings[settingKey];
   }, []);
 
   const applyZoom = useCallback(async (value: number) => {
@@ -234,50 +209,42 @@ export const useEpubNavigator = () => {
     return null;
   }, []);
 
-  const applyLineLength = useCallback(async (value: number[]) => {
-    const editor = navigatorInstance?.preferencesEditor;
-    if (editor) {
-      const strategy = editor.layoutStrategy.value;
-
-      let minimalLineLength = navigatorInstance?.settings.minimalLineLength;
-      let lineLength = navigatorInstance?.settings.lineLength;
-      let maximalLineLength = navigatorInstance?.settings.maximalLineLength;
-
-      if (strategy === LayoutStrategy.columns) {
-        minimalLineLength = value[0];
-        lineLength = value[1];
-        if (maximalLineLength && lineLength >= maximalLineLength) {
-          maximalLineLength = value[1];
-        }
-      } else if (strategy === LayoutStrategy.margin) {
-        lineLength = value[0];
-        if (minimalLineLength && lineLength <= minimalLineLength) {
-          minimalLineLength = value[0];
-        }
-        if (maximalLineLength && lineLength >= maximalLineLength) {
-          maximalLineLength = value[0];
-        }
-      } else if (strategy === LayoutStrategy.lineLength) {
-        if (editor.columnCount.value === null) {
-          lineLength = value[0];
-          maximalLineLength = value[1];
-          if (minimalLineLength && lineLength <= minimalLineLength) {
-            minimalLineLength = value[0];
-          }
-        } else {
-          lineLength = value[0];
-          maximalLineLength = value[0];          
-        }
-      }
-
-      await navigatorInstance?.submitPreferences(new EpubPreferences({
-        minimalLineLength: minimalLineLength,
-        lineLength: lineLength,
-        maximalLineLength: maximalLineLength
-      }));
-      dispatch(setLineLength(value));
-    }
+  // TMP for testing purposes
+  const nullifyMinChars = useCallback(async (value: number | null | undefined) => {
+    await navigatorInstance?.submitPreferences(new EpubPreferences({
+      minimalLineLength: value
+    }));
+    dispatch(setTmpMinChars(value === null));
   }, [dispatch]);
+
+  // TMP for testing purposes
+  const nullifyMaxChars = useCallback(async (value: number | null | undefined) => {
+    await navigatorInstance?.submitPreferences(new EpubPreferences({
+      maximalLineLength: value
+    }));
+    dispatch(setTmpMaxChars(value === null));
+  }, [dispatch]);
+
+  const applyLineLengths = useCallback(async (value: number[]) => {
+    await navigatorInstance?.submitPreferences(new EpubPreferences({
+      minimalLineLength: value[0],
+      lineLength: value[1],
+      maximalLineLength: value[2]
+    }));
+    dispatch(setTmpLineLengths(value));
+  }, [dispatch]);
+
+  const getLineLengths = useCallback(() => {
+    const minimal = navigatorInstance?.settings.minimalLineLength || RSPrefs.typography.minimalLineLength;
+    const optimal = navigatorInstance?.settings.optimalLineLength || RSPrefs.typography.optimalLineLength;
+    const maximal = navigatorInstance?.settings.maximalLineLength || RSPrefs.typography.maximalLineLength;
+
+    return {
+      minimal: minimal,
+      optimal: optimal,
+      maximal: maximal
+    }
+  }, []);
 
   const getLengthStep = useCallback(() => {
     const editor = navigatorInstance?.preferencesEditor;
@@ -294,161 +261,6 @@ export const useEpubNavigator = () => {
     }
     return null;
   }, []);
-
-  const getBaseLength = useCallback(() => {
-    const editor = navigatorInstance?.preferencesEditor;
-    if (editor) {
-      if (editor.columnCount.value === null) {
-        if (editor.layoutStrategy.value === LayoutStrategy.columns) {
-          const minimal = editor.minimalLineLength.value || RSPrefs.typography.minimalLineLength || 20;
-          const lineLength = editor.lineLength.value || editor.optimalLineLength.value || RSPrefs.typography.optimalLineLength;
-          if (minimal === lineLength) {
-            return [minimal, lineLength + 1];
-          }
-          return [minimal, lineLength];
-        } else if (editor.layoutStrategy.value === LayoutStrategy.lineLength) {
-          const lineLength = editor.lineLength.value || editor.optimalLineLength.value || RSPrefs.typography.optimalLineLength;
-          const maximal = editor.maximalLineLength.value || RSPrefs.typography.maximalLineLength || 100;
-          if (lineLength === maximal) {
-            return [lineLength - 1, maximal];
-          }
-          return [lineLength, maximal]; 
-        } 
-
-        return [editor.lineLength.value || editor.optimalLineLength.value || RSPrefs.typography.optimalLineLength];
-      } else {
-        if (editor.layoutStrategy.value === LayoutStrategy.lineLength) {
-          return [editor.maximalLineLength.value || RSPrefs.typography.maximalLineLength || 100]
-        } else {
-          return [editor.lineLength.value || editor.optimalLineLength.value || RSPrefs.typography.optimalLineLength];
-        }
-      }
-    }
-
-    return [RSPrefs.typography.optimalLineLength];
-  }, []);
-
-  const applyFontFamily = useCallback(async (fontFamily: { id: keyof typeof ReadingDisplayFontFamilyOptions, value: string | null }) => {
-    await navigatorInstance?.submitPreferences(new EpubPreferences({
-      fontFamily: fontFamily.value
-    }));
-    dispatch(setFontFamily(fontFamily.id));
-  }, [dispatch]);
-
-  const applyFontWeight = useCallback(async (value: number) => {
-    await navigatorInstance?.submitPreferences(new EpubPreferences({
-      fontWeight: value
-    }));
-    dispatch(setFontWeight(value));
-  }, [dispatch]);
-
-  const applyParaSpacing = useCallback(async (value: number | null) => {
-    await navigatorInstance?.submitPreferences(new EpubPreferences({
-      publisherStyles: false,
-      paragraphSpacing: value
-    }));
-    dispatch(setParaSpacing(value));
-    dispatch(setPublisherStyles(false));
-  }, [dispatch]);
-
-  const applyParaIndent = useCallback(async (value: number | null) => {
-    await navigatorInstance?.submitPreferences(new EpubPreferences({
-      publisherStyles: false,
-      paragraphIndent: value
-    }));
-    dispatch(setParaIndent(value));
-    dispatch(setPublisherStyles(false));
-  }, [dispatch]);
-
-  const applyWordSpacing = useCallback(async (value: number | null) => {
-    await navigatorInstance?.submitPreferences(new EpubPreferences({
-      publisherStyles: false,
-      wordSpacing: value
-    }));
-    dispatch(setWordSpacing(value));
-    dispatch(setPublisherStyles(false));
-  }, [dispatch]);
-
-  const applyLetterSpacing = useCallback(async (value: number | null) => {
-    await navigatorInstance?.submitPreferences(new EpubPreferences({
-      publisherStyles: false,
-      letterSpacing: value
-    }));
-    dispatch(setLetterSpacing(value));
-    dispatch(setPublisherStyles(false));
-  }, [dispatch]);
-
-  const applySpacingDefaults = useCallback(async (values: {
-    lineHeight: number | null,
-    paraSpacing: number | null,
-    paraIndent: number | null,
-    letterSpacing: number | null,
-    wordSpacing: number | null
-  }) => {
-    await navigatorInstance?.submitPreferences(new EpubPreferences({
-      publisherStyles: false,
-      lineHeight: values.lineHeight,
-      paragraphSpacing: values.paraSpacing,
-      paragraphIndent: values.paraIndent,
-      letterSpacing: values.letterSpacing,
-      wordSpacing: values.wordSpacing
-    }));
-  }, []);
-
-  const applyLineHeight = useCallback(async (value: string) => {
-    const computedValue = value === ReadingDisplayLineHeightOptions.publisher 
-      ? null 
-      : RSPrefs.settings.spacing?.lineHeight?.[value as Exclude<ReadingDisplayLineHeightOptions, ReadingDisplayLineHeightOptions.publisher>] ?? 
-          (value === ReadingDisplayLineHeightOptions.small 
-            ? defaultLineHeights[ReadingDisplayLineHeightOptions.small] 
-            : value === ReadingDisplayLineHeightOptions.medium 
-              ? defaultLineHeights[ReadingDisplayLineHeightOptions.medium] 
-              : defaultLineHeights[ReadingDisplayLineHeightOptions.large]
-          );
-
-    await navigatorInstance?.submitPreferences(new EpubPreferences({
-      publisherStyles: false,
-      lineHeight: computedValue
-    }));
-    dispatch(setLineHeight(value));
-    dispatch(setPublisherStyles(false));
-  }, [dispatch]);
-
-  const applyTextAlign = useCallback(async (value: ReadingDisplayAlignOptions) => {
-    const textAlign: TextAlignment | null = value === ReadingDisplayAlignOptions.publisher 
-      ? null 
-      : value === ReadingDisplayAlignOptions.start 
-        ? TextAlignment.start 
-        : TextAlignment.justify;
-
-    const hyphens = textAlign === null 
-      ? null 
-      : (navigatorInstance?.settings.hyphens ?? textAlign === TextAlignment.justify);
-
-    await navigatorInstance?.submitPreferences(new EpubPreferences({
-      publisherStyles: false,
-      textAlign: textAlign,
-      hyphens: hyphens
-    }));
-    dispatch(setAlign(value));
-    dispatch(setHyphens(hyphens));
-  }, [dispatch]);
-
-  const applyHyphens = useCallback(async (value: boolean) => {
-    await navigatorInstance?.submitPreferences(new EpubPreferences({
-      publisherStyles: false,
-      hyphens: value
-    }));
-    dispatch(setHyphens(value));
-  }, [dispatch]);
-
-  const applyNormalizeText = useCallback(async (value: boolean) => {
-    await navigatorInstance?.submitPreferences(new EpubPreferences({
-      publisherStyles: false,
-      textNormalization: value
-    }));
-    dispatch(setNormalizeText(value));
-  }, [dispatch]);
 
   const handleProgression = useCallback((locator: Locator) => {
     const relativeRef = locator.title || Locale.reader.app.progression.referenceFallback;
@@ -585,32 +397,21 @@ export const useEpubNavigator = () => {
     applyScroll,
     scrollBackTo, 
     listThemeProps, 
-    applyTheme, 
-    applyConstraint, 
-    applyColCount, 
-    applyLayoutStrategy,
-    applyFontFamily, 
-    applyFontWeight,
-    applyParaSpacing,
-    applyParaIndent,
-    applyWordSpacing,
-    applyLetterSpacing,
-    applyLineHeight,
-    applyTextAlign, 
-    applyHyphens, 
-    applyNormalizeText, 
-    applySpacingDefaults,
+    nullifyMinChars,
     nullifyMaxChars,
     applyZoom,
     getSizeStep, 
     getSizeRange,
-    applyLineLength,
+    applyLineLengths,
+    getLineLengths,
     getLengthStep,
     getLengthRange,
-    getBaseLength,
     handleProgression,
     navLayout, 
     currentLocator,
+    preferencesEditor: navigatorInstance?.preferencesEditor,
+    getSetting,
+    submitPreferences,
     getCframes
   }
 }

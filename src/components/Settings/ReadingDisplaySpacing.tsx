@@ -16,7 +16,6 @@ import { ReadingDisplayGroupWrapper } from "./Wrappers/ReadingDisplayGroupWrappe
 
 import { ReadingDisplayLetterSpacing } from "./ReadingDisplayLetterSpacing";
 import { ReadingDisplayLineHeight } from "./ReadingDisplayLineHeight";
-import { ReadingDisplayLineLength } from "./ReadingDisplayLineLength";
 import { ReadingDisplayParaIndent } from "./ReadingDisplayParaIndent";
 import { ReadingDisplayParaSpacing } from "./ReadingDisplayParaSpacing";
 import { ReadingDisplayPublisherStyles } from "./ReadingDisplayPublisherStyles";
@@ -31,9 +30,6 @@ const SpacingSettingsMap: { [key in SpacingSettingsKeys]: ISettingsMapObject } =
   },
   [SpacingSettingsKeys.lineHeight]: {
     Comp: ReadingDisplayLineHeight
-  },
-  [SpacingSettingsKeys.lineLength]: {
-    Comp: ReadingDisplayLineLength
   },
   [SpacingSettingsKeys.paraIndent]: {
     Comp: ReadingDisplayParaIndent

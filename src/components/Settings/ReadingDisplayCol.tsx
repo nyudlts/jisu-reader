@@ -12,25 +12,31 @@ import { RadioGroup, Radio, Label } from "react-aria-components";
 
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { setColCount } from "@/lib/settingsReducer";
 
 export const ReadingDisplayCol = () => {
   const isPaged = useAppSelector(state => state.reader.isPaged);
   const colCount = useAppSelector(state => state.settings.colCount) || "auto";
   const scrollable = !isPaged;
+  const dispatch = useAppDispatch();
 
-  const { applyColCount } = useEpubNavigator();
+  const { submitPreferences } = useEpubNavigator();
 
-  const handleChange = useCallback(async (value: string) => {
-    await applyColCount(value);
-  }, [applyColCount]);
+  const updatePreference = useCallback(async (value: string) => {
+    const colCount = value === "auto" ? null : Number(value);
+
+    await submitPreferences({ columnCount: colCount });
+    
+    dispatch(setColCount(value));
+  }, [submitPreferences, dispatch]);
 
   return (
     <>
     <RadioGroup 
       orientation="horizontal" 
       value={ colCount } 
-      onChange={ async (val: string) => await handleChange(val) }
+      onChange={ async (val: string) => await updatePreference(val) }
       className={ settingsStyles.readerSettingsGroup }
       isDisabled={ scrollable }
     >

@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+
 import Locale from "../../resources/locales/en.json";
 
 import settingsStyles from "../assets/styles/readerSettings.module.css";
@@ -9,14 +11,26 @@ import { SwitchWrapper } from "./Wrappers/SwitchWrapper";
 
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { setHyphens } from "@/lib/settingsReducer";
 
 // TMP Component that is not meant to be implemented AS-IS, for testing purposes
 export const ReadingDisplayHyphens: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
   const hyphens = useAppSelector(state => state.settings.hyphens);
   const textAlign = useAppSelector(state => state.settings.align);
 
-  const { applyHyphens } = useEpubNavigator();
+  const dispatch = useAppDispatch();
+  
+  const { getSetting, submitPreferences } = useEpubNavigator();
+  
+  const updatePreference = useCallback(async (value: boolean) => {
+    await submitPreferences({ 
+      publisherStyles: false,
+      hyphens: value 
+    });
+  
+    dispatch(setHyphens(await getSetting("hyphens")));
+  }, [submitPreferences, getSetting, dispatch]);
 
   return(
     <>
@@ -26,7 +40,7 @@ export const ReadingDisplayHyphens: React.FC<IAdvancedDisplayProps> = ({ standal
         heading: Locale.reader.settings.hyphens.title 
       } : {}) }
       label={ Locale.reader.settings.hyphens.label }
-      onChangeCallback={ async (isSelected: boolean) => await applyHyphens(isSelected) }
+      onChangeCallback={ async (isSelected: boolean) => await updatePreference(isSelected) }
       isSelected={ hyphens ?? false }
       isDisabled={ textAlign === ReadingDisplayAlignOptions.publisher }
     />

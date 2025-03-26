@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+
 import { RSPrefs } from "@/preferences";
 
 import Locale from "../../resources/locales/en.json";
@@ -15,7 +17,8 @@ import { SliderWrapper } from "./Wrappers/SliderWrapper";
 
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { setPublisherStyles, setWordSpacing } from "@/lib/settingsReducer";
 
 export const ReadingDisplayWordSpacing: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
   const wordSpacing = useAppSelector(state => state.settings.wordSpacing);
@@ -24,8 +27,19 @@ export const ReadingDisplayWordSpacing: React.FC<IAdvancedDisplayProps> = ({ sta
     range: RSPrefs.settings.spacing?.wordSpacing?.range ?? defaultWordSpacing.range,
     step: RSPrefs.settings.spacing?.wordSpacing?.step ?? defaultWordSpacing.step
   };
+  const dispatch = useAppDispatch();
 
-  const { applyWordSpacing } = useEpubNavigator();
+  const { getSetting, submitPreferences } = useEpubNavigator();
+
+  const updatePreference = useCallback(async (value: number) => {
+    await submitPreferences({
+      publisherStyles: false, 
+      wordSpacing: value
+    });
+
+    dispatch(setWordSpacing(await getSetting("wordSpacing")));
+    dispatch(setPublisherStyles(await getSetting("publisherStyles")));
+  }, [submitPreferences, getSetting, dispatch]);
 
   return (
     <>
@@ -35,7 +49,7 @@ export const ReadingDisplayWordSpacing: React.FC<IAdvancedDisplayProps> = ({ sta
         { ...(standalone ? { className: settingsStyles.readerSettingsGroup } : {}) }
         defaultValue={ 0 } 
         value={ wordSpacing || 0 } 
-        onChangeCallback={ async(value) => await applyWordSpacing(value) } 
+        onChangeCallback={ async(value) => await updatePreference(value) } 
         label={ Locale.reader.settings.wordSpacing.title }
         range={ wordSpacingRangeConfig.range }
         step={ wordSpacingRangeConfig.step }
@@ -52,7 +66,7 @@ export const ReadingDisplayWordSpacing: React.FC<IAdvancedDisplayProps> = ({ sta
         { ...(standalone ? { className: settingsStyles.readerSettingsGroup } : {}) }
         defaultValue={ 0 } 
         value={ wordSpacing || 0 } 
-        onChangeCallback={ async(value) => await applyWordSpacing(value) } 
+        onChangeCallback={ async(value) => await updatePreference(value) } 
         label={ Locale.reader.settings.wordSpacing.title }
         range={ wordSpacingRangeConfig.range }
         step={ wordSpacingRangeConfig.step }

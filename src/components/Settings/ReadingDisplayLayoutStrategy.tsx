@@ -3,6 +3,7 @@ import { useCallback, useEffect } from "react";
 import Locale from "../../resources/locales/en.json";
 
 import { RSLayoutStrategy } from "@/models/layout";
+import { LayoutStrategy } from "@readium/navigator";
 
 import settingsStyles from "../assets/styles/readerSettings.module.css";
 
@@ -11,34 +12,42 @@ import RangeIcon from "../assets/icons/arrow_range.svg";
 import AddColumnIcon from "../assets/icons/add_column_right.svg";
 
 import { Label, Radio, RadioGroup } from "react-aria-components";
-import { ReadingDisplayMaxChars } from "./ReadingDisplayMaxChars";
+import { ReadingDisplayLineLengths } from "./ReadingDisplayLineLengths";
 
-import { useAppSelector } from "@/lib/hooks";
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
+
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { setLayoutStrategy } from "@/lib/settingsReducer";
 
 export const ReadingDisplayLayoutStrategy = () => {
   const layoutStrategy = useAppSelector(state => state.settings.layoutStrategy);
   const isPaged = useAppSelector(state => state.reader.isPaged);
   const colCount = useAppSelector(state => state.settings.colCount);
+  const dispatch = useAppDispatch();
 
-  const { applyLayoutStrategy } = useEpubNavigator();
+  const { getSetting, submitPreferences } = useEpubNavigator();
 
-  const handleChange = useCallback(async (value: string) => {
-    await applyLayoutStrategy(value as RSLayoutStrategy);
-  }, [applyLayoutStrategy]);
+  const updatePreference = useCallback(async (value: string) => {
+    await submitPreferences({ layoutStrategy: value as unknown as LayoutStrategy });
+
+    dispatch(setLayoutStrategy(await getSetting("layoutStrategy")));
+  }, [submitPreferences, getSetting, dispatch]);
 
   useEffect(() => {
-    if (colCount !== "auto" && layoutStrategy === RSLayoutStrategy.columns) {
-      handleChange(RSLayoutStrategy.lineLength);
-    }
-  }, [colCount, layoutStrategy, handleChange]);
+    const updateIfNeeded = async () => {
+      if (colCount !== "auto" && layoutStrategy === RSLayoutStrategy.columns) {
+        await updatePreference(RSLayoutStrategy.lineLength);
+      }
+    };
+    updateIfNeeded();
+  }, [colCount, layoutStrategy, updatePreference]);
 
   return(
     <>
     <RadioGroup 
       orientation="horizontal" 
       value={ layoutStrategy } 
-      onChange={ async (val: string) => await handleChange(val) } 
+      onChange={ async (val: string) => await updatePreference(val) } 
       className={ settingsStyles.readerSettingsGroup }
     >
       <Label className={ settingsStyles.readerSettingsLabel }>{ Locale.reader.layoutStrategy.title }</Label>
@@ -70,7 +79,7 @@ export const ReadingDisplayLayoutStrategy = () => {
         </Radio>
       </div>
     </RadioGroup>
-    <ReadingDisplayMaxChars />
+    <ReadingDisplayLineLengths />
     </>
   )
 }

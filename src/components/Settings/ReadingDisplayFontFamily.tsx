@@ -1,4 +1,4 @@
-import { Key, useCallback, useRef } from "react";
+import { Key, use, useCallback, useRef } from "react";
 
 import Locale from "../../resources/locales/en.json";
 
@@ -12,7 +12,9 @@ import DropIcon from "../assets/icons/arrow_drop_down.svg";
 import { Button, Label, ListBox, ListBoxItem, Popover, Select, SelectValue } from "react-aria-components";
 
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
-import { useAppSelector } from "@/lib/hooks";
+
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { setFontFamily } from "@/lib/settingsReducer";
 
 export const ReadingDisplayFontFamily: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
   const fontFamily = useAppSelector(state => state.settings.fontFamily);
@@ -22,10 +24,11 @@ export const ReadingDisplayFontFamily: React.FC<IAdvancedDisplayProps> = ({ stan
       value: stack
     }))
   );
+  const dispatch = useAppDispatch();
 
-  const { applyFontFamily } = useEpubNavigator();
+  const { getSetting, submitPreferences } = useEpubNavigator();
 
-  const handleFontFamily = useCallback((key: Key) => {
+  const updatePreference = useCallback(async (key: Key) => {
     if (key === fontFamily) return;
 
     const selectedOption = fontFamilyOptions.current.find((option) => option.id === key) as {
@@ -33,10 +36,14 @@ export const ReadingDisplayFontFamily: React.FC<IAdvancedDisplayProps> = ({ stan
       label: string;
       value: string | null;
     };
+    
     if (selectedOption) {
-      applyFontFamily(selectedOption);
+      await submitPreferences({ fontFamily: selectedOption.value });
+      const currentSetting = await getSetting("fontFamily");
+      const selectedOptionId = Object.keys(ReadingDisplayFontFamilyOptions).find(key => ReadingDisplayFontFamilyOptions[key as keyof typeof ReadingDisplayFontFamilyOptions] === currentSetting) as keyof typeof ReadingDisplayFontFamilyOptions;
+      dispatch(setFontFamily(selectedOptionId || ReadingDisplayFontFamilyOptions.publisher));
     }
-  }, [applyFontFamily, fontFamily]);
+  }, [fontFamily, submitPreferences, getSetting, dispatch]);
 
   return(
     <>
@@ -44,7 +51,7 @@ export const ReadingDisplayFontFamily: React.FC<IAdvancedDisplayProps> = ({ stan
       { ...(standalone ? { className: settingsStyles.readerSettingsGroup } : {}) }
       { ...(!standalone ? { "aria-label": Locale.reader.settings.fontFamily.title } : {}) }
       selectedKey={ fontFamily }
-      onSelectionChange={ handleFontFamily }
+      onSelectionChange={ async (key) => await updatePreference(key) }
     >
       { standalone && <Label className={ settingsStyles.readerSettingsLabel }>
           { Locale.reader.settings.fontFamily.title }

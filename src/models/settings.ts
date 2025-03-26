@@ -19,7 +19,6 @@ export enum SettingsKeys {
   layout = "layout",
   letterSpacing = "letterSpacing",
   lineHeight = "lineHeight",
-  lineLength = "lineLength",
   normalizeText = "normalizeText",
   paraIndent = "paraIndent",
   paraSpacing = "paraSpacing",
@@ -44,15 +43,14 @@ export const defaultTextSettingsMain = [TextSettingsKeys.fontFamily];
 export const defaultTextSettingsSubpanel = [
   TextSettingsKeys.fontFamily,
   TextSettingsKeys.fontWeight,
-  TextSettingsKeys.normalizeText,
   TextSettingsKeys.align,
-  TextSettingsKeys.hyphens
+  TextSettingsKeys.hyphens,
+  TextSettingsKeys.normalizeText
 ]
 
 export enum SpacingSettingsKeys {
   letterSpacing = "letterSpacing",
   lineHeight = "lineHeight",
-  lineLength = "lineLength",
   paraIndent = "paraIndent",
   paraSpacing = "paraSpacing",
   publisherStyles = "publisherStyles",
@@ -60,14 +58,12 @@ export enum SpacingSettingsKeys {
 }
 
 export const defaultSpacingSettingsMain = [
-  SpacingSettingsKeys.lineHeight,
-  SpacingSettingsKeys.lineLength
+  SpacingSettingsKeys.lineHeight
 ];
 
 export const defaultSpacingSettingsSubpanel = [
   SpacingSettingsKeys.publisherStyles,
   SpacingSettingsKeys.lineHeight,
-  SpacingSettingsKeys.lineLength,
   SpacingSettingsKeys.paraSpacing,
   SpacingSettingsKeys.paraIndent,
   SpacingSettingsKeys.wordSpacing,
@@ -192,18 +188,6 @@ export interface ISettingsNumberFieldProps extends ISettingsRangeProps {
 
 export interface ISettingsSliderProps extends ISettingsRangeProps {}
 
-export interface ISettingsRangeSliderProps {
-  standalone?: boolean;
-  className?: string;
-  label: string;
-  thumbLabels: string[];
-  defaultValue: number[];
-  value: number[];
-  onChangeCallback: (value: number[]) => void;
-  range: number[];
-  step: number;
-}
-
 export interface ISettingsSwitchProps {
   name?: string;
   className?: string;
@@ -221,7 +205,7 @@ export interface IRCSSSettings {
   fontWeight: number;
   hyphens: boolean | null;
   letterSpacing: number | null;
-  lineLength: number[] | null;
+  lineLength: number | null;
   lineHeight: ReadingDisplayLineHeightOptions | null;
   layoutStrategy: RSLayoutStrategy;
   normalizeText: boolean;

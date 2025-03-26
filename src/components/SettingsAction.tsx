@@ -38,7 +38,6 @@ import { ReadingDisplayHyphens } from "./Settings/ReadingDisplayHyphens";
 import { ReadingDisplayLayout } from "./Settings/ReadingDisplayLayout";
 import { ReadingDisplayLetterSpacing } from "./Settings/ReadingDisplayLetterSpacing";
 import { ReadingDisplayLineHeight } from "./Settings/ReadingDisplayLineHeight";
-import { ReadingDisplayLineLength } from "./Settings/ReadingDisplayLineLength";
 import { ReadingDisplayParaIndent } from "./Settings/ReadingDisplayParaIndent";
 import { ReadingDisplayParaSpacing } from "./Settings/ReadingDisplayParaSpacing";
 import { ReadingDisplayPublisherStyles } from "./Settings/ReadingDisplayPublisherStyles";
@@ -79,9 +78,6 @@ const SettingsMap: { [key in SettingsKeys]: ISettingsMapObject } = {
   },
   [SettingsKeys.lineHeight]: {
     Comp: ReadingDisplayLineHeight
-  },
-  [SettingsKeys.lineLength]: {
-    Comp: ReadingDisplayLineLength
   },
   [SettingsKeys.paraIndent]: {
     Comp: ReadingDisplayParaIndent

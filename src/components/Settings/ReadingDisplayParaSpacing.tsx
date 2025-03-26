@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+
 import { RSPrefs } from "@/preferences";
 
 import Locale from "../../resources/locales/en.json";
@@ -15,7 +17,8 @@ import { SliderWrapper } from "./Wrappers/SliderWrapper";
 
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { setParaSpacing, setPublisherStyles } from "@/lib/settingsReducer";
 
 export const ReadingDisplayParaSpacing: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
   const paraSpacing = useAppSelector(state => state.settings.paraSpacing);
@@ -24,8 +27,19 @@ export const ReadingDisplayParaSpacing: React.FC<IAdvancedDisplayProps> = ({ sta
     range: RSPrefs.settings.spacing?.paraSpacing?.range ?? defaultParaSpacing.range,
     step: RSPrefs.settings.spacing?.paraSpacing?.step ?? defaultParaSpacing.step
   };
+  const dispatch = useAppDispatch();
 
-  const { applyParaSpacing } = useEpubNavigator();
+  const { getSetting, submitPreferences } = useEpubNavigator();
+
+  const updatePreference = useCallback(async (value: number) => {
+    await submitPreferences({
+      publisherStyles: false, 
+      paragraphSpacing: value
+    });
+
+    dispatch(setParaSpacing(await getSetting("paragraphSpacing")));
+    dispatch(setPublisherStyles(await getSetting("publisherStyles")));
+  }, [submitPreferences, getSetting, dispatch]);
 
   return (
     <>
@@ -35,7 +49,7 @@ export const ReadingDisplayParaSpacing: React.FC<IAdvancedDisplayProps> = ({ sta
         { ...(standalone ? { className: settingsStyles.readerSettingsGroup } : {}) }
         defaultValue={ 0 } 
         value={ paraSpacing || 0 } 
-        onChangeCallback={ async(value) => await applyParaSpacing(value) } 
+        onChangeCallback={ async(value) => await updatePreference(value) } 
         label={ Locale.reader.settings.paraSpacing.title }
         range={ paraSpacingRangeConfig.range }
         step={ paraSpacingRangeConfig.step }
@@ -56,7 +70,7 @@ export const ReadingDisplayParaSpacing: React.FC<IAdvancedDisplayProps> = ({ sta
         { ...(standalone ? { className: settingsStyles.readerSettingsGroup } : {}) }
         defaultValue={ 0 } 
         value={ paraSpacing || 0 } 
-        onChangeCallback={ async(value) => await applyParaSpacing(value) } 
+        onChangeCallback={ async(value) => await updatePreference(value) } 
         label={ Locale.reader.settings.paraSpacing.title }
         range={ paraSpacingRangeConfig.range }
         step={ paraSpacingRangeConfig.step }

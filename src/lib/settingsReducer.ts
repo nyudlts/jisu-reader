@@ -18,7 +18,10 @@ const initialState: ISettingsState = {
   paraIndent: null,
   paraSpacing: null,
   publisherStyles: true,
-  wordSpacing: null
+  wordSpacing: null,
+  tmpLineLengths: [],
+  tmpMaxChars: false,
+  tmpMinChars: false
 }
 
 export const settingsSlice = createSlice({
@@ -69,6 +72,15 @@ export const settingsSlice = createSlice({
     },
     setWordSpacing: (state, action) => {
       state.wordSpacing = action.payload
+    },
+    setTmpLineLengths: (state, action) => {
+      state.tmpLineLengths = action.payload
+    },
+    setTmpMaxChars: (state, action) => {
+      state.tmpMaxChars = action.payload
+    },
+    setTmpMinChars: (state, action) => {
+      state.tmpMinChars = action.payload
     }
   }
 })
@@ -89,7 +101,10 @@ export const {
   setParaIndent,
   setParaSpacing,
   setPublisherStyles,
-  setWordSpacing
+  setWordSpacing,
+  setTmpLineLengths,
+  setTmpMaxChars,
+  setTmpMinChars
 } = settingsSlice.actions;
 
 export default settingsSlice.reducer;

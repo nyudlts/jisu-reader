@@ -17,6 +17,7 @@ import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setActionOpen } from "@/lib/actionsReducer";
+import { setTheme } from "@/lib/themeReducer";
 
 import classNames from "classnames";
 
@@ -33,11 +34,14 @@ export const ReadingDisplayTheme = ({ mapArrowNav }: { mapArrowNav?: number }) =
 
   const dispatch = useAppDispatch();
 
-  const { applyTheme } = useEpubNavigator();
+  const { listThemeProps, submitPreferences } = useEpubNavigator();
 
-  const handleTheme = useCallback(async (value: ThemeKeys) => {
-    await applyTheme(value, colorScheme);
-  }, [applyTheme, colorScheme]);
+  const updatePreference = useCallback(async (value: ThemeKeys) => {
+    const themeProps = listThemeProps(value, colorScheme);
+    await submitPreferences(themeProps);
+
+    dispatch(setTheme(value));
+  }, [listThemeProps, submitPreferences, dispatch, colorScheme]);
 
   // It’s easier to inline styles from preferences for these
   // than spamming the entire app with all custom properties right now
@@ -70,7 +74,7 @@ export const ReadingDisplayTheme = ({ mapArrowNav }: { mapArrowNav?: number }) =
         const currentIdx = themeItems.current.findIndex((val) => val === theme);
         const nextIdx = currentIdx + perRow;
         if (nextIdx >= 0 && nextIdx < themeItems.current.length) {
-          await handleTheme(themeItems.current[nextIdx]);
+          await updatePreference(themeItems.current[nextIdx]);
 
           // Focusing here instead of useEffect on theme change so that 
           // it doesn’t steal focus when themes is not the first radio group in the sheet
@@ -116,7 +120,7 @@ export const ReadingDisplayTheme = ({ mapArrowNav }: { mapArrowNav?: number }) =
       ref={ radioGroupRef }
       orientation="horizontal" 
       value={ theme }
-      onChange={ async (val) => await handleTheme(val as ThemeKeys) }
+      onChange={ async (val) => await updatePreference(val as ThemeKeys) }
       className={ settingsStyles.readerSettingsGroup }
     >
       <Label className={ settingsStyles.readerSettingsLabel }>{ Locale.reader.settings.themes.title }</Label>

@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+
 import { RSPrefs } from "@/preferences";
 
 import Locale from "../../resources/locales/en.json";
@@ -15,7 +17,8 @@ import { SliderWrapper } from "./Wrappers/SliderWrapper";
 
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { setLetterSpacing, setPublisherStyles } from "@/lib/settingsReducer";
 
 export const ReadingDisplayLetterSpacing: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
   const letterSpacing = useAppSelector(state => state.settings.letterSpacing);
@@ -24,8 +27,19 @@ export const ReadingDisplayLetterSpacing: React.FC<IAdvancedDisplayProps> = ({ s
       range: RSPrefs.settings.spacing?.letterSpacing?.range ?? defaultLetterSpacing.range,
       step: RSPrefs.settings.spacing?.letterSpacing?.step ?? defaultLetterSpacing.step
     };
+  const dispatch = useAppDispatch();
 
-  const { applyLetterSpacing } = useEpubNavigator();
+  const { getSetting, submitPreferences } = useEpubNavigator();
+
+  const updatePreference = useCallback(async (value: number) => {
+    await submitPreferences({
+      publisherStyles: false, 
+      letterSpacing: value
+    });
+
+    dispatch(setLetterSpacing(await getSetting("letterSpacing")));
+    dispatch(setPublisherStyles(await getSetting("publisherStyles")));
+  }, [submitPreferences, getSetting, dispatch]);
 
   return (
     <>
@@ -35,7 +49,7 @@ export const ReadingDisplayLetterSpacing: React.FC<IAdvancedDisplayProps> = ({ s
         { ...(standalone ? { className: settingsStyles.readerSettingsGroup } : {}) }
         defaultValue={ 0 } 
         value={ letterSpacing || 0 } 
-        onChangeCallback={ async(value) => await applyLetterSpacing(value) } 
+        onChangeCallback={ async(value) => await updatePreference(value) } 
         label={ Locale.reader.settings.letterSpacing.title }
         range={ letterSpacingRangeConfig.range }
         step={ letterSpacingRangeConfig.step }
@@ -52,7 +66,7 @@ export const ReadingDisplayLetterSpacing: React.FC<IAdvancedDisplayProps> = ({ s
         { ...(standalone ? { className: settingsStyles.readerSettingsGroup } : {}) }
         defaultValue={ 0 } 
         value={ letterSpacing || 0 } 
-        onChangeCallback={ async(value) => await applyLetterSpacing(value) } 
+        onChangeCallback={ async(value) => await updatePreference(value) } 
         label={ Locale.reader.settings.letterSpacing.title }
         range={ letterSpacingRangeConfig.range }
         step={ letterSpacingRangeConfig.step }

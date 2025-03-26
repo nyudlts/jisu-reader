@@ -12,22 +12,23 @@ import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 import { useAppSelector } from "@/lib/hooks";
 
 // TMP Component that is not meant to be implemented AS-IS, for testing purposes
-export const ReadingDisplayMaxChars = () => {
+export const ReadingDisplayMinChars = () => {
+  const colCount = useAppSelector(state => state.settings.colCount);
   const layoutStrategy = useAppSelector(state => state.settings.layoutStrategy);
-  const lineLength = useAppSelector(state => state.settings.tmpLineLengths[2]);
-  const maxChars = useAppSelector(state => state.settings.tmpMaxChars);
+  const lineLength = useAppSelector(state => state.settings.tmpLineLengths[0]);
+  const minChars = useAppSelector(state => state.settings.tmpMinChars);
   
-  const { nullifyMaxChars } = useEpubNavigator();
+  const { nullifyMinChars } = useEpubNavigator();
 
   return(
     <>
-    { RSPrefs.typography.maximalLineLength &&
+    { RSPrefs.typography.minimalLineLength &&
       <div className={ settingsStyles.readerSettingsGroup }>
         <SwitchWrapper 
-          label={ Locale.reader.layoutStrategy.maxChars }
-          onChangeCallback={ async (isSelected: boolean) => await nullifyMaxChars(isSelected ? null : lineLength || RSPrefs.typography.maximalLineLength) }
-          isSelected={ maxChars }
-          isDisabled={ layoutStrategy !== RSLayoutStrategy.lineLength }
+          label={ Locale.reader.layoutStrategy.minChars }
+          onChangeCallback={ async (isSelected: boolean) => await nullifyMinChars(isSelected ? null : lineLength || RSPrefs.typography.minimalLineLength) }
+          isSelected={ minChars }
+          isDisabled={ layoutStrategy !== RSLayoutStrategy.columns && colCount !== "2" }
         />
       </div>
     }

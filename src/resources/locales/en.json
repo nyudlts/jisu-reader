@@ -118,7 +118,23 @@
       "margin": "Margin",
       "lineLength": "Line length",
       "columns": "Columns",
-      "maxChars": "Disable maximal line length"
+      "minChars": "Disable minimal line length",
+      "maxChars": "Disable maximal line length",
+      "minimalLineLength": {
+        "title": "Minimal line length",
+        "increase": "Increase minimal line length",
+        "decrease": "Decrease maximal line length"
+      },
+      "optimalLineLength": {
+        "title": "Optimal line length",
+        "increase": "Increase optimal line length",
+        "decrease": "Decrease optimal line length"
+      },
+      "maximalLineLength": {
+        "title": "Maximal line length",
+        "increase": "Increase maximal line length",
+        "decrease": "Decrease maximal line length"
+      }
     },
     "settings": {
       "tooltip": "Settings",
@@ -190,18 +206,6 @@
         "small": "Tight",
         "medium": "Balanced",
         "large": "Loose"
-      },
-      "lineLength": {
-        "title": "Line length",
-        "increase": "Increase line length",
-        "decrease": "Decrease line length",
-        "minimal": "Minimal line length",
-        "maximal": "Maximal line length"
-      },
-      "margins": {
-        "title": "Margins",
-        "increase": "Increase margins",
-        "decrease": "Decrease margins"
       },
       "paraSpacing": {
         "title": "Paragraph spacing",

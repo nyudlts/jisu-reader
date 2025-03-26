@@ -4,6 +4,7 @@ import Locale from "../../resources/locales/en.json";
 
 import { LayoutDirection, ReadingDisplayAlignOptions } from "@/models/layout";
 import { IAdvancedDisplayProps } from "@/models/settings";
+import { TextAlignment } from "@readium/navigator";
 
 import settingsStyles from "../assets/styles/readerSettings.module.css";
 
@@ -16,17 +17,39 @@ import { RadioGroup, Radio, Label } from "react-aria-components";
 
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { setAlign, setHyphens } from "@/lib/settingsReducer";
 
 export const ReadingDisplayAlign: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
   const isRTL = useAppSelector(state => state.reader.direction) === LayoutDirection.rtl;
   const textAlign = useAppSelector(state => state.settings.align);
+  const dispatch = useAppDispatch();
 
-  const { applyTextAlign } = useEpubNavigator();
+  const { getSetting, submitPreferences } = useEpubNavigator();
 
-  const handleChange = useCallback(async (value: string) => {
-    await applyTextAlign(value as ReadingDisplayAlignOptions);
-  }, [applyTextAlign]);
+  const updatePreference = useCallback(async (value: string) => {
+    const textAlign: TextAlignment | null = value === ReadingDisplayAlignOptions.publisher 
+      ? null 
+      : value === ReadingDisplayAlignOptions.start 
+        ? TextAlignment.start 
+        : TextAlignment.justify;
+    
+    const currentHyphens = await getSetting("hyphens") as boolean | undefined | null;
+    
+    const hyphens = textAlign === null 
+      ? null 
+      : (currentHyphens ?? textAlign === TextAlignment.justify);
+    
+      await submitPreferences({
+        publisherStyles: false,
+        textAlign: textAlign,
+        hyphens: hyphens
+      });
+      
+      // TODO: derive from computedValue
+      dispatch(setAlign(value));
+      dispatch(setHyphens(await getSetting("hyphens")));
+  }, [getSetting, submitPreferences, dispatch]);
 
   return (
     <>
@@ -35,7 +58,7 @@ export const ReadingDisplayAlign: React.FC<IAdvancedDisplayProps> = ({ standalon
       { ...(!standalone ? { "aria-label": Locale.reader.settings.align.title } : {}) }
       orientation="horizontal" 
       value={ textAlign } 
-      onChange={ async (val: string) => await handleChange(val) }
+      onChange={ async (val: string) => await updatePreference(val) }
     >
       { standalone && <Label className={ settingsStyles.readerSettingsLabel }>
           { Locale.reader.settings.align.title }

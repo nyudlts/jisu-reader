@@ -1,9 +1,11 @@
 import React, { useCallback } from "react";
 
+import { RSPrefs } from "@/preferences";
+
 import Locale from "../../resources/locales/en.json";
 
 import { ReadingDisplayLineHeightOptions } from "@/models/layout";
-import { IAdvancedDisplayProps } from "@/models/settings";
+import { defaultLineHeights, IAdvancedDisplayProps } from "@/models/settings";
 
 import settingsStyles from "../assets/styles/readerSettings.module.css";
 
@@ -16,17 +18,36 @@ import { RadioGroup, Radio, Label } from "react-aria-components";
 
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { setLineHeight, setPublisherStyles } from "@/lib/settingsReducer";
 
 export const ReadingDisplayLineHeight: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
   const publisherStyles = useAppSelector(state => state.settings.publisherStyles);
   const lineHeight = useAppSelector(state => state.settings.lineHeight);
+  const dispatch = useAppDispatch();
 
-  const { applyLineHeight } = useEpubNavigator();
+  const { getSetting, submitPreferences } = useEpubNavigator();
 
-  const handleChange = useCallback(async (value: string) => {
-    await applyLineHeight(value);
-  }, [applyLineHeight]);
+  const updatePreference = useCallback(async (value: string) => {
+    const computedValue = value === ReadingDisplayLineHeightOptions.publisher 
+          ? null 
+          : RSPrefs.settings.spacing?.lineHeight?.[value as Exclude<ReadingDisplayLineHeightOptions, ReadingDisplayLineHeightOptions.publisher>] ?? 
+              (value === ReadingDisplayLineHeightOptions.small 
+                ? defaultLineHeights[ReadingDisplayLineHeightOptions.small] 
+                : value === ReadingDisplayLineHeightOptions.medium 
+                  ? defaultLineHeights[ReadingDisplayLineHeightOptions.medium] 
+                  : defaultLineHeights[ReadingDisplayLineHeightOptions.large]
+              );
+    
+        await submitPreferences({
+          publisherStyles: false,
+          lineHeight: computedValue
+        });
+
+        // TODO: derive from computedValue
+        dispatch(setLineHeight(value));
+        dispatch(setPublisherStyles(false));
+  }, [submitPreferences, dispatch]);
 
   return (
     <>
@@ -35,7 +56,7 @@ export const ReadingDisplayLineHeight: React.FC<IAdvancedDisplayProps> = ({ stan
       { ...(!standalone ? { "aria-label": Locale.reader.settings.fontFamily.title } : {}) }
       orientation="horizontal" 
       value={ publisherStyles ? ReadingDisplayLineHeightOptions.publisher : lineHeight } 
-      onChange={ async (val: string) => await handleChange(val) }
+      onChange={ async (val: string) => await updatePreference(val) }
     >
       { standalone && <Label className={ settingsStyles.readerSettingsLabel }>
          { Locale.reader.settings.lineHeight.title }

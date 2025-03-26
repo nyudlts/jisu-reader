@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+
 import { RSPrefs } from "@/preferences";
 
 import Locale from "../../resources/locales/en.json";
@@ -15,7 +17,8 @@ import { SliderWrapper } from "./Wrappers/SliderWrapper";
 
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { setParaIndent, setPublisherStyles } from "@/lib/settingsReducer";
 
 export const ReadingDisplayParaIndent: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
   const paraIndent = useAppSelector(state => state.settings.paraIndent);
@@ -24,8 +27,19 @@ export const ReadingDisplayParaIndent: React.FC<IAdvancedDisplayProps> = ({ stan
       range: RSPrefs.settings.spacing?.paraIndent?.range ?? defaultParaIndent.range,
       step: RSPrefs.settings.spacing?.paraIndent?.step ?? defaultParaIndent.step
     };
+  const dispatch = useAppDispatch();
 
-  const { applyParaIndent } = useEpubNavigator();
+  const { getSetting, submitPreferences } = useEpubNavigator();
+
+  const updatePreference = useCallback(async (value: number) => {
+    await submitPreferences({
+      publisherStyles: false, 
+      paragraphIndent: value
+    });
+
+    dispatch(setParaIndent(await getSetting("paragraphIndent")));
+    dispatch(setPublisherStyles(await getSetting("publisherStyles")));
+  }, [submitPreferences, getSetting, dispatch]);
 
   return (
     <>
@@ -35,7 +49,7 @@ export const ReadingDisplayParaIndent: React.FC<IAdvancedDisplayProps> = ({ stan
         { ...(standalone ? { className: settingsStyles.readerSettingsGroup } : {}) }
         defaultValue={ 0 } 
         value={ paraIndent || 0 } 
-        onChangeCallback={ async(value) => await applyParaIndent(value) } 
+        onChangeCallback={ async(value) => await updatePreference(value) } 
         label={ Locale.reader.settings.paraIndent.title }
         range={ paraIndentRangeConfig.range }
         step={ paraIndentRangeConfig.step }
@@ -56,7 +70,7 @@ export const ReadingDisplayParaIndent: React.FC<IAdvancedDisplayProps> = ({ stan
         { ...(standalone ? { className: settingsStyles.readerSettingsGroup } : {}) }
         defaultValue={ 0 } 
         value={ paraIndent || 0 } 
-        onChangeCallback={ async(value) => await applyParaIndent(value) } 
+        onChangeCallback={ async(value) => await updatePreference(value) } 
         label={ Locale.reader.settings.paraIndent.title }
         range={ paraIndentRangeConfig.range }
         step={ paraIndentRangeConfig.step }

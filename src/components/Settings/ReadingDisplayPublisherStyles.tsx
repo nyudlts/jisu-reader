@@ -27,33 +27,38 @@ export const ReadingDisplayPublisherStyles: React.FC<IAdvancedDisplayProps> = ({
 
   const dispatch = useAppDispatch();
 
-  const { applySpacingDefaults } = useEpubNavigator();
+  const { getSetting, submitPreferences } = useEpubNavigator();
 
-  const handleChange = useCallback(async (isSelected: boolean) => {
+  const updatePreference = useCallback(async (isSelected: boolean) => {
     const values = isSelected ? 
     {
       lineHeight: null,
       paraIndent: null,
       paraSpacing: null,
       letterSpacing: null,
-      wordSpacing: null
+      wordSpacing: null,
+      publisherStyles: true
     } : 
     {
-      lineHeight: lineHeight === ReadingDisplayLineHeightOptions.publisher ? null : RSPrefs.settings.spacing?.lineHeight?.[lineHeight] ?? 
-                (lineHeight === ReadingDisplayLineHeightOptions.small 
-                  ? defaultLineHeights[ReadingDisplayLineHeightOptions.small] 
-                  : lineHeight === ReadingDisplayLineHeightOptions.medium 
-                    ? defaultLineHeights[ReadingDisplayLineHeightOptions.medium] 
-                    : defaultLineHeights[ReadingDisplayLineHeightOptions.large]
-                ),
+      lineHeight: lineHeight === ReadingDisplayLineHeightOptions.publisher 
+        ? null 
+        : RSPrefs.settings.spacing?.lineHeight?.[lineHeight] ?? 
+          (lineHeight === ReadingDisplayLineHeightOptions.small 
+            ? defaultLineHeights[ReadingDisplayLineHeightOptions.small] 
+            : lineHeight === ReadingDisplayLineHeightOptions.medium 
+              ? defaultLineHeights[ReadingDisplayLineHeightOptions.medium] 
+              : defaultLineHeights[ReadingDisplayLineHeightOptions.large]
+          ),
       paraIndent,
       paraSpacing,
       letterSpacing,
-      wordSpacing
+      wordSpacing,
+      publisherStyles: false
     };
-    await applySpacingDefaults(values);
-    dispatch(setPublisherStyles(isSelected));
-  }, [applySpacingDefaults, dispatch, lineHeight, paraIndent, paraSpacing, letterSpacing, wordSpacing]);
+    await submitPreferences(values);
+
+    dispatch(setPublisherStyles(await getSetting("publisherStyles")));
+  }, [submitPreferences, getSetting, dispatch, lineHeight, paraIndent, paraSpacing, letterSpacing, wordSpacing]);
 
   return(
     <>
@@ -62,7 +67,7 @@ export const ReadingDisplayPublisherStyles: React.FC<IAdvancedDisplayProps> = ({
         className: settingsStyles.readerSettingsGroup
       } : {}) }
       label={ Locale.reader.settings.publisherStyles.label }
-      onChangeCallback={ async (isSelected: boolean) => await handleChange(isSelected) }
+      onChangeCallback={ async (isSelected: boolean) => await updatePreference(isSelected) }
       isSelected={ publisherStyles }
     />
     </>

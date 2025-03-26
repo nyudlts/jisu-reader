@@ -353,9 +353,9 @@ export const RSPrefs: IRSPrefs = {
       subPanel: [
         TextSettingsKeys.fontFamily,
         TextSettingsKeys.fontWeight,
-        TextSettingsKeys.normalizeText,
         TextSettingsKeys.align,
-        TextSettingsKeys.hyphens
+        TextSettingsKeys.hyphens,
+        TextSettingsKeys.normalizeText
       ]
     },
     spacing: {
