@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 
 import { RSPrefs } from "@/preferences";
 
@@ -27,6 +27,13 @@ export const ReadingDisplayPublisherStyles: React.FC<IAdvancedDisplayProps> = ({
 
   const dispatch = useAppDispatch();
 
+  const lineHeightOptions = useRef({
+    [ReadingDisplayLineHeightOptions.publisher]: null,
+    [ReadingDisplayLineHeightOptions.small]: RSPrefs.settings.spacing?.lineHeight?.[ReadingDisplayLineHeightOptions.small] || defaultLineHeights[ReadingDisplayLineHeightOptions.small],
+    [ReadingDisplayLineHeightOptions.medium]: RSPrefs.settings.spacing?.lineHeight?.[ReadingDisplayLineHeightOptions.medium] || defaultLineHeights[ReadingDisplayLineHeightOptions.medium],
+    [ReadingDisplayLineHeightOptions.large]: RSPrefs.settings.spacing?.lineHeight?.[ReadingDisplayLineHeightOptions.large] || defaultLineHeights[ReadingDisplayLineHeightOptions.large],
+  });
+
   const { getSetting, submitPreferences } = useEpubNavigator();
 
   const updatePreference = useCallback(async (isSelected: boolean) => {
@@ -42,13 +49,7 @@ export const ReadingDisplayPublisherStyles: React.FC<IAdvancedDisplayProps> = ({
     {
       lineHeight: lineHeight === ReadingDisplayLineHeightOptions.publisher 
         ? null 
-        : RSPrefs.settings.spacing?.lineHeight?.[lineHeight] ?? 
-          (lineHeight === ReadingDisplayLineHeightOptions.small 
-            ? defaultLineHeights[ReadingDisplayLineHeightOptions.small] 
-            : lineHeight === ReadingDisplayLineHeightOptions.medium 
-              ? defaultLineHeights[ReadingDisplayLineHeightOptions.medium] 
-              : defaultLineHeights[ReadingDisplayLineHeightOptions.large]
-          ),
+        : lineHeightOptions.current[lineHeight as keyof typeof ReadingDisplayLineHeightOptions],
       paraIndent,
       paraSpacing,
       letterSpacing,
@@ -57,7 +58,7 @@ export const ReadingDisplayPublisherStyles: React.FC<IAdvancedDisplayProps> = ({
     };
     await submitPreferences(values);
 
-    dispatch(setPublisherStyles(await getSetting("publisherStyles")));
+    dispatch(setPublisherStyles(getSetting("publisherStyles")));
   }, [submitPreferences, getSetting, dispatch, lineHeight, paraIndent, paraSpacing, letterSpacing, wordSpacing]);
 
   return(

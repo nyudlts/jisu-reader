@@ -30,7 +30,7 @@ export const ReadingDisplayLayoutStrategy = () => {
   const updatePreference = useCallback(async (value: string) => {
     await submitPreferences({ layoutStrategy: value as unknown as LayoutStrategy });
 
-    dispatch(setLayoutStrategy(await getSetting("layoutStrategy")));
+    dispatch(setLayoutStrategy(getSetting("layoutStrategy")));
   }, [submitPreferences, getSetting, dispatch]);
 
   useEffect(() => {

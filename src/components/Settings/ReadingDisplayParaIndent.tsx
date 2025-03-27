@@ -37,8 +37,8 @@ export const ReadingDisplayParaIndent: React.FC<IAdvancedDisplayProps> = ({ stan
       paragraphIndent: value
     });
 
-    dispatch(setParaIndent(await getSetting("paragraphIndent")));
-    dispatch(setPublisherStyles(await getSetting("publisherStyles")));
+    dispatch(setParaIndent(getSetting("paragraphIndent")));
+    dispatch(setPublisherStyles(getSetting("publisherStyles")));
   }, [submitPreferences, getSetting, dispatch]);
 
   return (

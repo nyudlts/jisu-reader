@@ -17,6 +17,7 @@ import { setColCount } from "@/lib/settingsReducer";
 
 export const ReadingDisplayCol = () => {
   const isPaged = useAppSelector(state => state.reader.isPaged);
+  const isFXL = useAppSelector(state => state.publication.isFXL);
   const colCount = useAppSelector(state => state.settings.colCount) || "auto";
   const scrollable = !isPaged;
   const dispatch = useAppDispatch();
@@ -28,6 +29,7 @@ export const ReadingDisplayCol = () => {
 
     await submitPreferences({ columnCount: colCount });
     
+    // TODO: See how best to handle this for 2 -> 1 column if minimal null
     dispatch(setColCount(value));
   }, [submitPreferences, dispatch]);
 
@@ -38,7 +40,7 @@ export const ReadingDisplayCol = () => {
       value={ colCount } 
       onChange={ async (val: string) => await updatePreference(val) }
       className={ settingsStyles.readerSettingsGroup }
-      isDisabled={ scrollable }
+      isDisabled={ scrollable && !isFXL }
     >
       <Label className={ settingsStyles.readerSettingsLabel }>{ Locale.reader.settings.column.title }</Label>
       <div className={ settingsStyles.readerSettingsRadioWrapper }>

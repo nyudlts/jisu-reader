@@ -18,7 +18,7 @@ import { ReadingDisplayMinChars } from "./ReadingDisplayMinChars";
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { setTmpMaxChars, setTmpMinChars } from "@/lib/settingsReducer";
+import { setTmpLineLengths, setTmpMaxChars, setTmpMinChars } from "@/lib/settingsReducer";
 
 // TMP Component that is not meant to be implemented AS-IS, for testing purposes
 export const ReadingDisplayLineLengths: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
@@ -32,43 +32,60 @@ export const ReadingDisplayLineLengths: React.FC<IAdvancedDisplayProps> = ({ sta
   const dispatch = useAppDispatch();
 
   const { 
-    applyLineLengths,
-    getLineLengths,
-    getLengthStep,
-    getLengthRange
+    getSetting,
+    submitPreferences,
+    preferencesEditor
   } = useEpubNavigator();
 
   const lineLengthRangeConfig = {
-    range: getLengthRange() || [20, 100],
-    step: getLengthStep() || 1
+    range: preferencesEditor?.lineLength.supportedRange || [20, 100],
+    step: preferencesEditor?.lineLength.step || 1
   }
 
-  const handleChange = useCallback(async (type: "min" | "optimal" | "max", value: number) => {
+  const updatePreference = useCallback(async (type: "min" | "optimal" | "max", value: number) => {
     switch(type) {
       case "min":
-        await applyLineLengths([value, optimal, max]);
+        await submitPreferences({
+          minimalLineLength: value, 
+          optimalLineLength: optimal, 
+          maximalLineLength: max
+        });
         dispatch(setTmpMinChars(false));
         break;
       case "optimal":
-        await applyLineLengths([min, value, max]);
+        await submitPreferences({
+          minimalLineLength: min, 
+          optimalLineLength: value, 
+          maximalLineLength: max
+        });
         break;
       case "max":
-        await applyLineLengths([min, optimal, value]);
+        await submitPreferences({
+          minimalLineLength: min, 
+          optimalLineLength: optimal, 
+          maximalLineLength: value
+        });
         dispatch(setTmpMaxChars(false));
         break;
       default:
         break;
     }
-  }, [applyLineLengths, min, optimal, max, dispatch]);
+    const appliedValues = [
+      getSetting("minimalLineLength"),
+      getSetting("optimalLineLength"),
+      getSetting("maximalLineLength")
+    ];
+    dispatch(setTmpLineLengths(appliedValues));
+  }, [submitPreferences, getSetting, min, optimal, max, dispatch]);
 
   return(
     <>
     <NumberFieldWrapper
       standalone={ standalone }
       { ...(standalone ? { className: settingsStyles.readerSettingsGroup } : {}) }
-      defaultValue={ getLineLengths().minimal || lineLengthRangeConfig.range[0] } 
+      defaultValue={ getSetting("minimalLineLength") ?? lineLengthRangeConfig.range[0] }
       value={ tmpLineLengths[0] } 
-      onChangeCallback={ async(value) => await handleChange("min", value) } 
+      onChangeCallback={ async(value) => await updatePreference("min", value) } 
       label={ Locale.reader.layoutStrategy.minimalLineLength.title }
       steppers={{
         decrementLabel: Locale.reader.layoutStrategy.minimalLineLength.decrease,
@@ -83,9 +100,9 @@ export const ReadingDisplayLineLengths: React.FC<IAdvancedDisplayProps> = ({ sta
     <NumberFieldWrapper
       standalone={ standalone }
       { ...(standalone ? { className: settingsStyles.readerSettingsGroup } : {}) }
-      defaultValue={ getLineLengths().optimal } 
+      defaultValue={ getSetting("optimalLineLength") } 
       value={ tmpLineLengths[1] } 
-      onChangeCallback={ async(value) => await handleChange("optimal", value) } 
+      onChangeCallback={ async(value) => await updatePreference("optimal", value) } 
       label={ Locale.reader.layoutStrategy.optimalLineLength.title }
       steppers={{
         decrementLabel: Locale.reader.layoutStrategy.optimalLineLength.decrease,
@@ -98,9 +115,9 @@ export const ReadingDisplayLineLengths: React.FC<IAdvancedDisplayProps> = ({ sta
     <NumberFieldWrapper
       standalone={ standalone }
       { ...(standalone ? { className: settingsStyles.readerSettingsGroup } : {}) }
-      defaultValue={ getLineLengths().maximal || lineLengthRangeConfig.range[1] } 
+      defaultValue={ getSetting("maximalLineLength") || lineLengthRangeConfig.range[1] } 
       value={ tmpLineLengths[2] } 
-      onChangeCallback={ async(value) => await handleChange("max", value) }
+      onChangeCallback={ async(value) => await updatePreference("max", value) }
       label={ Locale.reader.layoutStrategy.maximalLineLength.title }
       steppers={{
         decrementLabel: Locale.reader.layoutStrategy.maximalLineLength.decrease,

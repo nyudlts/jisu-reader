@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useCallback } from "react";
 
 import { RSPrefs } from "@/preferences";
 
 import Locale from "../../resources/locales/en.json";
 
-import { SettingsRangeVariant } from "@/models/settings";
+import { defaultFontSize, SettingsRangeVariant } from "@/models/settings";
 
 import settingsStyles from "../assets/styles/readerSettings.module.css";
 
@@ -17,22 +17,30 @@ import { SliderWrapper } from "./Wrappers/SliderWrapper";
 import { NumberFieldWrapper } from "./Wrappers/NumberFieldWrapper";
 
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
-import { useAppSelector } from "@/lib/hooks";
+
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { setFontSize } from "@/lib/settingsReducer";
 
 export const ReadingDisplayZoom = () => {
   const fontSize = useAppSelector((state) => state.settings.fontSize);
   const isFXL = useAppSelector((state) => state.publication.isFXL);
+  const dispatch = useAppDispatch();
   
   const { 
-    applyZoom, 
-    getSizeStep, 
-    getSizeRange 
+    getSetting, 
+    submitPreferences,
+    preferencesEditor 
   } = useEpubNavigator();
 
+  const updatePreference = useCallback(async (value: number) => {
+    await submitPreferences({ fontSize: value });
+    dispatch(setFontSize(getSetting("fontSize")));
+  }, [submitPreferences, getSetting, dispatch]);
+
   const zoomRangeConfig = {
-    variant: RSPrefs.settings.zoom?.variant || SettingsRangeVariant.numberField,
-    range: getSizeRange() || [0.7, 2.5],
-    step: getSizeStep() || 0.1
+    variant: RSPrefs.settings.zoom?.variant || defaultFontSize.variant,
+    range: preferencesEditor?.fontSize.supportedRange || defaultFontSize.range,
+    step: preferencesEditor?.fontSize.step || defaultFontSize.step
   }
 
   return (
@@ -43,7 +51,7 @@ export const ReadingDisplayZoom = () => {
         className={ settingsStyles.readerSettingsGroup }
         defaultValue={ 1 } 
         value={ fontSize } 
-        onChangeCallback={ async(value) => await applyZoom(value) } 
+        onChangeCallback={ async(value) => await updatePreference(value) } 
         label={ isFXL ? Locale.reader.settings.zoom.title : Locale.reader.settings.fontSize.title }
         range={ zoomRangeConfig.range }
         step={ zoomRangeConfig.step }
@@ -62,7 +70,7 @@ export const ReadingDisplayZoom = () => {
         className={ settingsStyles.readerSettingsGroup }
         defaultValue={ 1 } 
         value={ fontSize } 
-        onChangeCallback={ async(value) => await applyZoom(value) } 
+        onChangeCallback={ async(value) => await updatePreference(value) } 
         label={ isFXL ? Locale.reader.settings.zoom.title : Locale.reader.settings.fontSize.title }
         range={ zoomRangeConfig.range }
         step={ zoomRangeConfig.step }

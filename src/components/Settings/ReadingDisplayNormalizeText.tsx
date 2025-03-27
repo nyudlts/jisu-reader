@@ -22,7 +22,7 @@ export const ReadingDisplayNormalizeText: React.FC<IAdvancedDisplayProps> = ({ s
   const updatePreference = useCallback(async (value: boolean) => {
     await submitPreferences({ textNormalization: value });
 
-    dispatch(setNormalizeText(await getSetting("textNormalization")));
+    dispatch(setNormalizeText(getSetting("textNormalization")));
   }, [submitPreferences, getSetting, dispatch]);
 
   return(

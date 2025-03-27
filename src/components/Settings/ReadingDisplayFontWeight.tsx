@@ -24,7 +24,7 @@ export const ReadingDisplayFontWeight: React.FC<IAdvancedDisplayProps> = ({ stan
   const updatePreference = useCallback(async (value: number) => {
     await submitPreferences({ fontWeight: value });
 
-    dispatch(setFontWeight(await getSetting("fontWeight")));
+    dispatch(setFontWeight(getSetting("fontWeight")));
   }, [submitPreferences, getSetting, dispatch]);
 
   return(

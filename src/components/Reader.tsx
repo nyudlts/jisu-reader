@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef } from "react";
 
 import { RSPrefs } from "@/preferences";
+
 import Locale from "../resources/locales/en.json";
 
 import "./assets/styles/reader.css";
@@ -13,6 +14,8 @@ import { ScrollBackTo } from "@/models/preferences";
 import { ActionKeys } from "@/models/actions";
 import { ThemeKeys } from "@/models/theme";
 import { ICache } from "@/models/reader";
+import { ReadingDisplayFontFamilyOptions, ReadingDisplayLineHeightOptions } from "@/models/layout";
+import { defaultLineHeights } from "@/models/settings";
 
 import { I18nProvider } from "react-aria";
 
@@ -24,7 +27,10 @@ import {
   EpubNavigatorListeners, 
   FrameManager, 
   FXLFrameManager, 
-  LayoutStrategy 
+  IEpubDefaults, 
+  IEpubPreferences, 
+  LayoutStrategy, 
+  TextAlignment
 } from "@readium/navigator";
 import { 
   Link,
@@ -56,6 +62,9 @@ import { createTocTree } from "@/helpers/toc/createTocTree";
 import { getPageListItems } from "@/helpers/pageList/getPageListItems";
 import { extractAccessibilityInfo } from "@/helpers/a11y/a11yInfo";
 
+import { toggleActionOpen } from "@/lib/actionsReducer";
+import { useAppSelector, useAppDispatch, useAppStore } from "@/lib/hooks";
+import { setTheme } from "@/lib/themeReducer";
 import { 
   setImmersive, 
   setHovering, 
@@ -71,11 +80,8 @@ import {
   setRunningHead, 
   setTocTree, setPageList, setPublishers, setAuthors, setIdentifier, setCoverUrl, setChapterHref, setA11yInfo 
 } from "@/lib/publicationReducer";
-import { toggleActionOpen } from "@/lib/actionsReducer";
-import { useAppSelector, useAppDispatch, useAppStore } from "@/lib/hooks";
 
 import debounce from "debounce";
-import { setTheme } from "@/lib/themeReducer";
 import { DecoratorRequest } from "@/readium/ts-toolkit/navigator-html-injectables/src/modules/Decorator";
 
 export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: object, selfHref: string, locatorParam: string }) => {
@@ -83,6 +89,8 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   const publication = useRef<Publication | null>(null);
   const localDataKey = useRef(`${selfHref}-current-location`);
   const arrowsWidth = useRef(2 * ((RSPrefs.theming.arrow.size || 40) + (RSPrefs.theming.arrow.offset || 0)));
+
+  const isFXL = useAppSelector(state => state.publication.isFXL);
 
   const align = useAppSelector(state => state.settings.align);
   const colCount = useAppSelector(state => state.settings.colCount);
@@ -447,14 +455,16 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
     if (theme !== ThemeKeys.auto && previousTheme !== theme) return;
 
     const applyCurrentTheme = async () => {
-      const themeProps = listThemeProps(theme, colorScheme);
+      const themeKeys = isFXL ? RSPrefs.theming.themes.fxlOrder : RSPrefs.theming.themes.reflowOrder;
+      const themeKey = themeKeys.includes(theme) ? theme : ThemeKeys.auto;
+      const themeProps = listThemeProps(themeKey, colorScheme);
       await submitPreferences(themeProps);
-      dispatch(setTheme(theme));
+      dispatch(setTheme(themeKey));
     };
 
     applyCurrentTheme()
       .catch(console.error);
-  }, [theme, previousTheme, colorScheme, listThemeProps, submitPreferences, dispatch]);
+  }, [theme, previousTheme, colorScheme, isFXL, listThemeProps, submitPreferences, dispatch]);
 
   useEffect(() => {
     RSPrefs.direction && dispatch(setDirection(RSPrefs.direction));
@@ -540,9 +550,50 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
     fetchPositions()
       .catch(console.error)
       .then(() => {
+        const isFXL = publication.current?.metadata.getPresentation()?.layout === EPUBLayout.fixed;
+
         const initialPosition = localData.get(localDataKey.current);
         const initialConstraint = cache.current.arrowsOccupySpace ? arrowsWidth.current : 0;
-        const themeProps = listThemeProps(cache.current.settings.theme, cache.current.colorScheme);
+        
+        const themeKeys = isFXL ? RSPrefs.theming.themes.fxlOrder : RSPrefs.theming.themes.reflowOrder;
+        const theme = themeKeys.includes(cache.current.settings.theme) ? cache.current.settings.theme : ThemeKeys.auto;
+        const themeProps = listThemeProps(theme, cache.current.colorScheme);
+
+        const lineHeightOptions = {
+            [ReadingDisplayLineHeightOptions.publisher]: null,
+            [ReadingDisplayLineHeightOptions.small]: RSPrefs.settings.spacing?.lineHeight?.[ReadingDisplayLineHeightOptions.small] || defaultLineHeights[ReadingDisplayLineHeightOptions.small],
+            [ReadingDisplayLineHeightOptions.medium]: RSPrefs.settings.spacing?.lineHeight?.[ReadingDisplayLineHeightOptions.medium] || defaultLineHeights[ReadingDisplayLineHeightOptions.medium],
+            [ReadingDisplayLineHeightOptions.large]: RSPrefs.settings.spacing?.lineHeight?.[ReadingDisplayLineHeightOptions.large] || defaultLineHeights[ReadingDisplayLineHeightOptions.large],
+          };
+
+        const preferences: IEpubPreferences = isFXL ? {} : {
+          columnCount: cache.current.settings.colCount === "auto" ? null : Number(cache.current.settings.colCount),
+          constraint: initialConstraint,
+          fontFamily: cache.current.settings.fontFamily && ReadingDisplayFontFamilyOptions[cache.current.settings.fontFamily],
+          fontSize: cache.current.settings.fontSize,
+          fontWeight: cache.current.settings.fontWeight,
+          hyphens: cache.current.settings.hyphens,
+          layoutStrategy: cache.current.settings.layoutStrategy as unknown as LayoutStrategy | null | undefined,
+          letterSpacing: cache.current.settings.letterSpacing,
+          lineHeight: cache.current.settings.lineHeight === null ? null : lineHeightOptions[cache.current.settings.lineHeight],
+          lineLength: cache.current.settings.lineLength,
+          paragraphIndent: cache.current.settings.paraIndent,
+          paragraphSpacing: cache.current.settings.paraSpacing,
+          publisherStyles: cache.current.settings.publisherStyles,
+          scroll: !cache.current.settings.paginated,
+          textAlign: cache.current.settings.align as unknown as TextAlignment | null | undefined,
+          textNormalization: cache.current.settings.normalizeText,
+          wordSpacing: cache.current.settings.wordSpacing,
+          ...themeProps
+        };
+
+        const defaults: IEpubDefaults = isFXL ? {} : {
+          layoutStrategy: RSPrefs.typography.layoutStrategy as LayoutStrategy | null | undefined,
+          maximalLineLength: RSPrefs.typography.maximalLineLength, 
+          minimalLineLength: RSPrefs.typography.minimalLineLength, 
+          optimalLineLength: RSPrefs.typography.optimalLineLength,
+          pageGutter: RSPrefs.typography.pageGutter
+        }
 
          //NYU Press if a locatorParam was passed as a deeplink, send the reader there
         if (locatorParam !== "") {  
@@ -575,15 +626,8 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
           listeners: listeners, 
           positionsList: positionsList,
           initialPosition: initialPosition,
-          preferences: {
-            pageGutter: RSPrefs.typography.pageGutter,
-            optimalLineLength: RSPrefs.typography.optimalLineLength,
-            minimalLineLength: RSPrefs.typography.minimalLineLength,
-            maximalLineLength: RSPrefs.typography.maximalLineLength,
-            constraint: initialConstraint,
-            layoutStrategy: RSPrefs.typography.layoutStrategy as unknown as LayoutStrategy,
-            ...themeProps
-          },
+          preferences: preferences,
+          defaults: defaults,
           localDataKey: localDataKey.current,
           }, () => p.observe(window));
 

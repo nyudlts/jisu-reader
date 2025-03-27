@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 
 import { RSPrefs } from "@/preferences";
 
@@ -28,26 +28,29 @@ export const ReadingDisplayLineHeight: React.FC<IAdvancedDisplayProps> = ({ stan
 
   const { getSetting, submitPreferences } = useEpubNavigator();
 
-  const updatePreference = useCallback(async (value: string) => {
-    const computedValue = value === ReadingDisplayLineHeightOptions.publisher 
-          ? null 
-          : RSPrefs.settings.spacing?.lineHeight?.[value as Exclude<ReadingDisplayLineHeightOptions, ReadingDisplayLineHeightOptions.publisher>] ?? 
-              (value === ReadingDisplayLineHeightOptions.small 
-                ? defaultLineHeights[ReadingDisplayLineHeightOptions.small] 
-                : value === ReadingDisplayLineHeightOptions.medium 
-                  ? defaultLineHeights[ReadingDisplayLineHeightOptions.medium] 
-                  : defaultLineHeights[ReadingDisplayLineHeightOptions.large]
-              );
-    
-        await submitPreferences({
-          publisherStyles: false,
-          lineHeight: computedValue
-        });
+  const lineHeightOptions = useRef({
+    [ReadingDisplayLineHeightOptions.publisher]: null,
+    [ReadingDisplayLineHeightOptions.small]: RSPrefs.settings.spacing?.lineHeight?.[ReadingDisplayLineHeightOptions.small] || defaultLineHeights[ReadingDisplayLineHeightOptions.small],
+    [ReadingDisplayLineHeightOptions.medium]: RSPrefs.settings.spacing?.lineHeight?.[ReadingDisplayLineHeightOptions.medium] || defaultLineHeights[ReadingDisplayLineHeightOptions.medium],
+    [ReadingDisplayLineHeightOptions.large]: RSPrefs.settings.spacing?.lineHeight?.[ReadingDisplayLineHeightOptions.large] || defaultLineHeights[ReadingDisplayLineHeightOptions.large],
+  });
 
-        // TODO: derive from computedValue
-        dispatch(setLineHeight(value));
-        dispatch(setPublisherStyles(false));
-  }, [submitPreferences, dispatch]);
+  const updatePreference = useCallback(async (value: string) => {
+    const computedValue = value === ReadingDisplayLineHeightOptions.publisher
+      ? null 
+      : lineHeightOptions.current[value as keyof typeof ReadingDisplayLineHeightOptions];
+    
+    await submitPreferences({
+      publisherStyles: false,
+      lineHeight: computedValue
+    });
+
+    const currentLineHeight = getSetting("lineHeight");
+    const currentDisplayLineHeightOption = Object.entries(lineHeightOptions.current).find(([key, value]) => value === currentLineHeight)?.[0] as ReadingDisplayLineHeightOptions;
+
+    dispatch(setLineHeight(currentDisplayLineHeightOption));
+    dispatch(setPublisherStyles(false));
+  }, [submitPreferences, getSetting, dispatch]);
 
   return (
     <>

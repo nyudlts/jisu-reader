@@ -37,8 +37,8 @@ export const ReadingDisplayParaSpacing: React.FC<IAdvancedDisplayProps> = ({ sta
       paragraphSpacing: value
     });
 
-    dispatch(setParaSpacing(await getSetting("paragraphSpacing")));
-    dispatch(setPublisherStyles(await getSetting("publisherStyles")));
+    dispatch(setParaSpacing(getSetting("paragraphSpacing")));
+    dispatch(setPublisherStyles(getSetting("publisherStyles")));
   }, [submitPreferences, getSetting, dispatch]);
 
   return (

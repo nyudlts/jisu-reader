@@ -37,8 +37,8 @@ export const ReadingDisplayWordSpacing: React.FC<IAdvancedDisplayProps> = ({ sta
       wordSpacing: value
     });
 
-    dispatch(setWordSpacing(await getSetting("wordSpacing")));
-    dispatch(setPublisherStyles(await getSetting("publisherStyles")));
+    dispatch(setWordSpacing(getSetting("wordSpacing")));
+    dispatch(setPublisherStyles(getSetting("publisherStyles")));
   }, [submitPreferences, getSetting, dispatch]);
 
   return (

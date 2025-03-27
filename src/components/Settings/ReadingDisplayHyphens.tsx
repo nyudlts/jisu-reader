@@ -29,7 +29,7 @@ export const ReadingDisplayHyphens: React.FC<IAdvancedDisplayProps> = ({ standal
       hyphens: value 
     });
   
-    dispatch(setHyphens(await getSetting("hyphens")));
+    dispatch(setHyphens(getSetting("hyphens")));
   }, [submitPreferences, getSetting, dispatch]);
 
   return(

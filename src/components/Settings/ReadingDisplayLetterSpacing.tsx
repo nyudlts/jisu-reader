@@ -23,10 +23,10 @@ import { setLetterSpacing, setPublisherStyles } from "@/lib/settingsReducer";
 export const ReadingDisplayLetterSpacing: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
   const letterSpacing = useAppSelector(state => state.settings.letterSpacing);
   const letterSpacingRangeConfig = {
-      variant: RSPrefs.settings.spacing?.letterSpacing?.variant ?? defaultLetterSpacing.variant,
-      range: RSPrefs.settings.spacing?.letterSpacing?.range ?? defaultLetterSpacing.range,
-      step: RSPrefs.settings.spacing?.letterSpacing?.step ?? defaultLetterSpacing.step
-    };
+    variant: RSPrefs.settings.spacing?.letterSpacing?.variant ?? defaultLetterSpacing.variant,
+    range: RSPrefs.settings.spacing?.letterSpacing?.range ?? defaultLetterSpacing.range,
+    step: RSPrefs.settings.spacing?.letterSpacing?.step ?? defaultLetterSpacing.step
+  };
   const dispatch = useAppDispatch();
 
   const { getSetting, submitPreferences } = useEpubNavigator();
@@ -37,8 +37,8 @@ export const ReadingDisplayLetterSpacing: React.FC<IAdvancedDisplayProps> = ({ s
       letterSpacing: value
     });
 
-    dispatch(setLetterSpacing(await getSetting("letterSpacing")));
-    dispatch(setPublisherStyles(await getSetting("publisherStyles")));
+    dispatch(setLetterSpacing(getSetting("letterSpacing")));
+    dispatch(setPublisherStyles(getSetting("publisherStyles")));
   }, [submitPreferences, getSetting, dispatch]);
 
   return (
