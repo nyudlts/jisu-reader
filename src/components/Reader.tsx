@@ -486,6 +486,7 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
     const publisher = publication.current.metadata.publishers?.items[0].name.getTranslation("en");
     const identifier = publication.current.metadata.identifier;
     const coverLink = publication.current.manifest.resources?.findWithRel("cover") as Link | undefined;
+    const contentsLink = publication.current.manifest.resources?.findWithRel("contents") as Link | undefined;
     const a11yInfo = extractAccessibilityInfo(publication.current);
 
     const fetchCoverUrl = async () => {
@@ -495,8 +496,20 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
       return coverUrl;
     };
 
+    const fetchContents = async () => {
+      const contentsRes = await publication.current!.get(contentsLink!);  
+      const plainContentsRes = JSON.parse(JSON.stringify(contentsRes));
+      const contentsUrl = plainContentsRes.url;
+      return contentsUrl;
+    };
+
     fetchCoverUrl().then((coverUrl) => {
       dispatch(setCoverUrl(coverUrl));
+    });
+
+    fetchContents().then((contentsUrl) => {
+      console.log("PK contents", contentsUrl);
+      //dispatch(setCoverUrl(coverUrl));
     });
 
     dispatch(setRunningHead(pubTitle));

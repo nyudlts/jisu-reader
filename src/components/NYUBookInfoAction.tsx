@@ -13,7 +13,7 @@ import { LayoutDirection } from "@/models/layout";
 
 import bookInfoStyles from "./assets/styles/nyuBookInfo.module.css";
 
-import TocIcon from "./assets/icons/toc.svg";
+import BookInfoIcon from "./assets/icons/book_info.svg";
 
 import { ActionIcon } from "./ActionTriggers/ActionIcon";
 import { SheetWithType } from "./Sheets/SheetWithType";
@@ -182,7 +182,7 @@ export const NYUBookInfoAction: React.FC<IActionComponentTrigger> = ({ variant }
     { (variant && variant === ActionComponentVariant.menu) 
       ? <OverflowMenuItem 
           label={ Locale.reader.nyuBookInfo.trigger }
-          SVG={ TocIcon } 
+          SVG={ BookInfoIcon } 
           shortcut={ RSPrefs.actions.keys[ActionKeys.nyuBookInfo].shortcut }
           id={ ActionKeys.nyuBookInfo }
           onActionCallback={ () => setOpen(!actionState.isOpen) }
@@ -190,7 +190,7 @@ export const NYUBookInfoAction: React.FC<IActionComponentTrigger> = ({ variant }
       : <ActionIcon 
           visibility={ RSPrefs.actions.keys[ActionKeys.nyuBookInfo].visibility }
           ariaLabel={ Locale.reader.nyuBookInfo.trigger } 
-          SVG={ TocIcon } 
+          SVG={ BookInfoIcon } 
           placement="bottom"
           tooltipLabel={ Locale.reader.nyuBookInfo.tooltip } 
           onPressCallback={ () => setOpen(!actionState.isOpen) }

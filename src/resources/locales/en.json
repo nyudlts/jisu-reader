@@ -87,13 +87,27 @@
       "tooltip": "Search",
       "trigger": "Search",
       "close": "Close Search",
-      "heading": "Search"
+      "heading": "Search",
+      "empty": "No search items returned."
     },
     "nyuBookInfo": {
       "tooltip": "Book Info",
       "trigger": "Book Info",
       "close": "Close Book Info",
       "heading": "Book Info"
+    },
+    "nyuAbout": {
+      "tooltip": "About",
+      "trigger": "About",
+      "close": "Close About",
+      "heading": "About"
+    },
+    "nyuPageList": {
+      "tooltip": "Page List",
+      "trigger": "Page List",
+      "close": "Close Page List",
+      "heading": "PageList",
+      "empty": "A page list was not provided for this publication."
     },
     "jumpToPosition": {
       "tooltip": "Jump to…",

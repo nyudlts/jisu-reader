@@ -192,7 +192,9 @@ export const RSPrefs: IRSPrefs = {
       ActionKeys.toc,
       ActionKeys.fullscreen,
       ActionKeys.layoutStrategy,
+      ActionKeys.nyuPageList,
       ActionKeys.nyuBookInfo,
+      ActionKeys.nyuAbout,
     //  ActionKeys.jumpToPosition
     ],
     collapse: {
@@ -222,6 +224,40 @@ export const RSPrefs: IRSPrefs = {
         }
       },
       [ActionKeys.nyuBookInfo]: {
+        visibility: ActionVisibility.overflow,
+        shortcut: null,
+        sheet: {
+          defaultSheet: SheetTypes.popover,
+          breakpoints: {
+            [StaticBreakpoints.compact]: SheetTypes.bottomSheet
+          }
+        },
+        docked: {
+          dockable: DockTypes.none
+        },
+        snapped: {
+          scrim: true,
+          minHeight: "content-height"
+        }
+      },
+      [ActionKeys.nyuAbout]: {
+        visibility: ActionVisibility.overflow,
+        shortcut: null,
+        sheet: {
+          defaultSheet: SheetTypes.popover,
+          breakpoints: {
+            [StaticBreakpoints.compact]: SheetTypes.bottomSheet
+          }
+        },
+        docked: {
+          dockable: DockTypes.none
+        },
+        snapped: {
+          scrim: true,
+          minHeight: "content-height"
+        }
+      },
+      [ActionKeys.nyuPageList]: {
         visibility: ActionVisibility.overflow,
         shortcut: null,
         sheet: {

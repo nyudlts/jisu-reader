@@ -13,9 +13,9 @@ import { LayoutDirection } from "@/models/layout";
 
 import tocStyles from "./assets/styles/toc.module.css";
 
-import TocIcon from "./assets/icons/toc.svg";
+import PageListIcon from "./assets/icons/page_list.svg";
 
-import { ActionIcon } from "./ActionTriggers/ActionIcon";
+import { ActionIcon } from "./ActionTriggers/NYUActionIcon";
 import { SheetWithType } from "./Sheets/SheetWithType";
 import { OverflowMenuItem } from "./ActionTriggers/OverflowMenuItem";
 import { Button, Collection, Key } from "react-aria-components";
@@ -31,46 +31,100 @@ import { useDocking } from "@/hooks/useDocking";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setActionOpen } from "@/lib/actionsReducer";
 
-export const TocActionContainer: React.FC<IActionComponentContainer> = ({ triggerRef }) => {
+type PageListItem = {
+  page: string;
+  href: string;
+};
+
+export const NYUPageListActionContainer: React.FC<IActionComponentContainer> = ({ triggerRef }) => {
   const direction = useAppSelector(state => state.reader.direction);
   const isRTL = direction === LayoutDirection.rtl;
 
-  const actionState = useAppSelector(state => state.actions.keys[ActionKeys.toc]);
+  const actionState = useAppSelector(state => state.actions.keys[ActionKeys.nyuPageList]);
   const tocTree = useAppSelector(state => state.publication.tocTree);
   const dispatch = useAppDispatch();
 
+  const foo = "http://localhost:15080/OTc4MTQ3OTgxOTQ1NC5lcHVi/ops/nav.xhtml";
+
+  getPageListItems(foo).then((items) => {
+    console.log("PK page list items:", items);
+    /*
+    items.forEach((li, index) => {
+      console.log(`Item ${index + 1}:`, li.textContent?.trim());
+    });
+    */
+  });
+
   const { goLink } = useEpubNavigator();
 
-  const docking = useDocking(ActionKeys.toc);
+  const docking = useDocking(ActionKeys.nyuPageList);
   const sheetType = docking.sheetType;
 
   const setOpen = (value: boolean) => {
     dispatch(setActionOpen({ 
-      key: ActionKeys.toc,
+      key: ActionKeys.nyuPageList,
       isOpen: value 
     }));
   }
 
+  async function getPageListItems(url: string): Promise<PageListItem[]> {
+    const response = await fetch(url);
+    const text = await response.text();
+  
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, "application/xhtml+xml");
+  
+    const nav = doc.querySelector(
+      'nav[role="doc-pagelist"]'
+    );
+  
+    if (!nav) {
+      throw new Error("Page list navigation not found.");
+    }
+  
+    const items: PageListItem[] = [];
+  
+    const liElements = nav.querySelectorAll("li");
+  
+    liElements.forEach((li) => {
+      const anchor = li.querySelector("a");
+      if (anchor && anchor.textContent && anchor.getAttribute("href")) {
+        items.push({
+          page: anchor.textContent.trim(),
+          href: anchor.getAttribute("href")!,
+        });
+      }
+    });
+  
+    return items;
+  }
+  
+
   const handleAction = (key: Key) => {
+
+
+    /*
     if (!key) return;
     
     const el = document.querySelector(`[data-key=${key}]`);
     const href = el?.getAttribute("data-href");
 
     if (!href) return;
+    */
+    const r = "ops/xhtml/chapter2.xhtml#pg_51";
+    const link: Link = new Link({ href: r });
 
-    const link: Link = new Link({ href: href });
-
+    
     const cb = actionState.isOpen && 
       (sheetType === SheetTypes.dockedStart || sheetType === SheetTypes.dockedEnd)
         ? () => {} 
         : () => {
           dispatch(setActionOpen({ 
-            key: ActionKeys.toc,
+            key: ActionKeys.nyuPageList,
             isOpen: false 
           }));
         }
-    console.log("PK toc link:", link);
+    
     goLink(link, true, cb);
   };
 
@@ -79,9 +133,9 @@ export const TocActionContainer: React.FC<IActionComponentContainer> = ({ trigge
     <SheetWithType 
       sheetType={ sheetType }
       sheetProps={ {
-        id: ActionKeys.toc,
+        id: ActionKeys.nyuPageList,
         triggerRef: triggerRef, 
-        heading: Locale.reader.toc.heading,
+        heading: Locale.reader.nyuPageList.heading,
         className: tocStyles.toc,
         placement: "bottom",
         isOpen: actionState.isOpen || false,
@@ -134,13 +188,13 @@ export const TocActionContainer: React.FC<IActionComponentContainer> = ({ trigge
   )
 }
 
-export const TocAction: React.FC<IActionComponentTrigger> = ({ variant }) => {
-  const actionState = useAppSelector(state => state.actions.keys[ActionKeys.toc]);
+export const NYUPageListAction: React.FC<IActionComponentTrigger> = ({ variant }) => {
+  const actionState = useAppSelector(state => state.actions.keys[ActionKeys.nyuPageList]);
   const dispatch = useAppDispatch();
 
   const setOpen = (value: boolean) => {
     dispatch(setActionOpen({ 
-      key: ActionKeys.toc,
+      key: ActionKeys.nyuPageList,
       isOpen: value 
     }));
   }
@@ -149,18 +203,18 @@ export const TocAction: React.FC<IActionComponentTrigger> = ({ variant }) => {
     <>
     { (variant && variant === ActionComponentVariant.menu) 
       ? <OverflowMenuItem 
-          label={ Locale.reader.toc.trigger }
-          SVG={ TocIcon } 
-          shortcut={ RSPrefs.actions.keys[ActionKeys.toc].shortcut }
-          id={ ActionKeys.toc }
+          label={ Locale.reader.nyuPageList.trigger }
+          SVG={ PageListIcon } 
+          shortcut={ RSPrefs.actions.keys[ActionKeys.nyuPageList].shortcut }
+          id={ ActionKeys.nyuPageList }
           onActionCallback={ () => setOpen(!actionState.isOpen) }
         />
       : <ActionIcon 
-          visibility={ RSPrefs.actions.keys[ActionKeys.toc].visibility }
-          ariaLabel={ Locale.reader.toc.trigger } 
-          SVG={ TocIcon } 
+          visibility={ RSPrefs.actions.keys[ActionKeys.nyuPageList].visibility }
+          ariaLabel={ Locale.reader.nyuPageList.trigger } 
+          SVG={ PageListIcon } 
           placement="bottom"
-          tooltipLabel={ Locale.reader.toc.tooltip } 
+          tooltipLabel={ Locale.reader.nyuPageList.tooltip } 
           onPressCallback={ () => setOpen(!actionState.isOpen) }
         />
     }
