@@ -42,6 +42,9 @@ export const publicationSlice = createSlice({
     setTocTree: (state, action) => {
       state.tocTree = action.payload;
     },
+    setPageList: (state, action) => {
+      state.pageList = action.payload;
+    },
     setPublishers: (state, action) => {
       state.publishers = action.payload
     },
@@ -76,6 +79,7 @@ export const {
   setAuthors,
   setIdentifier,
   setCoverUrl,
+  setPageList,
   setChapterHref,
   setA11yInfo, 
 } = publicationSlice.actions;

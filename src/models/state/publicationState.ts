@@ -1,6 +1,7 @@
 import { AccessibilityInfo } from "@/helpers/a11y/a11yInfo";
 import { IProgression } from "../progression";
 import { TocItem } from "../toc";
+import { PageListItem } from "../pageList";
 
 export interface IPublicationState {
   runningHead?: string;
@@ -10,6 +11,7 @@ export interface IPublicationState {
   atPublicationStart: boolean;
   atPublicationEnd: boolean;
   tocTree?: TocItem[];
+  pageList?: PageListItem[];
   chapterHref?: string;
   authors?: string[];
   publishers?: string[];

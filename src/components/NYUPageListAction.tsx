@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
 
 import { RSPrefs } from "@/preferences";
 
@@ -32,6 +34,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setActionOpen } from "@/lib/actionsReducer";
 
 type PageListItem = {
+  id: string;
   page: string;
   href: string;
 };
@@ -41,20 +44,9 @@ export const NYUPageListActionContainer: React.FC<IActionComponentContainer> = (
   const isRTL = direction === LayoutDirection.rtl;
 
   const actionState = useAppSelector(state => state.actions.keys[ActionKeys.nyuPageList]);
+  const pageList = useAppSelector(state => state.publication.pageList);
   const tocTree = useAppSelector(state => state.publication.tocTree);
   const dispatch = useAppDispatch();
-
-  const foo = "http://localhost:15080/OTc4MTQ3OTgxOTQ1NC5lcHVi/ops/nav.xhtml";
-
-  getPageListItems(foo).then((items) => {
-    console.log("PK page list items:", items);
-    /*
-    items.forEach((li, index) => {
-      console.log(`Item ${index + 1}:`, li.textContent?.trim());
-    });
-    */
-  });
-
   const { goLink } = useEpubNavigator();
 
   const docking = useDocking(ActionKeys.nyuPageList);
@@ -67,65 +59,26 @@ export const NYUPageListActionContainer: React.FC<IActionComponentContainer> = (
     }));
   }
 
-  async function getPageListItems(url: string): Promise<PageListItem[]> {
-    const response = await fetch(url);
-    const text = await response.text();
-  
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(text, "application/xhtml+xml");
-  
-    const nav = doc.querySelector(
-      'nav[role="doc-pagelist"]'
-    );
-  
-    if (!nav) {
-      throw new Error("Page list navigation not found.");
-    }
-  
-    const items: PageListItem[] = [];
-  
-    const liElements = nav.querySelectorAll("li");
-  
-    liElements.forEach((li) => {
-      const anchor = li.querySelector("a");
-      if (anchor && anchor.textContent && anchor.getAttribute("href")) {
-        items.push({
-          page: anchor.textContent.trim(),
-          href: anchor.getAttribute("href")!,
-        });
-      }
-    });
-  
-    return items;
-  }
-  
-
   const handleAction = (key: Key) => {
-
-
-    /*
     if (!key) return;
+        const el = document.querySelector(`[data-key=${key}]`);
+        const href = el?.getAttribute("data-href");
+        
+        if (!href) return;
     
-    const el = document.querySelector(`[data-key=${key}]`);
-    const href = el?.getAttribute("data-href");
+        const link: Link = new Link({ href: href });
+        
+        const cb = actionState.isOpen && 
+          (sheetType === SheetTypes.dockedStart || sheetType === SheetTypes.dockedEnd)
+            ? () => {} 
+            : () => {
+              dispatch(setActionOpen({ 
+                key: ActionKeys.toc,
+                isOpen: false 
+              }));
+            }
 
-    if (!href) return;
-    */
-    const r = "ops/xhtml/chapter2.xhtml#pg_51";
-    const link: Link = new Link({ href: r });
-
-    
-    const cb = actionState.isOpen && 
-      (sheetType === SheetTypes.dockedStart || sheetType === SheetTypes.dockedEnd)
-        ? () => {} 
-        : () => {
-          dispatch(setActionOpen({ 
-            key: ActionKeys.nyuPageList,
-            isOpen: false 
-          }));
-        }
-    
-    goLink(link, true, cb);
+        goLink(link, true, cb);
   };
 
   return(
@@ -146,9 +99,9 @@ export const NYUPageListActionContainer: React.FC<IActionComponentContainer> = (
     >
       { tocTree && tocTree.length > 0 
       ? (<Tree
-          aria-label={ Locale.reader.toc.entries }
+          aria-label={ Locale.reader.nyuPageList.entries }
           selectionMode="none"
-          items={ tocTree }
+          items={ pageList }
           className={ tocStyles.tocTree }
           onAction={ handleAction }
         >

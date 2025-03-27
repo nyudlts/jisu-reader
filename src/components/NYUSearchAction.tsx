@@ -157,8 +157,6 @@ export const NYUSearchContainer: React.FC<IActionComponentContainer> = ({ trigge
 
       const deepLink = `${host}?book=${newBookUrl}&locator=${encodedLocator}&search=${searchTerm}`;
 
-      //router.push(deepLink);
-      //window.open(deepLink, "_blank");
       window.location.href = deepLink;
     }
 

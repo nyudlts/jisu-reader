@@ -107,7 +107,9 @@
       "trigger": "Page List",
       "close": "Close Page List",
       "heading": "PageList",
-      "empty": "A page list was not provided for this publication."
+      "entries": "Entries in the table",
+      "empty": "A page list was not provided for this publication.",
+      "position": "position"
     },
     "jumpToPosition": {
       "tooltip": "Jump to…",

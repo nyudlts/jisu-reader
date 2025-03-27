@@ -53,6 +53,7 @@ import { CUSTOM_SCHEME, ScrollActions } from "@/helpers/scrollAffordance";
 import { localData } from "@/helpers/localData";
 import { getPlatformModifier } from "@/helpers/keyboard/getMetaKeys";
 import { createTocTree } from "@/helpers/toc/createTocTree";
+import { getPageListItems } from "@/helpers/pageList/getPageListItems";
 import { extractAccessibilityInfo } from "@/helpers/a11y/a11yInfo";
 
 import { 
@@ -68,7 +69,7 @@ import {
   setRTL, 
   setProgression, 
   setRunningHead, 
-  setTocTree, setPublishers, setAuthors, setIdentifier, setCoverUrl, setChapterHref, setA11yInfo 
+  setTocTree, setPageList, setPublishers, setAuthors, setIdentifier, setCoverUrl, setChapterHref, setA11yInfo 
 } from "@/lib/publicationReducer";
 import { toggleActionOpen } from "@/lib/actionsReducer";
 import { useAppSelector, useAppDispatch, useAppStore } from "@/lib/hooks";
@@ -489,27 +490,31 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
     const contentsLink = publication.current.manifest.resources?.findWithRel("contents") as Link | undefined;
     const a11yInfo = extractAccessibilityInfo(publication.current);
 
-    const fetchCoverUrl = async () => {
-      const coverRes = await publication.current!.get(coverLink!);
-      const plainCoverRes = JSON.parse(JSON.stringify(coverRes));
-      const coverUrl = plainCoverRes.url;
-      return coverUrl;
+    //gets the url of a resource from a link
+    const getResourceUrl = async (link?: Link): Promise<string | null> => {
+      if (!link) {
+        return null;
+      }
+      const resource = await publication.current!.get(link);
+      const plainResource = JSON.parse(JSON.stringify(resource));
+      return plainResource.url;
     };
 
-    const fetchContents = async () => {
-      const contentsRes = await publication.current!.get(contentsLink!);  
-      const plainContentsRes = JSON.parse(JSON.stringify(contentsRes));
-      const contentsUrl = plainContentsRes.url;
-      return contentsUrl;
-    };
-
-    fetchCoverUrl().then((coverUrl) => {
+    //get the url of the book cover
+    getResourceUrl(coverLink).then((coverUrl) => {
       dispatch(setCoverUrl(coverUrl));
     });
 
-    fetchContents().then((contentsUrl) => {
-      console.log("PK contents", contentsUrl);
-      //dispatch(setCoverUrl(coverUrl));
+    //get the url of the table of contents and extract the page-list
+    getResourceUrl(contentsLink).then((contentsUrl) => {
+      if (contentsUrl) {
+        //the nav document page-list may not have href values with the full path needed for EpubNavigator
+        //so pass in a samplePath from the fist reading list item to rebase the path if needed 
+        const readingOrderPath = publication.current!.manifest.readingOrder.items[0].href;
+        getPageListItems(contentsUrl,readingOrderPath).then((items) => {
+          dispatch(setPageList(items));
+        });
+      }
     });
 
     dispatch(setRunningHead(pubTitle));

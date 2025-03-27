@@ -70,7 +70,7 @@ export const TocActionContainer: React.FC<IActionComponentContainer> = ({ trigge
             isOpen: false 
           }));
         }
-    console.log("PK toc link:", link);
+    console.log("PK link ", link);
     goLink(link, true, cb);
   };
 

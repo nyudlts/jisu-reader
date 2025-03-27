@@ -195,21 +195,6 @@ export const ReaderFooter = () => {
             <span className={ classNames(readerFooterStyles.nyuPageNumber, handleClassNameFromState()) }>
               <ProgressionOf />
             </span>
-            <button
-              title="Bookmark"
-              aria-label="Add Bookmark"
-              className={ classNames(readerFooterStyles.bookmarkButton, handleClassNameFromState()) }
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="24px"
-                viewBox="0 -960 960 960"
-                width="22px"
-                fill="#555"
-              >
-                <path d="M200-120v-640q0-33 23.5-56.5T280-840h400q33 0 56.5 23.5T760-760v640L480-240 200-120Zm80-122 200-86 200 86v-518H280v518Zm0-518h400-400Z" />
-              </svg>
-            </button>
           </div>
         </div>
       </footer>
