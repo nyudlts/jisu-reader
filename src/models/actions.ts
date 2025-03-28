@@ -15,7 +15,7 @@ export enum ActionKeys {
   nyuSearch = "nyuSearch",
   nyuBookInfo = "nyuBookInfo",
   nyuAbout = "nyuAbout",
-  nyuPageList = "nyuHPageList",
+  nyuPageList = "nyuPageList",
 }
 
 export enum ActionVisibility {
