@@ -34,7 +34,6 @@ import {
   TextAlignment
 } from "@readium/navigator";
 import { 
-  Link,
   Locator, 
   Manifest, 
   Publication, 

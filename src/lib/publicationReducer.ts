@@ -79,7 +79,7 @@ export const {
   setPublicationStart,
   setPublicationEnd,
   setTocTree,
-  setTocEntry
+  setTocEntry,
   setPublishers,
   setAuthors,
   setIdentifier,
