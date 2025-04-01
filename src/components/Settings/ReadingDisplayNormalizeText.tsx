@@ -10,11 +10,11 @@ import { SwitchWrapper } from "./Wrappers/SwitchWrapper";
 
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { setNormalizeText } from "@/lib/settingsReducer";
+import { setTextNormalization } from "@/lib/settingsReducer";
 
 // TMP Component that is not meant to be implemented AS-IS, for testing purposes
 export const ReadingDisplayNormalizeText: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
-  const normalizeText = useAppSelector(state => state.settings.normalizeText);
+  const textNormalization = useAppSelector(state => state.settings.textNormalization);
   const dispatch = useAppDispatch();
 
   const { getSetting, submitPreferences } = useEpubNavigator();
@@ -22,7 +22,7 @@ export const ReadingDisplayNormalizeText: React.FC<IAdvancedDisplayProps> = ({ s
   const updatePreference = useCallback(async (value: boolean) => {
     await submitPreferences({ textNormalization: value });
 
-    dispatch(setNormalizeText(getSetting("textNormalization")));
+    dispatch(setTextNormalization(getSetting("textNormalization")));
   }, [submitPreferences, getSetting, dispatch]);
 
   return(
@@ -34,7 +34,7 @@ export const ReadingDisplayNormalizeText: React.FC<IAdvancedDisplayProps> = ({ s
       } : {}) }
       label={ Locale.reader.settings.normalizeText.label }
       onChangeCallback={ async (isSelected: boolean) => await updatePreference(isSelected) }
-      isSelected={ normalizeText ?? false }
+      isSelected={ textNormalization ?? false }
     />
     </>
   )

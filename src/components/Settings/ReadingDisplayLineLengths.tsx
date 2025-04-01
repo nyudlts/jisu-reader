@@ -22,7 +22,7 @@ import { setTmpLineLengths, setTmpMaxChars, setTmpMinChars } from "@/lib/setting
 
 // TMP Component that is not meant to be implemented AS-IS, for testing purposes
 export const ReadingDisplayLineLengths: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
-  const colCount = useAppSelector(state => state.settings.colCount);
+  const columnCount = useAppSelector(state => state.settings.columnCount);
   const layoutStrategy = useAppSelector(state => state.settings.layoutStrategy);
   const tmpLineLengths = useAppSelector(state => state.settings.tmpLineLengths);
   const min = tmpLineLengths[0];
@@ -93,7 +93,7 @@ export const ReadingDisplayLineLengths: React.FC<IAdvancedDisplayProps> = ({ sta
       }}
       range={ [lineLengthRangeConfig.range[0], optimal || RSPrefs.typography.optimalLineLength] }
       step={ lineLengthRangeConfig.step }
-      isDisabled={ layoutStrategy !== RSLayoutStrategy.columns && colCount !== "2" }
+      isDisabled={ layoutStrategy !== RSLayoutStrategy.columns && columnCount !== "2" }
     /> 
     <ReadingDisplayMinChars />
 

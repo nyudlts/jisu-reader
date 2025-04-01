@@ -31,7 +31,8 @@ export interface ISheet {
   onClosePressCallback: () => void;
   docker?: DockingKeys[];
   children?: ReactNode;
-  resetFocus?: unknown
+  resetFocus?: unknown;
+  dismissEscapeKeyClose?: boolean;
 }
 
 export type BottomSheetDetent = "content-height" | "full-height";

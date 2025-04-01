@@ -330,7 +330,9 @@ export const RSPrefs: IRSPrefs = {
         },
         snapped: {
           scrim: true,
-          minHeight: "content-height"
+          peekHeight: 50,
+          minHeight: 30,
+          maxHeight: 100
         }
       },
       [ActionKeys.jumpToPosition]: {

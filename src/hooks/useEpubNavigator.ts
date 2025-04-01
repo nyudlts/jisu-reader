@@ -29,7 +29,6 @@ import { localData } from "@/helpers/localData";
 
 import { useAppDispatch } from "@/lib/hooks";
 import { setProgression } from "@/lib/publicationReducer";
-import { setPaged } from "@/lib/readerReducer";
 
 type cbb = (ok: boolean) => void;
 
@@ -80,15 +79,10 @@ export const useEpubNavigator = () => {
     });
   }, []);
 
-  const applyScroll = useCallback(async (scroll: boolean) => {
+  const handleScrollAffordances = useCallback((scroll: boolean) => {
     if (navigatorInstance === null || navigatorInstance.layout === EPUBLayout.fixed) return;
-    if (!scroll) unmountScroll();
-    await navigatorInstance?.submitPreferences(new EpubPreferences({
-      scroll: scroll
-    }));
-    if (scroll) mountScroll();
-    dispatch(setPaged(!scroll));
-  }, [dispatch, mountScroll, unmountScroll]);
+    scroll ? mountScroll() : unmountScroll();
+  }, [mountScroll, unmountScroll]);
 
   const listThemeProps = useCallback((t: ThemeKeys, colorScheme?: ColorScheme) => {
     if (t === ThemeKeys.auto && colorScheme) {
@@ -288,7 +282,7 @@ export const useEpubNavigator = () => {
     goForward,
     goLink, 
     go, 
-    applyScroll,
+    handleScrollAffordances,
     scrollBackTo, 
     listThemeProps, 
     handleProgression,

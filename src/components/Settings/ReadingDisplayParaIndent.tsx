@@ -7,7 +7,7 @@ import Locale from "../../resources/locales/en.json";
 import settingsStyles from "../assets/styles/readerSettings.module.css";
 
 import { 
-  defaultParaIndent, 
+  defaultParagraphIndent, 
   IAdvancedDisplayProps, 
   SettingsRangeVariant 
 } from "@/models/settings";
@@ -18,14 +18,14 @@ import { SliderWrapper } from "./Wrappers/SliderWrapper";
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { setParaIndent, setPublisherStyles } from "@/lib/settingsReducer";
+import { setParagraphIndent, setPublisherStyles } from "@/lib/settingsReducer";
 
 export const ReadingDisplayParaIndent: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
-  const paraIndent = useAppSelector(state => state.settings.paraIndent);
-  const paraIndentRangeConfig = {
-      variant: RSPrefs.settings.spacing?.paraIndent?.variant ?? defaultParaIndent.variant,
-      range: RSPrefs.settings.spacing?.paraIndent?.range ?? defaultParaIndent.range,
-      step: RSPrefs.settings.spacing?.paraIndent?.step ?? defaultParaIndent.step
+  const paragraphIndent = useAppSelector(state => state.settings.paragraphIndent);
+  const paragraphIndentRangeConfig = {
+      variant: RSPrefs.settings.spacing?.paragrapIndent?.variant ?? defaultParagraphIndent.variant,
+      range: RSPrefs.settings.spacing?.paragrapIndent?.range ?? defaultParagraphIndent.range,
+      step: RSPrefs.settings.spacing?.paragrapIndent?.step ?? defaultParagraphIndent.step
     };
   const dispatch = useAppDispatch();
 
@@ -37,22 +37,22 @@ export const ReadingDisplayParaIndent: React.FC<IAdvancedDisplayProps> = ({ stan
       paragraphIndent: value
     });
 
-    dispatch(setParaIndent(getSetting("paragraphIndent")));
+    dispatch(setParagraphIndent(getSetting("paragraphIndent")));
     dispatch(setPublisherStyles(getSetting("publisherStyles")));
   }, [submitPreferences, getSetting, dispatch]);
 
   return (
     <>
-    { paraIndentRangeConfig.variant === SettingsRangeVariant.numberField 
+    { paragraphIndentRangeConfig.variant === SettingsRangeVariant.numberField 
       ? <NumberFieldWrapper 
         standalone={ standalone }
         { ...(standalone ? { className: settingsStyles.readerSettingsGroup } : {}) }
         defaultValue={ 0 } 
-        value={ paraIndent || 0 } 
+        value={ paragraphIndent || 0 } 
         onChangeCallback={ async(value) => await updatePreference(value) } 
         label={ Locale.reader.settings.paraIndent.title }
-        range={ paraIndentRangeConfig.range }
-        step={ paraIndentRangeConfig.step }
+        range={ paragraphIndentRangeConfig.range }
+        step={ paragraphIndentRangeConfig.step }
         steppers={{
           decrementLabel: Locale.reader.settings.paraIndent.decrease,
           incrementLabel: Locale.reader.settings.paraIndent.increase
@@ -69,11 +69,11 @@ export const ReadingDisplayParaIndent: React.FC<IAdvancedDisplayProps> = ({ stan
         standalone={ standalone }
         { ...(standalone ? { className: settingsStyles.readerSettingsGroup } : {}) }
         defaultValue={ 0 } 
-        value={ paraIndent || 0 } 
+        value={ paragraphIndent || 0 } 
         onChangeCallback={ async(value) => await updatePreference(value) } 
         label={ Locale.reader.settings.paraIndent.title }
-        range={ paraIndentRangeConfig.range }
-        step={ paraIndentRangeConfig.step }
+        range={ paragraphIndentRangeConfig.range }
+        step={ paragraphIndentRangeConfig.step }
         format={{
           signDisplay: "exceptZero",
           minimumFractionDigits: 0,

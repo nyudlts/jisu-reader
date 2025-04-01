@@ -13,6 +13,7 @@
   padding: calc(var(--layout-spacing) / 2);
   padding-inline-start: calc(((var(--tree-item-level) - 1) * var(--layout-spacing)) + (var(--layout-spacing) / 2));
   border-radius: var(--layout-radius);
+  box-sizing: border-box;
 }
 
 .tocTree:has(.tocTreeItemButton) .tocTreeItem {
@@ -24,7 +25,19 @@
 }
 
 .tocTreeItemText {
+  display: flex;
   flex: 1 1 auto;
+}
+
+.tocTreeItemTextTitle {
+  text-wrap: balance;
+}
+
+.tocTreeItemTextPosition {
+  margin-inline-start: auto;
+  padding-inline-start: calc(var(--layout-spacing) / 2);
+  color: var(--theme-subdue);
+  font-variant-numeric: lining-nums tabular-nums;
 }
 
 .tocTreeItemButton {
@@ -49,6 +62,10 @@
 
 .tocTreeItem[data-disabled] {
   color: var(--theme-disable);
+}
+
+.tocTreeItem[data-selected] {
+  border: 2px solid var(--theme-subdue);
 }
 
 .tocTreeItemButton svg {

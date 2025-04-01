@@ -64,10 +64,10 @@ export const defaultSpacingSettingsMain = [
 export const defaultSpacingSettingsSubpanel = [
   SpacingSettingsKeys.publisherStyles,
   SpacingSettingsKeys.lineHeight,
-  SpacingSettingsKeys.paraSpacing,
-  SpacingSettingsKeys.paraIndent,
   SpacingSettingsKeys.wordSpacing,
-  SpacingSettingsKeys.letterSpacing
+  SpacingSettingsKeys.letterSpacing,
+  SpacingSettingsKeys.paraSpacing,
+  SpacingSettingsKeys.paraIndent
 ]
 
 export enum SettingsRangeVariant {
@@ -89,8 +89,8 @@ export interface ISettingsSpacingPref {
   lineHeight?: {
     [key in Exclude<ReadingDisplayLineHeightOptions, ReadingDisplayLineHeightOptions.publisher>]: number
   };
-  paraIndent?: ISettingsRangePref;
-  paraSpacing?: ISettingsRangePref;
+  paragrapIndent?: ISettingsRangePref;
+  paragraphSpacing?: ISettingsRangePref;
   wordSpacing?: ISettingsRangePref;
 }
 
@@ -106,13 +106,13 @@ export const defaultFontSize: Required<ISettingsRangePref> = {
   step: 0.05
 }
 
-export const defaultParaSpacing: Required<ISettingsRangePref> = {
+export const defaultParagraphSpacing: Required<ISettingsRangePref> = {
   variant: SettingsRangeVariant.slider,
   range: [0, 3],
   step: 0.5
 }
 
-export const defaultParaIndent: Required<ISettingsRangePref> = {
+export const defaultParagraphIndent: Required<ISettingsRangePref> = {
   variant: SettingsRangeVariant.slider,
   range: [0, 2],
   step: 0.25
@@ -204,8 +204,7 @@ export interface ISettingsSwitchProps {
 }
 
 export interface IRCSSSettings {
-  align: ReadingDisplayAlignOptions | null;
-  colCount: string;
+  columnCount: string;
   fontFamily: keyof typeof ReadingDisplayFontFamilyOptions | null;
   fontSize: number;
   fontWeight: number;
@@ -214,11 +213,12 @@ export interface IRCSSSettings {
   lineLength: number | null;
   lineHeight: ReadingDisplayLineHeightOptions | null;
   layoutStrategy: RSLayoutStrategy;
-  normalizeText: boolean;
-  paginated: boolean;
-  paraIndent: number | null;
-  paraSpacing: number | null;
+  paragraphIndent: number | null;
+  paragraphSpacing: number | null;
   publisherStyles: boolean;
+  scroll: boolean;
+  textAlign: ReadingDisplayAlignOptions | null;
+  textNormalization: boolean;
   theme: ThemeKeys;
   wordSpacing: number | null;
 }

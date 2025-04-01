@@ -9,6 +9,7 @@ const initialState: IPublicationState = {
   atPublicationStart: false,
   atPublicationEnd: false,
   tocTree: undefined,
+  tocEntry: undefined,
   chapterHref: undefined,
   authors: undefined,
   publishers: undefined,
@@ -41,6 +42,9 @@ export const publicationSlice = createSlice({
     },
     setTocTree: (state, action) => {
       state.tocTree = action.payload;
+    },
+    setTocEntry: (state, action) => {
+      state.tocEntry = action.payload;
     },
     setPageList: (state, action) => {
       state.pageList = action.payload;
@@ -75,6 +79,7 @@ export const {
   setPublicationStart,
   setPublicationEnd,
   setTocTree,
+  setTocEntry
   setPublishers,
   setAuthors,
   setIdentifier,

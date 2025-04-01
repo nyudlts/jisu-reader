@@ -8,7 +8,6 @@ export interface IReaderState {
   isHovering: boolean;
   hasArrows: boolean;
   isFullscreen: boolean;
-  isPaged: boolean;
   settingsContainer: SettingsContainerKeys;
   platformModifier: IPlatformModifier;
 }

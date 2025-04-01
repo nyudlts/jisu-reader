@@ -55,8 +55,7 @@
         }
       },
       "back": {
-        "trigger": "Go Back",
-        "tooltip": "Go Back"
+        "trigger": "Back"
       }
     },
     "navigation": {

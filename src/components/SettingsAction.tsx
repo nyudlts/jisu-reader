@@ -203,6 +203,21 @@ export const SettingsActionContainer: React.FC<IActionComponentContainer> = ({ t
     }
   }, [contains]);
 
+useEffect(() => {
+  const handleEscape = (event: KeyboardEvent) => {
+    if (event.key === "Escape" && contains !== SettingsContainerKeys.initial) {
+      dispatch(setSettingsContainer(SettingsContainerKeys.initial));
+    }
+  };
+
+  document.addEventListener("keydown", handleEscape, true);
+
+  return () => {
+    document.removeEventListener("keydown", handleEscape, true);
+  };
+}, [contains, dispatch]);
+
+
   // Reset when closed
   useEffect(() => {
     if (!actionState.isOpen) setInitial();
@@ -223,7 +238,8 @@ export const SettingsActionContainer: React.FC<IActionComponentContainer> = ({ t
         onOpenChangeCallback: setOpen, 
         onClosePressCallback: () => { contains === SettingsContainerKeys.initial ? setOpen(false) : setInitial() },
         docker: docking.getDocker(),
-        resetFocus: contains
+        resetFocus: contains,
+        dismissEscapeKeyClose: contains !== SettingsContainerKeys.initial
       } }
     >
       { renderSettings() }

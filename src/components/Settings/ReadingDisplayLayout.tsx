@@ -13,28 +13,33 @@ import { RadioGroup, Radio, Label } from "react-aria-components";
 
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
-import { useAppSelector } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { setScroll } from "@/lib/settingsReducer";
 
 export const ReadingDisplayLayout = () => {
-  const isPaged = useAppSelector(state => state.reader.isPaged);
+  const isScroll = useAppSelector(state => state.settings.scroll);
   const isFXL = useAppSelector(state => state.publication.isFXL);
 
-  const { applyScroll } = useEpubNavigator();
+  const dispatch = useAppDispatch();
 
-  const handleChange = useCallback(async (value: string) => {
-    if (value === ReadingDisplayLayoutOptions.paginated) {
-      await applyScroll(false);
-    } else {
-      await applyScroll(true);
-    }
-  }, [applyScroll]);
-  
+  const { getSetting, submitPreferences, handleScrollAffordances } = useEpubNavigator();
+
+  const updatePreference = useCallback(async (value: string) => { 
+    const derivedValue = value === ReadingDisplayLayoutOptions.scroll;
+    await submitPreferences({ scroll: derivedValue });
+    dispatch(setScroll(getSetting("scroll")));
+
+    // [TMP] We need to handle this in multiple places due to the lack
+    // of Injection API. This mounts and unmounts scroll affordances
+    handleScrollAffordances(derivedValue);
+  }, [submitPreferences, getSetting, dispatch, handleScrollAffordances]);
+
   return (
     <>
     <RadioGroup 
       orientation="horizontal" 
-      value={ isPaged ? ReadingDisplayLayoutOptions.paginated : ReadingDisplayLayoutOptions.scroll } 
-      onChange={ async (val: string) => await handleChange(val) } 
+      value={ isScroll ? ReadingDisplayLayoutOptions.scroll : ReadingDisplayLayoutOptions.paginated } 
+      onChange={ async (val: string) => await updatePreference(val) } 
       className={ settingsStyles.readerSettingsGroup }
     >
       <Label className={ settingsStyles.readerSettingsLabel }>{ Locale.reader.settings.layout.title }</Label>

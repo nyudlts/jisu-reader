@@ -28,7 +28,8 @@ export const PopoverSheet: React.FC<IPopoverSheet> = ({
     placement,
     docker,
     children,
-    resetFocus
+    resetFocus,
+    dismissEscapeKeyClose
   }) => {
   const popoverRef = useRef<HTMLDivElement | null>(null);
   const popoverHeaderRef = useRef<HTMLDivElement | null>(null);
@@ -57,6 +58,7 @@ export const PopoverSheet: React.FC<IPopoverSheet> = ({
         className={ classNames(sheetStyles.popOverSheet , className) }
         isOpen={ isOpen }
         onOpenChange={ onOpenChangeCallback } 
+        isKeyboardDismissDisabled={ dismissEscapeKeyClose }
         maxHeight={ computeMaxHeight() }
         style={{
           "--sheet-sticky-header": popoverHeaderRef.current ? `${ popoverHeaderRef.current.clientHeight }px` : undefined
@@ -66,19 +68,15 @@ export const PopoverSheet: React.FC<IPopoverSheet> = ({
           <div 
             ref={ popoverHeaderRef }
             className={ sheetStyles.sheetHeader }
-          >
-            { headerVariant === SheetHeaderVariant.previous && 
-              <BackButton 
-                ref={ popoverCloseRef }
-                className={ sheetStyles.sheetHeaderBackButton }
-                onPressCallback={ onClosePressCallback }
-              /> 
-            }
-            
+          > 
             <Heading slot="title" className={ sheetStyles.sheetHeading }>{ heading }</Heading>
             
-            { headerVariant !== SheetHeaderVariant.previous &&
-              <Docker 
+            { headerVariant === SheetHeaderVariant.previous 
+              ? <BackButton 
+                ref={ popoverCloseRef }
+                onPressCallback={ onClosePressCallback }
+              />
+              : <Docker 
                 id={ id }
                 keys={ docker || [] }
                 ref={ popoverCloseRef }

@@ -17,7 +17,7 @@ import { setHyphens } from "@/lib/settingsReducer";
 // TMP Component that is not meant to be implemented AS-IS, for testing purposes
 export const ReadingDisplayHyphens: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
   const hyphens = useAppSelector(state => state.settings.hyphens);
-  const textAlign = useAppSelector(state => state.settings.align);
+  const textAlign = useAppSelector(state => state.settings.textAlign);
 
   const dispatch = useAppDispatch();
   

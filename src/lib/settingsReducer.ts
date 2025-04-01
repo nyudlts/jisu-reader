@@ -4,8 +4,7 @@ import { ReadingDisplayAlignOptions, ReadingDisplayLineHeightOptions, RSLayoutSt
 import { ISettingsState } from "@/models/state/settingsState";
 
 const initialState: ISettingsState = {
-  align: ReadingDisplayAlignOptions.publisher,
-  colCount: "auto",
+  columnCount: "auto",
   fontFamily: "publisher",
   fontSize: 1,
   fontWeight: 400,
@@ -14,10 +13,12 @@ const initialState: ISettingsState = {
   letterSpacing: null,
   lineHeight: ReadingDisplayLineHeightOptions.publisher,
   lineLength: null,
-  normalizeText: false,
-  paraIndent: null,
-  paraSpacing: null,
+  paragraphIndent: null,
+  paragraphSpacing: null,
   publisherStyles: true,
+  scroll: false,
+  textAlign: ReadingDisplayAlignOptions.publisher,
+  textNormalization: false,
   wordSpacing: null,
   tmpLineLengths: [],
   tmpMaxChars: false,
@@ -28,11 +29,8 @@ export const settingsSlice = createSlice({
   name: "settings",
   initialState,
   reducers: {
-    setAlign: (state, action) => {
-      state.align = action.payload
-    },
-    setColCount: (state, action) => {
-      state.colCount = action.payload
+    setColumnCount: (state, action) => {
+      state.columnCount = action.payload
     },
     setFontFamily: (state, action) => {
       state.fontFamily = action.payload
@@ -58,17 +56,23 @@ export const settingsSlice = createSlice({
     setLineLength: (state, action) => {
       state.lineLength = action.payload
     },
-    setNormalizeText: (state, action) => {
-      state.normalizeText = action.payload
+    setParagraphIndent: (state, action) => {
+      state.paragraphIndent = action.payload
     },
-    setParaIndent: (state, action) => {
-      state.paraIndent = action.payload
-    },
-    setParaSpacing: (state, action) => {
-      state.paraSpacing = action.payload
+    setParagraphSpacing: (state, action) => {
+      state.paragraphSpacing = action.payload
     },
     setPublisherStyles: (state, action) => {
       state.publisherStyles = action.payload
+    },
+    setScroll: (state, action) => {
+      state.scroll = action.payload
+    },
+    setTextAlign: (state, action) => {
+      state.textAlign = action.payload
+    },
+    setTextNormalization: (state, action) => {
+      state.textNormalization = action.payload
     },
     setWordSpacing: (state, action) => {
       state.wordSpacing = action.payload
@@ -87,8 +91,7 @@ export const settingsSlice = createSlice({
 
 // Action creators are generated for each case reducer function
 export const { 
-  setAlign, 
-  setColCount,
+  setColumnCount,
   setFontSize,
   setFontWeight, 
   setFontFamily,
@@ -97,10 +100,12 @@ export const {
   setLetterSpacing,
   setLineHeight,
   setLineLength,
-  setNormalizeText,
-  setParaIndent,
-  setParaSpacing,
+  setParagraphIndent,
+  setParagraphSpacing,
   setPublisherStyles,
+  setScroll,
+  setTextAlign,
+  setTextNormalization, 
   setWordSpacing,
   setTmpLineLengths,
   setTmpMaxChars,

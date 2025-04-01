@@ -27,6 +27,7 @@ body {
   overscroll-behavior-y: none;
   background-color: var(--theme-background);
   color: var(--theme-text);
+  position: relative;
 }
 
 main {

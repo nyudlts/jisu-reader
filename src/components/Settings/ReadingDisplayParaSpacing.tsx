@@ -7,7 +7,7 @@ import Locale from "../../resources/locales/en.json";
 import settingsStyles from "../assets/styles/readerSettings.module.css";
 
 import { 
-  defaultParaSpacing, 
+  defaultParagraphSpacing, 
   IAdvancedDisplayProps, 
   SettingsRangeVariant 
 } from "@/models/settings";
@@ -18,14 +18,14 @@ import { SliderWrapper } from "./Wrappers/SliderWrapper";
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { setParaSpacing, setPublisherStyles } from "@/lib/settingsReducer";
+import { setParagraphSpacing, setPublisherStyles } from "@/lib/settingsReducer";
 
 export const ReadingDisplayParaSpacing: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
-  const paraSpacing = useAppSelector(state => state.settings.paraSpacing);
-  const paraSpacingRangeConfig = {
-    variant: RSPrefs.settings.spacing?.paraSpacing?.variant ?? defaultParaSpacing.variant,
-    range: RSPrefs.settings.spacing?.paraSpacing?.range ?? defaultParaSpacing.range,
-    step: RSPrefs.settings.spacing?.paraSpacing?.step ?? defaultParaSpacing.step
+  const paragraphSpacing = useAppSelector(state => state.settings.paragraphSpacing);
+  const paragraphSpacingRangeConfig = {
+    variant: RSPrefs.settings.spacing?.paragraphSpacing?.variant ?? defaultParagraphSpacing.variant,
+    range: RSPrefs.settings.spacing?.paragraphSpacing?.range ?? defaultParagraphSpacing.range,
+    step: RSPrefs.settings.spacing?.paragraphSpacing?.step ?? defaultParagraphSpacing.step
   };
   const dispatch = useAppDispatch();
 
@@ -37,22 +37,22 @@ export const ReadingDisplayParaSpacing: React.FC<IAdvancedDisplayProps> = ({ sta
       paragraphSpacing: value
     });
 
-    dispatch(setParaSpacing(getSetting("paragraphSpacing")));
+    dispatch(setParagraphSpacing(getSetting("paragraphSpacing")));
     dispatch(setPublisherStyles(getSetting("publisherStyles")));
   }, [submitPreferences, getSetting, dispatch]);
 
   return (
     <>
-    { paraSpacingRangeConfig.variant === SettingsRangeVariant.numberField 
+    { paragraphSpacingRangeConfig.variant === SettingsRangeVariant.numberField 
       ? <NumberFieldWrapper 
         standalone={ standalone }
         { ...(standalone ? { className: settingsStyles.readerSettingsGroup } : {}) }
         defaultValue={ 0 } 
-        value={ paraSpacing || 0 } 
+        value={ paragraphSpacing || 0 } 
         onChangeCallback={ async(value) => await updatePreference(value) } 
         label={ Locale.reader.settings.paraSpacing.title }
-        range={ paraSpacingRangeConfig.range }
-        step={ paraSpacingRangeConfig.step }
+        range={ paragraphSpacingRangeConfig.range }
+        step={ paragraphSpacingRangeConfig.step }
         steppers={{
           decrementLabel: Locale.reader.settings.paraSpacing.decrease,
           incrementLabel: Locale.reader.settings.paraSpacing.increase
@@ -69,11 +69,11 @@ export const ReadingDisplayParaSpacing: React.FC<IAdvancedDisplayProps> = ({ sta
         standalone={ standalone }
         { ...(standalone ? { className: settingsStyles.readerSettingsGroup } : {}) }
         defaultValue={ 0 } 
-        value={ paraSpacing || 0 } 
+        value={ paragraphSpacing || 0 } 
         onChangeCallback={ async(value) => await updatePreference(value) } 
         label={ Locale.reader.settings.paraSpacing.title }
-        range={ paraSpacingRangeConfig.range }
-        step={ paraSpacingRangeConfig.step }
+        range={ paragraphSpacingRangeConfig.range }
+        step={ paragraphSpacingRangeConfig.step }
         format={{
           signDisplay: "exceptZero",
           minimumFractionDigits: 0,

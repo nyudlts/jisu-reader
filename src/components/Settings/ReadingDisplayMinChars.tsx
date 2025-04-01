@@ -17,7 +17,7 @@ import { setTmpMinChars } from "@/lib/settingsReducer";
 
 // TMP Component that is not meant to be implemented AS-IS, for testing purposes
 export const ReadingDisplayMinChars = () => {
-  const colCount = useAppSelector(state => state.settings.colCount);
+  const columnCount = useAppSelector(state => state.settings.columnCount);
   const layoutStrategy = useAppSelector(state => state.settings.layoutStrategy);
   const lineLength = useAppSelector(state => state.settings.tmpLineLengths[0]);
   const minChars = useAppSelector(state => state.settings.tmpMinChars);
@@ -41,7 +41,7 @@ export const ReadingDisplayMinChars = () => {
           label={ Locale.reader.layoutStrategy.minChars }
           onChangeCallback={ async (isSelected: boolean) => await updatePreference(isSelected ? null : lineLength || RSPrefs.typography.minimalLineLength) }
           isSelected={ minChars }
-          isDisabled={ layoutStrategy !== RSLayoutStrategy.columns && colCount !== "2" }
+          isDisabled={ layoutStrategy !== RSLayoutStrategy.columns && columnCount !== "2" }
         />
       </div>
     }

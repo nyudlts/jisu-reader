@@ -6,8 +6,7 @@ import {
 } from "../layout";
 
 export interface ISettingsState {
-  align: ReadingDisplayAlignOptions;
-  colCount: string;
+  columnCount: string;
   fontFamily: keyof typeof ReadingDisplayFontFamilyOptions;
   fontSize: number;
   fontWeight: number;
@@ -19,9 +18,11 @@ export interface ISettingsState {
   tmpLineLengths: number[];
   tmpMaxChars: boolean;
   tmpMinChars: boolean;
-  normalizeText: boolean;
-  paraIndent: number | null;
-  paraSpacing: number | null;
+  paragraphIndent: number | null;
+  paragraphSpacing: number | null;
   publisherStyles: boolean;
+  scroll: boolean;
+  textAlign: ReadingDisplayAlignOptions;
+  textNormalization: boolean;
   wordSpacing: number | null;
 }

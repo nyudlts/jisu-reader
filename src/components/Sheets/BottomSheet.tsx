@@ -43,6 +43,7 @@ const BottomSheetContainer = ({
   onDragKeyCallback,
   isDraggable, 
   hasDetent, 
+  dismissEscapeKeyClose,
   maxWidth, 
   scrimPref, 
   sheetRef,
@@ -60,6 +61,7 @@ const BottomSheetContainer = ({
   onDragKeyCallback: (event: KeyboardEvent) => void;
   isDraggable: boolean;
   hasDetent: BottomSheetDetent;
+  dismissEscapeKeyClose?: boolean;
   maxWidth?: string;
   scrimPref: IScrimPref;
   sheetRef: RefObject<SheetRef | null>;
@@ -72,7 +74,8 @@ const BottomSheetContainer = ({
   const overlay = useOverlay({ 
     onClose: sheetState.close, 
     isOpen: true, 
-    isDismissable: true 
+    isDismissable: true,
+    isKeyboardDismissDisabled: dismissEscapeKeyClose
   }, sheetContainerRef);
 
   const closeButton = useButton({}, bottomSheetCloseRef);
@@ -142,14 +145,6 @@ const BottomSheetContainer = ({
           /> 
         }
         <div className={ sheetStyles.bottomSheetHeader }>
-          { headerVariant === SheetHeaderVariant.previous && 
-            <BackButton 
-              ref={ bottomSheetCloseRef }
-              className={ sheetStyles.sheetHeaderBackButton }
-              onPressCallback={ onClosePressCallback }
-            /> 
-          }
-
           <Heading 
             slot="title" 
             className={ sheetStyles.sheetHeading }
@@ -158,8 +153,12 @@ const BottomSheetContainer = ({
             { heading }
           </Heading>
 
-          { headerVariant !== SheetHeaderVariant.previous &&
-            <CloseButton
+          { headerVariant === SheetHeaderVariant.previous 
+            ? <BackButton 
+              ref={ bottomSheetCloseRef }
+              onPressCallback={ onClosePressCallback }
+            /> 
+            : <CloseButton
               ref={ bottomSheetCloseRef }
               className={ readerSharedUI.closeButton } 
               label={ Locale.reader.app.docker.close.trigger } 
@@ -200,7 +199,8 @@ export const BottomSheet: React.FC<IBottomSheet> = ({
   onOpenChangeCallback, 
   onClosePressCallback,
   children,
-  resetFocus
+  resetFocus,
+  dismissEscapeKeyClose
 }) => {
   const reducedMotion = useAppSelector(state => state.theming.prefersReducedMotion);
 
@@ -440,6 +440,7 @@ export const BottomSheet: React.FC<IBottomSheet> = ({
               onDragKeyCallback={ onDragKeyCallback }
               isDraggable= { isDraggable.current }
               hasDetent={ detent.current }
+              dismissEscapeKeyClose={ dismissEscapeKeyClose }
               maxWidth={ getMaxWidthPref() }
               scrimPref={ getScrimPref() }
               sheetRef={ sheetRef } 

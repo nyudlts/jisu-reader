@@ -28,15 +28,15 @@ export const ArrowButton = (props: IReaderArrow) => {
   const isRTL = useAppSelector(state => state.publication.isRTL);
   const hasArrows = useAppSelector(state => state.reader.hasArrows);
 
-  const isPaged = useAppSelector(state => state.reader.isPaged);
-  const wasPaged = usePrevious(isPaged);
+  const isScroll = useAppSelector(state => state.settings.scroll);
+  const wasScroll = usePrevious(isScroll);
 
   const dispatch = useAppDispatch();
 
   const [isHovering, setIsHovering] = useState(false);
 
   const switchedFromScrollable = () => {
-    return isPaged && isPaged !== wasPaged;
+    return wasScroll && !isScroll;
   }
 
   const label = (

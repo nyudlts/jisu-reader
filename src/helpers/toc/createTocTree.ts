@@ -1,5 +1,5 @@
 import { TocItem } from "@/models/toc";
-import { Link } from "@readium/shared";
+import { Link, Locator } from "@readium/shared";
 
 /**
  * Recursively adds an ID to each Link in a list of Links, and returns a new list of TocItems.
@@ -9,7 +9,8 @@ import { Link } from "@readium/shared";
  */
 export function createTocTree(
   links: Link[],
-  idGenerator: () => string
+  idGenerator: () => string,
+  positionsList?: Locator[]
 ): TocItem[] {
   return links.map((link) => {
     // Generate a new ID for the current Link
@@ -20,11 +21,12 @@ export function createTocTree(
       id: newId, 
       href: link.href,
       title: link.title,
+      position: positionsList?.find((position) => position.href === link.href)?.locations.position
     };
 
     // Recursively process children if they exist
     if (link.children) {
-      treeNode.children = createTocTree(link.children.items, idGenerator);
+      treeNode.children = createTocTree(link.children.items, idGenerator, positionsList);
     }
 
     return treeNode;

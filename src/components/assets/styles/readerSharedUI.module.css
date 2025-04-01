@@ -9,7 +9,16 @@
   border-radius: var(--layout-radius);
 }
 
-.closeButton {
+.backButton {
+  box-sizing: content-box;
+  height: var(--icon-size, 24px);
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+}
+
+.closeButton,
+.backButton {
   margin-inline-start: auto;
 }
 
@@ -31,7 +40,7 @@
 .icon[data-hovered],
 .nyuIcon[data-hovered],
 .dockerButton[data-hovered],
-.closeButton[data-hovered]
+.closeButton[data-hovered],
 .backButton[data-hovered] {
   background-color: var(--theme-hover);
 }
@@ -42,6 +51,10 @@
 .closeButton[data-focus-visible],
 .backButton[data-focus-visible] {
   outline: 2px solid var(--theme-focus);
+}
+
+.backButton[data-disabled] {
+  color: var(--theme-disable)
 }
 
 .icon[data-disabled] svg,

@@ -11,7 +11,6 @@ const initialState: IReaderState = {
   isHovering: false,
   hasArrows: true,
   isFullscreen: false,
-  isPaged: true,
   settingsContainer: SettingsContainerKeys.initial,
   platformModifier: defaultPlatformModifier
 }
@@ -41,9 +40,6 @@ export const readerSlice = createSlice({
     setFullscreen: (state, action) => {
       state.isFullscreen = action.payload
     },
-    setPaged: (state, action) => {
-      state.isPaged = action.payload
-    },
     setSettingsContainer: (state, action) => {
       state.settingsContainer = action.payload
     }
@@ -59,7 +55,6 @@ export const {
   setHovering, 
   setArrows, 
   setFullscreen, 
-  setPaged,
   setSettingsContainer
 } = readerSlice.actions;
 

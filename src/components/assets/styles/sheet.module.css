@@ -147,10 +147,6 @@
   border-bottom: 1px solid var(--theme-subdue);
 }
 
-.sheetHeaderBackButton {
-  margin-inline: calc((var(--layout-spacing) * -1) + (var(--layout-spacing) * 1/4)) calc(var(--layout-spacing) / 2);
-}
-
 .bottomSheetHeader {
   box-sizing: border-box;
   display: flex;

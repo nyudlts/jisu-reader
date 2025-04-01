@@ -1,3 +1,6 @@
+import { IActionsState } from "@/models/state/actionsState";
+import { DockingKeys } from "@/models/docking";
+
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import readerReducer from "@/lib/readerReducer";
 import settingsReducer from "@/lib/settingsReducer";
@@ -5,15 +8,37 @@ import themeReducer from "@/lib/themeReducer";
 import actionsReducer from "@/lib/actionsReducer";
 import publicationReducer from "./publicationReducer";
 
+import debounce from "debounce";
+
+const updateActionsState = (state: IActionsState) => {
+  const updatedKeys = Object.fromEntries(
+    Object.entries(state.keys).map(([key, value]) => [
+      key,
+      {
+        ...value,
+        isOpen: value.docking === DockingKeys.transient || value.docking === null && value.isOpen === true ? false : value.isOpen,
+      },
+    ])
+  );
+
+  return {
+    ...state,
+    keys: updatedKeys,
+    overflow: {}
+  };
+};
+
 const loadState = () => {
   try {
     const serializedState = localStorage.getItem("playground-state");
     if (serializedState === null) {
-      return undefined;
+      return { actions: undefined, settings: undefined, theming: undefined };
     }
-    return JSON.parse(serializedState);
+    const deserializedState = JSON.parse(serializedState);
+    deserializedState.actions = updateActionsState(deserializedState.actions);
+    return deserializedState;
   } catch (err) {
-    return undefined;
+    return { actions: undefined, settings: undefined, theming: undefined };
   }
 };
 
@@ -27,7 +52,6 @@ const saveState = (state: object) => {
 };
 
 export const makeStore = () => {
-  const preloadedState = loadState();
   const rootReducer = combineReducers({
     reader: readerReducer,
     settings: settingsReducer,
@@ -38,12 +62,18 @@ export const makeStore = () => {
 
   const store = configureStore({
     reducer: rootReducer,
-    preloadedState,
+    preloadedState: {
+      actions: loadState().actions,
+      settings: loadState().settings,
+      theming: loadState().theming
+    },
   });
 
-  store.subscribe(() => {
+  const saveStateDebounced = debounce(() => {
     saveState(store.getState());
-  });
+  }, 500);
+
+  store.subscribe(saveStateDebounced);
 
   return store;
 }

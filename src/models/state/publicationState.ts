@@ -11,6 +11,7 @@ export interface IPublicationState {
   atPublicationStart: boolean;
   atPublicationEnd: boolean;
   tocTree?: TocItem[];
+  tocEntry?: string;
   pageList?: PageListItem[];
   chapterHref?: string;
   authors?: string[];

@@ -14,10 +14,6 @@
   position: relative;
 }
 
-.readerSettingsNumberField {
-  width: fit-content;
-}
-
 .readerSettingsAdvancedIcon {
   position: absolute;
   inset-inline-end: 0;
@@ -56,7 +52,7 @@
   outline: 2px solid var(--theme-focus);
 }
 
-.readerSettingsInput {
+.readerSettingsNumberField .readerSettingsInput {
   background-color: var(--theme-background);
   color: var(--theme-text);
   font-weight: bold;
@@ -136,14 +132,13 @@
 
 .readerSettingsSlider {
   display: grid;
-  grid-template-areas: "label output"
-                       "track track";
-  grid-template-columns: 1fr auto;
+  grid-template-areas: "label output blank"
+                       "track track blank";
+  grid-template-columns: 1fr auto minmax(calc(var(--layout-spacing) / 2), 20%);
   gap: calc(var(--layout-spacing) / 2);
-  max-width: 100%;
   color: var(--theme-text);
   flex-direction: column;
-  width: 250px;
+  max-width: 100%;
 }
 
 .readerSettingsSliderLabel {

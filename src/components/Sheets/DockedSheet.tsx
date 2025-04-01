@@ -76,19 +76,15 @@ export const DockedSheet: React.FC<IDockedSheet> = ({
             <div 
               ref={ dockedSheetHeaderRef }
               className={ sheetStyles.sheetHeader }
-            >
-              { headerVariant === SheetHeaderVariant.previous && 
-                <BackButton 
-                  ref={ dockedSheetCloseRef }
-                  className={ sheetStyles.sheetHeaderBackButton }
-                  onPressCallback={ onClosePressCallback }
-                /> 
-              }
-                          
+            >             
               <Heading slot="title" className={ sheetStyles.sheetHeading }>{ heading }</Heading>
 
-              { headerVariant !== SheetHeaderVariant.previous &&
-                <Docker 
+              { headerVariant === SheetHeaderVariant.previous 
+                ? <BackButton 
+                  ref={ dockedSheetCloseRef }
+                  onPressCallback={ onClosePressCallback }
+                /> 
+                : <Docker 
                   id={ id }
                   keys={ docker || [] }
                   ref={ dockedSheetCloseRef }

@@ -3,4 +3,5 @@ export interface TocItem {
   href: string;
   title?: string;
   children?: TocItem[];
+  position?: number;
 }

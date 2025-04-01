@@ -26,7 +26,8 @@ export const FullScreenSheet: React.FC<IFullScreenSheet> = ({
     onOpenChangeCallback, 
     onClosePressCallback,
     children,
-    resetFocus
+    resetFocus,
+    dismissEscapeKeyClose
   }) => {
   const fullScreenHeaderRef = useRef<HTMLDivElement | null>(null);
   const fullScreenBodyRef = useRef<HTMLDivElement | null>(null);
@@ -47,6 +48,7 @@ export const FullScreenSheet: React.FC<IFullScreenSheet> = ({
         onOpenChange={ onOpenChangeCallback }
         isDismissable={ true }
         className={ classNames(sheetStyles.fullScreenSheet, className) }
+        isKeyboardDismissDisabled={ dismissEscapeKeyClose }
         style={{
           "--sheet-sticky-header": fullScreenHeaderRef.current ? `${ fullScreenHeaderRef.current.clientHeight }px` : undefined
         }}
@@ -56,18 +58,14 @@ export const FullScreenSheet: React.FC<IFullScreenSheet> = ({
             ref={ fullScreenHeaderRef }
             className={ sheetStyles.sheetHeader }
           >
-            { headerVariant === SheetHeaderVariant.previous && 
-              <BackButton 
-                ref={ fullScreenCloseRef }
-                className={ sheetStyles.sheetHeaderBackButton }
-                onPressCallback={ onClosePressCallback }
-              /> 
-            }
-
             <Heading slot="title" className={ sheetStyles.sheetHeading }>{ heading }</Heading>
 
-            { headerVariant !== SheetHeaderVariant.previous &&
-              <CloseButton
+            { headerVariant === SheetHeaderVariant.previous
+              ? <BackButton 
+                ref={ fullScreenCloseRef }
+                onPressCallback={ onClosePressCallback }
+              />
+              : <CloseButton
                 ref={ fullScreenCloseRef }
                 className={ readerSharedUI.closeButton } 
                 label={ Locale.reader.app.docker.close.trigger } 

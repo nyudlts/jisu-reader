@@ -16,6 +16,7 @@ import { ThemeKeys } from "@/models/theme";
 import { ICache } from "@/models/reader";
 import { ReadingDisplayFontFamilyOptions, ReadingDisplayLineHeightOptions } from "@/models/layout";
 import { defaultLineHeights } from "@/models/settings";
+import { TocItem } from "@/models/toc";
 
 import { I18nProvider } from "react-aria";
 
@@ -40,7 +41,8 @@ import {
   Fetcher, 
   HttpFetcher, 
   EPUBLayout, 
-  ReadingProgression 
+  ReadingProgression, 
+  Link
 } from "@readium/shared";
 
 import { ReaderWithDock } from "./ReaderWithPanels";
@@ -78,7 +80,8 @@ import {
   setRTL, 
   setProgression, 
   setRunningHead, 
-  setTocTree, setPageList, setPublishers, setAuthors, setIdentifier, setCoverUrl, setChapterHref, setA11yInfo 
+  setTocTree, setPageList, setPublishers, setAuthors, setIdentifier, setCoverUrl, setChapterHref, setA11yInfo, 
+  setTocEntry
 } from "@/lib/publicationReducer";
 
 import debounce from "debounce";
@@ -91,22 +94,25 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   const arrowsWidth = useRef(2 * ((RSPrefs.theming.arrow.size || 40) + (RSPrefs.theming.arrow.offset || 0)));
 
   const isFXL = useAppSelector(state => state.publication.isFXL);
+  const tocTree = useAppSelector(state => state.publication.tocTree);
+  const tocEntry = useAppSelector(state => state.publication.tocEntry);
 
-  const align = useAppSelector(state => state.settings.align);
-  const colCount = useAppSelector(state => state.settings.colCount);
+  const textAlign = useAppSelector(state => state.settings.textAlign);
+  const columnCount = useAppSelector(state => state.settings.columnCount);
   const fontFamily = useAppSelector(state => state.settings.fontFamily);
   const fontSize = useAppSelector(state => state.settings.fontSize);
   const fontWeight = useAppSelector(state => state.settings.fontWeight);
   const hyphens = useAppSelector(state => state.settings.hyphens);
-  const isPaged = useAppSelector(state => state.reader.isPaged);
   const layoutStrategy = useAppSelector(state => state.settings.layoutStrategy);
   const letterSpacing = useAppSelector(state => state.settings.letterSpacing);
   const lineLength = useAppSelector(state => state.settings.lineLength);
   const lineHeight = useAppSelector(state => state.settings.lineHeight);
-  const normalizeText = useAppSelector(state => state.settings.normalizeText);
-  const paraIndent = useAppSelector(state => state.settings.paraIndent);
-  const paraSpacing = useAppSelector(state => state.settings.paraSpacing);
+  const paragraphIndent = useAppSelector(state => state.settings.paragraphIndent);
+  const paragraphSpacing = useAppSelector(state => state.settings.paragraphSpacing);
   const publisherStyles = useAppSelector(state => state.settings.publisherStyles);
+  const scroll = useAppSelector(state => state.settings.scroll);
+  const isPaged = !scroll;
+  const textNormalization = useAppSelector(state => state.settings.textNormalization);
   const wordSpacing = useAppSelector(state => state.settings.wordSpacing);
   const theme = useAppSelector(state => state.theming.theme);
   const previousTheme = usePrevious(theme);
@@ -125,8 +131,7 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
     isImmersive: isImmersive,
     arrowsOccupySpace: arrowsOccupySpace || false,
     settings: {
-      align: align,
-      colCount: colCount,
+      columnCount: columnCount,
       fontFamily: fontFamily,
       fontSize: fontSize,
       fontWeight: fontWeight,
@@ -135,14 +140,16 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
       letterSpacing: letterSpacing,
       lineHeight: lineHeight,
       lineLength: lineLength,
-      normalizeText: normalizeText,
-      paginated: isPaged,
-      paraIndent: paraIndent,
-      paraSpacing: paraSpacing,
+      paragraphIndent: paragraphIndent,
+      paragraphSpacing: paragraphSpacing,
       publisherStyles: publisherStyles,
+      scroll: scroll,
+      textAlign: textAlign,
+      textNormalization: textNormalization,
       theme: theme,
       wordSpacing: wordSpacing
     },
+    tocTree: tocTree,
     colorScheme: colorScheme,
     reducedMotion: reducedMotion
   });
@@ -173,7 +180,7 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
     navLayout,
     currentLocator,
     getCframes,
-    applyScroll,
+    handleScrollAffordances,
     submitPreferences
   } = useEpubNavigator();
 
@@ -196,7 +203,7 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   // See https://github.com/readium/playground/issues/25
   const handleTap = (event: FrameClickEvent) => {
     const _cframes = getCframes();
-    if (_cframes && cache.current.settings.paginated) {
+    if (_cframes && !cache.current.settings.scroll) {
       const oneQuarter = ((_cframes.length === 2 ? _cframes[0]!.window.innerWidth + _cframes[1]!.window.innerWidth : _cframes![0]!.window.innerWidth) * window.devicePixelRatio) / 4;
     
       if (event.x < oneQuarter) {
@@ -218,34 +225,62 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
       // Init’ing so that progression can be populated on first spread loaded
       const cLoc = currentLocator();
       if (cLoc) handleProgression(cLoc);
+    } else {
+      // [TMP] We need to handle this in multiple places due to the lack of Injection API.
+      // This mounts and unmounts scroll affordances on iframe loaded
+      handleScrollAffordances(cache.current.settings.scroll);
     }
   };
+
+  const handleTocEntryOnNav = useCallback((link?: Link) => {
+    if (!link) return;
+
+    if (cache.current.tocTree) {
+      const findMatch = (items: TocItem[]): TocItem | undefined => {
+        for (const item of items) {
+          if (item.href === link.href) {
+            return item;
+          }
+          if (item.children) {
+            const match = findMatch(item.children);
+            if (match) {
+              return match;
+            }
+          }
+        }
+        return undefined;
+      };
+
+      const match = findMatch(cache.current.tocTree);
+      if (match) dispatch(setTocEntry(match.id));
+    }
+  }, [dispatch]);
 
   const p = new Peripherals(useAppStore(), {
     moveTo: (direction) => {
       switch(direction) {
         case "right":
-          if (cache.current.settings.paginated) goRight(!cache.current.reducedMotion, activateImmersiveOnAction);
+          if (!cache.current.settings.scroll) goRight(!cache.current.reducedMotion, activateImmersiveOnAction);
           break;
         case "left":
-          if (cache.current.settings.paginated) goLeft(!cache.current.reducedMotion, activateImmersiveOnAction);
+          if (!cache.current.settings.scroll) goLeft(!cache.current.reducedMotion, activateImmersiveOnAction);
           break;
         case "up":
         case "home":
           // Home should probably go to first column/page of chapter in reflow?
-          if (!cache.current.settings.paginated) activateImmersiveOnAction();
+          if (cache.current.settings.scroll) activateImmersiveOnAction();
           break;
         case "down":
         case "end":
           // End should probably go to last column/page of chapter in reflow?
-          if (!cache.current.settings.paginated) activateImmersiveOnAction();
+          if (cache.current.settings.scroll) activateImmersiveOnAction();
           break;
         default:
           break;
       }
     },
     goProgression: (shiftKey) => {
-      if (cache.current.settings?.paginated) {
+      if (!cache.current.settings?.scroll) {
         shiftKey 
           ? goBackward(!cache.current.reducedMotion, activateImmersiveOnAction) 
           : goForward(!cache.current.reducedMotion, activateImmersiveOnAction);
@@ -287,6 +322,11 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
     positionChanged: async function (locator: Locator): Promise<void> {
       window.focus();
 
+      const currentLocator = localData.get(localDataKey.current);
+      if (currentLocator?.href !== locator.href) {
+        handleTocEntryOnNav(new Link(locator));
+      }
+
       // This can’t be relied upon with FXL to handleProgression at the moment,
       // Only reflowable snappers will register the "progress" event
       // that triggers positionChanged every time the progression changes
@@ -294,17 +334,16 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
       // the spread has not been shown yet, but won’t if you just slid to them.
       if (navLayout() === EPUBLayout.reflowable) {
         // Due to the lack of injection API we need to force scroll 
-        // to mount/unmount scroll affordances ATM
-        
+        // to mount/unmount scroll affordances ATM  
         const debouncedHandleProgression = debounce(
           async () => {
-            // TMP: To mount/unmount scroll affordances in the absence of the injection API. 
+            // TMP: To mount/unmount scroll affordances in the absence of the injection API.
+            // This is to make sure frames already loaded will mount/unmount scroll affordances. 
             // We need to debounce because of swipe, which has a 150ms animation in Column Snapper, 
             // otherwise the iframe will stay hidden since we must change the ReadingProgression,
             // that requires re-loading the frame pool
-            const currentLocator = localData.get(localDataKey.current);
             if (currentLocator?.href !== locator.href) {
-              await applyScroll(!cache.current.settings.paginated);
+              handleScrollAffordances(cache.current.settings.scroll);
             }
             //NYU Press set chapter href in redux, used in NYUReaderFooter
             dispatch(setChapterHref(locator.href)); 
@@ -359,28 +398,24 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   // Handling side effects on Navigator
 
   useEffect(() => {
-    cache.current.settings.paginated = isPaged;
+    cache.current.settings.scroll = scroll;
 
     const handleConstraint = async (value: number) => {
       await applyConstraint(value)
     }
 
-    if (isPaged) {
+    if (!scroll) {
       handleConstraint(arrowsOccupySpace ? arrowsWidth.current : 0)
         .catch(console.error);
     } else {
       handleConstraint(0)
         .catch(console.error);
     }
-  }, [isPaged, arrowsOccupySpace, applyConstraint]);
+  }, [scroll, arrowsOccupySpace, applyConstraint]);
 
   useEffect(() => {
-    cache.current.settings.align = align;
-  }, [align]);
-
-  useEffect(() => {
-    cache.current.settings.colCount = colCount;
-  }, [colCount]);
+    cache.current.settings.columnCount = columnCount;
+  }, [columnCount]);
 
   useEffect(() => {
     cache.current.settings.fontFamily = fontFamily;
@@ -415,16 +450,20 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   }, [lineLength]);
 
   useEffect(() => {
-    cache.current.settings.normalizeText = normalizeText;
-  }, [normalizeText]);
+    cache.current.settings.paragraphIndent = paragraphIndent;
+  }, [paragraphIndent]);
 
   useEffect(() => {
-    cache.current.settings.paraIndent = paraIndent;
-  }, [paraIndent]);
+    cache.current.settings.paragraphSpacing = paragraphSpacing;
+  }, [paragraphSpacing]);
 
   useEffect(() => {
-    cache.current.settings.paraSpacing = paraSpacing;
-  }, [paraSpacing]);
+    cache.current.settings.textAlign = textAlign;
+  }, [textAlign]);
+
+  useEffect(() => {
+    cache.current.settings.textNormalization = textNormalization;
+  }, [textNormalization]);
 
   useEffect(() => {
     cache.current.settings.theme = theme;
@@ -433,6 +472,22 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   useEffect(() => {
     cache.current.settings.wordSpacing = wordSpacing;
   }, [wordSpacing]);
+
+  useEffect(() => {
+    cache.current.tocTree = tocTree;
+
+    if (tocEntry) return;
+
+    const knownPosition: Locator = localData.get(localDataKey.current);
+    if (knownPosition) {
+      handleTocEntryOnNav(new Link(knownPosition));
+    } else {
+      const initialTocEntry = tocTree?.[0];
+      if (initialTocEntry) {
+        handleTocEntryOnNav(new Link({ href: initialTocEntry.href }));
+      }
+    }
+  }, [tocTree, tocEntry, handleTocEntryOnNav]);
 
   useEffect(() => {
     cache.current.arrowsOccupySpace = arrowsOccupySpace || false;
@@ -486,8 +541,8 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
 
     publication.current = new Publication({
       manifest: manifest,
-      fetcher: fetcher,
-    });    
+      fetcher: fetcher
+    });
 
     dispatch(setRTL(publication.current.metadata.effectiveReadingProgression === ReadingProgression.rtl));
     dispatch(setFXL(publication.current.metadata.getPresentation()?.layout === EPUBLayout.fixed));
@@ -535,13 +590,6 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
     dispatch(setA11yInfo(a11yInfo));
     let positionsList: Locator[] | undefined;
 
-    // Create a heirarchical tree structure for the table of contents
-    // where each entry has a unique id property and store this on the publication state
-    let idCounter = 0;
-    const idGenerator = () => `toc-${++idCounter}`;
-    const tocTree = createTocTree(publication.current.tableOfContents?.items || [], idGenerator);
-    dispatch(setTocTree(tocTree));
-
     const fetchPositions = async () => {
       positionsList = await publication.current?.positionsFromManifest();
       if (positionsList && positionsList.length > 0) dispatch(setProgression( { totalPositions: positionsList.length }));
@@ -552,7 +600,14 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
       .then(() => {
         const isFXL = publication.current?.metadata.getPresentation()?.layout === EPUBLayout.fixed;
 
-        const initialPosition = localData.get(localDataKey.current);
+        const initialPosition: Locator = localData.get(localDataKey.current);
+
+        // Create a heirarchical tree structure for the table of contents
+        // where each entry has a unique id property and store this on the publication state
+        let idCounter = 0;
+        const idGenerator = () => `toc-${++idCounter}`;
+        const tocTree = createTocTree(publication.current?.tableOfContents?.items || [], idGenerator, positionsList);
+        dispatch(setTocTree(tocTree));
         const initialConstraint = cache.current.arrowsOccupySpace ? arrowsWidth.current : 0;
         
         const themeKeys = isFXL ? RSPrefs.theming.themes.fxlOrder : RSPrefs.theming.themes.reflowOrder;
@@ -567,23 +622,27 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
           };
 
         const preferences: IEpubPreferences = isFXL ? {} : {
-          columnCount: cache.current.settings.colCount === "auto" ? null : Number(cache.current.settings.colCount),
+          columnCount: cache.current.settings.columnCount === "auto" ? null : Number(cache.current.settings.columnCount),
           constraint: initialConstraint,
           fontFamily: cache.current.settings.fontFamily && ReadingDisplayFontFamilyOptions[cache.current.settings.fontFamily],
           fontSize: cache.current.settings.fontSize,
           fontWeight: cache.current.settings.fontWeight,
           hyphens: cache.current.settings.hyphens,
           layoutStrategy: cache.current.settings.layoutStrategy as unknown as LayoutStrategy | null | undefined,
-          letterSpacing: cache.current.settings.letterSpacing,
-          lineHeight: cache.current.settings.lineHeight === null ? null : lineHeightOptions[cache.current.settings.lineHeight],
+          letterSpacing: cache.current.settings.publisherStyles ? undefined : cache.current.settings.letterSpacing,
+          lineHeight: cache.current.settings.publisherStyles 
+            ? undefined 
+            : cache.current.settings.lineHeight === null 
+              ? null 
+              : lineHeightOptions[cache.current.settings.lineHeight],
           lineLength: cache.current.settings.lineLength,
-          paragraphIndent: cache.current.settings.paraIndent,
-          paragraphSpacing: cache.current.settings.paraSpacing,
+          paragraphIndent: cache.current.settings.publisherStyles ? undefined :cache.current.settings.paragraphIndent,
+          paragraphSpacing: cache.current.settings.publisherStyles ? undefined :cache.current.settings.paragraphSpacing,
           publisherStyles: cache.current.settings.publisherStyles,
-          scroll: !cache.current.settings.paginated,
-          textAlign: cache.current.settings.align as unknown as TextAlignment | null | undefined,
-          textNormalization: cache.current.settings.normalizeText,
-          wordSpacing: cache.current.settings.wordSpacing,
+          scroll: cache.current.settings.scroll,
+          textAlign: cache.current.settings.textAlign as unknown as TextAlignment | null | undefined,
+          textNormalization: cache.current.settings.textNormalization,
+          wordSpacing: cache.current.settings.publisherStyles ? undefined : cache.current.settings.wordSpacing,
           ...themeProps
         };
 

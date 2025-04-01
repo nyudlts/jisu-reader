@@ -18,11 +18,11 @@ import { RadioGroup, Radio, Label } from "react-aria-components";
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { setAlign, setHyphens } from "@/lib/settingsReducer";
+import { setTextAlign, setHyphens } from "@/lib/settingsReducer";
 
 export const ReadingDisplayAlign: React.FC<IAdvancedDisplayProps> = ({ standalone = true }) => {
   const isRTL = useAppSelector(state => state.reader.direction) === LayoutDirection.rtl;
-  const textAlign = useAppSelector(state => state.settings.align);
+  const textAlign = useAppSelector(state => state.settings.textAlign);
   const dispatch = useAppDispatch();
 
   const { getSetting, submitPreferences } = useEpubNavigator();
@@ -49,7 +49,7 @@ export const ReadingDisplayAlign: React.FC<IAdvancedDisplayProps> = ({ standalon
       const textAlignSetting = getSetting("textAlign") as TextAlignment | null;
       const textAlignValue = textAlignSetting === null ? ReadingDisplayAlignOptions.publisher : textAlignSetting as unknown as ReadingDisplayAlignOptions;
       
-      dispatch(setAlign(textAlignValue));
+      dispatch(setTextAlign(textAlignValue));
       dispatch(setHyphens(getSetting("hyphens")));
   }, [getSetting, submitPreferences, dispatch]);
 
