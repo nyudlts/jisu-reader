@@ -53,7 +53,6 @@ export const ReaderFooter = () => {
   const { go } = useEpubNavigator();
 
   useEffect(() => {
-    //console.log("TODO PK stateProgression", stateProgression);
     if (shouldUpdate) {
       setLocalProgress(stateProgression);
     } else {

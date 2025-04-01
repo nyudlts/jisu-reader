@@ -73,7 +73,7 @@ export const NYUPageListActionContainer: React.FC<IActionComponentContainer> = (
             ? () => {} 
             : () => {
               dispatch(setActionOpen({ 
-                key: ActionKeys.toc,
+                key: ActionKeys.nyuPageList,
                 isOpen: false 
               }));
             }
