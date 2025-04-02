@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, ReactNode, RefObject, useCallback, useEffect, useRef, useState } from "react";
+import React, { KeyboardEvent, ReactNode, RefObject, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { OverlayTriggerState, useOverlayTriggerState } from "react-stately";
 
@@ -83,7 +83,7 @@ const BottomSheetContainer = ({
 
   useModal();
 
-  const getDetentClassName = () => {
+  const detentClassName = useMemo(() => {
     let className = "";
     if (hasDetent === "content-height") {
       className = sheetStyles.bottomSheetModalContentHeightDetent;
@@ -91,15 +91,15 @@ const BottomSheetContainer = ({
       className = sheetStyles.bottomSheetModalFullHeightDetent;
     }
     return className;
-  };
+  }, [hasDetent]);
 
-  const getScrimClassName = () => {
+  const scrimClassName = useMemo(() => {
     return scrimPref.active ? sheetStyles.bottomSheetScrim : "";
-  };
+  }, [scrimPref]);
 
-  const getFullscreenClassName = () => {
+  const fullscreenClassName = useMemo(() => {
     return isFullScreen ? sheetStyles.bottomSheetModalFullHeightReached : "";
-  };
+  }, [isFullScreen]);
 
   const fullScreenIntersectionCallback = useCallback((entries: IntersectionObserverEntry[]) => {
     entries.forEach( (entry) => {
@@ -131,7 +131,7 @@ const BottomSheetContainer = ({
   return (
     <>
     <Sheet.Container 
-      className={ classNames(sheetStyles.bottomSheetModal, getDetentClassName(), getFullscreenClassName() ) } 
+      className={ classNames(sheetStyles.bottomSheetModal, detentClassName, fullscreenClassName ) } 
       ref={ sheetContainerRef }
       { ...overlay.overlayProps as any}
       { ...dialog.dialogProps }
@@ -183,7 +183,7 @@ const BottomSheetContainer = ({
       </Sheet.Content>
     </Sheet.Container>
     <Sheet.Backdrop 
-      className={ classNames(sheetStyles.bottomSheetBackdrop, getScrimClassName()) } 
+      className={ classNames(sheetStyles.bottomSheetBackdrop, scrimClassName) } 
       { ...(scrimPref.override ? { style: { "--defaults-scrim": scrimPref.override }} : {}) }
     />
     </>
@@ -212,7 +212,7 @@ export const BottomSheet: React.FC<IBottomSheet> = ({
   const detent = useRef<BottomSheetDetent>("full-height");
   const isDraggable = useRef<boolean>(true);
 
-  const getSnapArray = useCallback(() => {
+  const snapArray = useMemo(() => {
     // Val is always checked in 0...1 range
     const getSecureVal = (val: number, ref: number) => {
       if (val > ref) {
@@ -315,16 +315,15 @@ export const BottomSheet: React.FC<IBottomSheet> = ({
     return snapArray;
   }, [id]);
 
-  const snapArray = useRef<number[]>(getSnapArray());
   const snapIdx = useRef<number | null>(null);
 
   const onDragPressCallback = useCallback(() => {
     if (snapIdx.current !== null) {
       // Don’t forget we’re having to handle max @ 0 and min @ 2 (decreasing order)
-      const nextIdx = snapIdx.current === 0 ? snapArray.current.length - 1 : (snapIdx.current - 1);
+      const nextIdx = snapIdx.current === 0 ? snapArray.length - 1 : (snapIdx.current - 1);
       sheetRef.current?.snapTo(nextIdx);
     }
-  }, []);
+  }, [snapArray]);
 
   const onDragKeyCallback = useCallback((e: KeyboardEvent) => {
     if (snapIdx.current !== null) {
@@ -344,7 +343,7 @@ export const BottomSheet: React.FC<IBottomSheet> = ({
           onClosePressCallback();
           break;
         case "ArrowDown":
-          if (snapIdx.current === snapArray.current.length - 1) {
+          if (snapIdx.current === snapArray.length - 1) {
             onClosePressCallback();
             break;
           }
@@ -354,9 +353,9 @@ export const BottomSheet: React.FC<IBottomSheet> = ({
           break;
       }
     }
-  }, [onClosePressCallback]);
+  }, [snapArray, onClosePressCallback]);
 
-  const getMaxWidthPref = () => {
+  const maxWidthPref = useMemo(() => {
     const maxWidth = RSPrefs.actions.keys[id].snapped?.maxWidth;
     if (typeof maxWidth === "undefined") {
       return undefined;
@@ -365,9 +364,9 @@ export const BottomSheet: React.FC<IBottomSheet> = ({
     } else {
       return `${ maxWidth }px`;
     }
-  };
+  }, [id]);
 
-  const getScrimPref = () => {
+  const scrimPref = useMemo(() => {
     let scrimPref: IScrimPref = {
       active: false,
       override: undefined
@@ -382,7 +381,7 @@ export const BottomSheet: React.FC<IBottomSheet> = ({
     }
 
     return scrimPref;
-  };
+  }, [id]);
  
   const firstFocusable = useFirstFocusable({
     withinRef: bottomSheetBodyRef, 
@@ -405,10 +404,10 @@ export const BottomSheet: React.FC<IBottomSheet> = ({
         isOpen={ sheetState.isOpen }
         onClose={ sheetState.close }
         onOpenEnd={ () => firstFocusable && firstFocusable.focus() }
-        { ...(snapArray.current.length > 1 
+        { ...(snapArray.length > 1 
           ? { 
-            snapPoints: snapArray.current, 
-            initialSnap: snapArray.current.length - 2,
+            snapPoints: snapArray, 
+            initialSnap: snapArray.length - 2,
             detent: detent.current
           } 
           : {
@@ -441,8 +440,8 @@ export const BottomSheet: React.FC<IBottomSheet> = ({
               isDraggable= { isDraggable.current }
               hasDetent={ detent.current }
               dismissEscapeKeyClose={ dismissEscapeKeyClose }
-              maxWidth={ getMaxWidthPref() }
-              scrimPref={ getScrimPref() }
+              maxWidth={ maxWidthPref }
+              scrimPref={ scrimPref }
               sheetRef={ sheetRef } 
               sheetContainerRef={ sheetContainerRef }
               bottomSheetBodyRef={ bottomSheetBodyRef }
