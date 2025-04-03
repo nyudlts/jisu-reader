@@ -11,7 +11,7 @@ import FullscreenCorners from "./assets/icons/fullscreen.svg";
 import FullscreenExit from "./assets/icons/fullscreen_exit.svg";
 
 import { OverflowMenuItem } from "./ActionTriggers/OverflowMenuItem";
-import { ActionIcon } from "./ActionTriggers/ActionIcon";
+import { ActionIcon } from "./ActionTriggers/NYUActionIcon";
 
 import { useFullscreen } from "@/hooks/useFullscreen";
 

@@ -11,6 +11,7 @@ import { Button, Tooltip, TooltipTrigger, ButtonProps } from "react-aria-compone
 
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setImmersive } from "@/lib/readerReducer";
+import { ThemeKeys } from "@/models/theme";
 
 import { isActiveElement, isKeyboardTriggered } from "@/helpers/focus";
 import classNames from "classnames";
@@ -29,6 +30,7 @@ export const ActionIcon: React.FC<Pick<ButtonProps, "preventFocusOnPress"> & IAc
   const triggerRef = useRef<HTMLButtonElement>(null);
   const isImmersive = useAppSelector(state => state.reader.isImmersive);
   const isHovering = useAppSelector(state => state.reader.isHovering);
+  const theme = useAppSelector((state) => state.theming.theme);
 
   const dispatch = useAppDispatch();
 
@@ -90,7 +92,7 @@ export const ActionIcon: React.FC<Pick<ButtonProps, "preventFocusOnPress"> & IAc
     >
       <Button 
         ref={ triggerRef }
-        className={ classNames(readerSharedUI.nyuIcon, handleClassNameFromState(), className) } 
+        className={ classNames(( theme === ThemeKeys.auto ? readerSharedUI.nyuIcon : readerSharedUI.icon), handleClassNameFromState(), className) } 
         aria-label={ ariaLabel } 
         onPress={ onPressCallback || defaultOnPressFunc }
         onKeyDown={ blurOnEsc } 

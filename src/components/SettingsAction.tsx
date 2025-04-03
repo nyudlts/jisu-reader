@@ -27,7 +27,7 @@ import settingsStyles from "./assets/styles/readerSettings.module.css";
 import TuneIcon from "./assets/icons/match_case.svg";
 
 import { SheetWithType } from "./Sheets/SheetWithType";
-import { ActionIcon } from "./ActionTriggers/ActionIcon";
+import { ActionIcon } from "./ActionTriggers/NYUActionIcon";
 import { OverflowMenuItem } from "./ActionTriggers/OverflowMenuItem";
 
 import { ReadingDisplayAlign } from "./Settings/ReadingDisplayAlign";

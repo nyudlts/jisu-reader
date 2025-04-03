@@ -5,15 +5,17 @@ import Locale from "../resources/locales/en.json";
 import { ActionComponentVariant, ActionVisibility, IOverflowMenu } from "@/models/actions";
 
 import overflowMenuStyles from "./assets/styles/overflowMenu.module.css";
+import readerSharedUI from "../assets/styles/readerSharedUI.module.css";
 
 import MenuIcon from "./assets/icons/more_vert.svg";
 
 import { Menu, MenuTrigger, Popover } from "react-aria-components";
 import { ActionIcon } from "./ActionTriggers/ActionIcon";
 
-import { useAppDispatch } from "@/lib/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { toggleImmersive } from "@/lib/readerReducer";
 import { setOverflow } from "@/lib/actionsReducer";
+import { ThemeKeys } from "@/models/theme";
 
 export const OverflowMenu = ({ 
   id,
@@ -31,13 +33,17 @@ export const OverflowMenu = ({
       isOpen: value
     }));
   }
+  
+  // NYU specific
+  const theme = useAppSelector((state) => state.theming.theme);
+  const overflowClass =  theme === ThemeKeys.auto ? overflowMenuStyles.activeButtonNYU : overflowMenuStyles.activeButton;
 
   if (actionItems.length > 0 && (display)) {
     return (
       <>
       <MenuTrigger onOpenChange={ (val) => toggleMenuState(val) }>
         <ActionIcon 
-          className={ className ? className : overflowMenuStyles.activeButton }
+          className={ className ? className : overflowClass }
           ariaLabel={ Locale.reader.overflowMenu.active.trigger }
           SVG={ MenuIcon } 
           placement="bottom"

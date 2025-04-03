@@ -17,7 +17,7 @@ import tocStyles from "./assets/styles/toc.module.css";
 
 import TocIcon from "./assets/icons/toc.svg";
 
-import { ActionIcon } from "./ActionTriggers/ActionIcon";
+import { ActionIcon } from "./ActionTriggers/NYUActionIcon";
 import { SheetWithType } from "./Sheets/SheetWithType";
 import { OverflowMenuItem } from "./ActionTriggers/OverflowMenuItem";
 import { Button, Collection, Selection } from "react-aria-components";

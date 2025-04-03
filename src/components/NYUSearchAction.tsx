@@ -14,7 +14,7 @@ import "./assets/styles/nyuDisclosure.css"; // Import regular CSS file for Discl
 
 import LocationIcon from "./assets/icons/nyu_search.svg";
 
-import { ActionIcon } from "./ActionTriggers/ActionIcon";
+import { ActionIcon } from "./ActionTriggers/NYUActionIcon";
 import { SheetWithType } from "./Sheets/SheetWithType";
 import { OverflowMenuItem } from "./ActionTriggers/OverflowMenuItem";
 import { Button, Disclosure, Form, Heading, Input, Key, Link as AriaLink, TextField, DisclosurePanel } from "react-aria-components";
