@@ -697,27 +697,29 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
     p.observe(window);
     setTimeout(() => {
       if (deepLinkLocator) {
-        go(deepLinkLocator! , true, () => {});
-
-        //highlight the search term on the page
-        const _cframes = getCframes();
-        if (_cframes)
-        {
-          _cframes.forEach((cframe) => {
-            if (cframe) {
-              cframe.msg?.send("decorate", {
-                group: "tts",
-                action: "update",
-                decoration: {
-                  id: "tts",
-                  locator: deepLinkLocator,
-                },
-              } as DecoratorRequest);
-            }
-          });
-        }
+        go(deepLinkLocator! , true, () => {highlightSearchTerm(deepLinkLocator!)});
       }
     }, 300);
+  }
+
+  const highlightSearchTerm = (searchLocator: Locator) => {
+    //highlight the search term on the page
+    const _cframes = getCframes();
+    if (_cframes)
+    {
+      _cframes.forEach((cframe) => {
+        if (cframe) {
+          cframe.msg?.send("decorate", {
+            group: "tts",
+            action: "update",
+            decoration: {
+              id: "tts",
+              locator: searchLocator,
+            },
+          } as DecoratorRequest);
+        }
+      });
+    }
   }
 
   return (

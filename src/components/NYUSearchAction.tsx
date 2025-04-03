@@ -127,27 +127,9 @@ export const NYUSearchContainer: React.FC<IActionComponentContainer> = ({ trigge
 
     //TODO Switch to bookID instead of title
     if (bookID === urlBookID) {
-      // If the title is the same as the current title just go to the locator
-      const myLocator = Locator.deserialize(locatorData);
-      go(myLocator! , true, () => {});
-
-      //highlight the search term on the page
-      const _cframes = getCframes();
-      if (_cframes)
-      {
-        _cframes.forEach((cframe) => {
-          if (cframe) {
-            cframe.msg?.send("decorate", {
-              group: "tts",
-              action: "update",
-              decoration: {
-                id: "tts",
-                locator: myLocator,
-              },
-            } as DecoratorRequest);
-          }
-        });
-      }
+      // If the bookID is the same as the current title just go to the locator
+      const searchLocator = Locator.deserialize(locatorData);
+      go(searchLocator! , true, () => {highlightSearchTerm(searchLocator!)});
 
     } else {
       const host = typeof window !== "undefined" ? `${window.location.origin}${pathname}` : "";
@@ -160,8 +142,27 @@ export const NYUSearchContainer: React.FC<IActionComponentContainer> = ({ trigge
       window.location.href = deepLink;
     }
 
-    
   };
+
+  const highlightSearchTerm = (searchLocator: Locator) => {
+    //highlight the search term on the page
+    const _cframes = getCframes();
+    if (_cframes)
+    {
+      _cframes.forEach((cframe) => {
+        if (cframe) {
+          cframe.msg?.send("decorate", {
+            group: "tts",
+            action: "update",
+            decoration: {
+              id: "tts",
+              locator: searchLocator,
+            },
+          } as DecoratorRequest);
+        }
+      });
+    }
+  }
 
   const findResultById = (id: string, results: SearchResult[]): SearchResult | undefined => {
     return results.find((result) => result.id === id);
