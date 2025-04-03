@@ -1,56 +1,81 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+import Locale from "../../resources/locales/en.json";
+
 import { HttpFetcher } from "@readium/shared";
 import { Link } from "@readium/shared";
-import { Reader } from "@/components/Reader";
 
-import StoreProvider from "../StoreProvider";
+import "../app.css";
+
+import dynamic from "next/dynamic";
+const Reader = dynamic<{ rawManifest: object; selfHref: string }>(() => import("../../components/Reader").then((mod) => mod.Reader), { ssr: false });
+
+import { useTheming } from "@/hooks/useTheming";
+
+import { useAppSelector } from "@/lib/hooks";
 
 // TODO page metadata w/ generateMetadata
 
-export default async function ReaderPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
-  let error = "";
-  const params = await searchParams;
+export default function ReaderPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const [isClient, setIsClient] = useState(false);
+  const [params, setParams] = useState<{ [key: string]: string | string[] | undefined } | null>(null);
+  const [error, setError] = useState("");
+  const [manifest, setManifest] = useState<object | undefined>(undefined);
+  const [selfLink, setSelfLink] = useState<string | undefined>(undefined);
 
-  let book = "moby-dick";
-  let publicationURL = "";
-  if (params["book"]) {
-    book = Array.isArray(params["book"]) ? params["book"][0] : params["book"];
-  }
-  if (book.startsWith("http://") || book.startsWith("https://")) {
-    // TODO: use URL.canParse()
-    publicationURL = book;
-    if (!book.endsWith("manifest.json") && !book.endsWith("/"))
-      publicationURL += "/";
-  } else
-    throw new Error("book parameter is required");
+  const readerIsLoading = useAppSelector(state => state.reader.isLoading);
 
-  const manifestLink = new Link({ href: "manifest.json" });
-  const fetcher = new HttpFetcher(fetch, publicationURL);
-  const fetched = fetcher.get(manifestLink);
-  const selfLink = (await fetched.link()).toURL(publicationURL)!;
+  // Init theming (breakpoints, theme, media queries…)
+  const theming = useTheming();
 
-  // NYU Press get locator/deep link from Url param 
-  let locatorParam = "";
-  if (params["locator"]) {
-    locatorParam = Array.isArray(params["locator"]) ? params["locator"][0] : params["locator"];
-  }
+  useEffect(() => {
+    setIsClient(true);
+    searchParams.then((params) => setParams(params));
+  }, [searchParams]);
 
-  let manifest: object | undefined;
-  try {
-    manifest = await fetched.readAsJSON() as object;
-  } catch (error) {
-    console.error("Error loading manifest", error);
-    error = `Failed loading manifest ${selfLink}`;
-  }
+  useEffect(() => {
+    if (params && isClient) {
+      let book = "moby-dick";
+      let publicationURL = "";
+      if (params["book"]) {
+        book = Array.isArray(params["book"]) ? params["book"][0] : params["book"];
+      }
+      
+      if (book.startsWith("http://") || book.startsWith("https://")) {
+        // TODO: use URL.canParse()
+        publicationURL = book;
+        if (!book.endsWith("manifest.json") && !book.endsWith("/"))
+          publicationURL += "/";
+      } else {
+        throw new Error("book parameter is required");
+      }
+  
+      const manifestLink = new Link({ href: "manifest.json" });
+      const fetcher = new HttpFetcher(undefined, publicationURL);
+      const fetched = fetcher.get(manifestLink);
+      fetched.link().then((link) => {
+        setSelfLink(link.toURL(publicationURL));
+      });
+
+      fetched.readAsJSON().then((manifestData) => {
+        setManifest(manifestData as object);
+      }).catch((error) => {
+        console.error("Error loading manifest:", error);
+        setError(`Failed loading manifest ${ publicationURL }: ${ error.message }`);
+      });
+    }
+  }, [params, isClient]);
 
   return (
     <>
     { error 
       ? <span>{error}</span> 
-      : manifest 
-        ? <StoreProvider>
-            <Reader rawManifest={manifest} selfHref={selfLink} locatorParam={locatorParam} />
-          </StoreProvider> 
-        : "Loading..."
+      : <>
+        { readerIsLoading && <div className="readerLoader">{ Locale.reader.app.loading }</div> }
+        { isClient && manifest && selfLink && <Reader rawManifest={ manifest } selfHref={ selfLink } /> }
+      </>
     }
     </>
   );

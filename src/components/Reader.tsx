@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { RSPrefs } from "@/preferences";
 
@@ -45,14 +45,12 @@ import {
 } from "@readium/shared";
 
 import { ReaderWithDock } from "./ReaderWithPanels";
-
 import { ReaderHeader } from "./ReaderHeader";
 import { ArrowButton } from "./ArrowButton";
 import { ReaderFooter } from "./NYUReaderFooter";
 
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 import { useFullscreen } from "@/hooks/useFullscreen";
-import { useTheming } from "@/hooks/useTheming";
 import { usePrevious } from "@/hooks/usePrevious";
 
 import Peripherals from "@/helpers/peripherals";
@@ -68,6 +66,7 @@ import { useAppSelector, useAppDispatch, useAppStore } from "@/lib/hooks";
 import { setTheme } from "@/lib/themeReducer";
 import { 
   setImmersive, 
+  setLoading,
   setHovering, 
   toggleImmersive, 
   setPlatformModifier, 
@@ -84,6 +83,7 @@ import {
 } from "@/lib/publicationReducer";
 
 import debounce from "debounce";
+import { Dispatch } from "@reduxjs/toolkit";
 import { DecoratorRequest } from "@/readium/ts-toolkit/navigator-html-injectables/src/modules/Decorator";
 
 export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: object, selfHref: string, locatorParam: string }) => {
@@ -159,11 +159,6 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
   const dispatch = useAppDispatch();
 
   const fs = useFullscreen();
-
-  // The reason why we’re not using theming for states e.g theming.theme 
-  // instead of useAppSelector is that theming will move to a higher-level component 
-  // and not reside in Reader anymore so we would eventually have to use Redux states
-  const theming = useTheming();
 
   const { 
     EpubNavigatorLoad, 
@@ -614,11 +609,11 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
         const themeProps = listThemeProps(theme, cache.current.colorScheme);
 
         const lineHeightOptions = {
-            [ReadingDisplayLineHeightOptions.publisher]: null,
-            [ReadingDisplayLineHeightOptions.small]: RSPrefs.settings.spacing?.lineHeight?.[ReadingDisplayLineHeightOptions.small] || defaultLineHeights[ReadingDisplayLineHeightOptions.small],
-            [ReadingDisplayLineHeightOptions.medium]: RSPrefs.settings.spacing?.lineHeight?.[ReadingDisplayLineHeightOptions.medium] || defaultLineHeights[ReadingDisplayLineHeightOptions.medium],
-            [ReadingDisplayLineHeightOptions.large]: RSPrefs.settings.spacing?.lineHeight?.[ReadingDisplayLineHeightOptions.large] || defaultLineHeights[ReadingDisplayLineHeightOptions.large],
-          };
+          [ReadingDisplayLineHeightOptions.publisher]: null,
+          [ReadingDisplayLineHeightOptions.small]: RSPrefs.settings.spacing?.lineHeight?.[ReadingDisplayLineHeightOptions.small] || defaultLineHeights[ReadingDisplayLineHeightOptions.small],
+          [ReadingDisplayLineHeightOptions.medium]: RSPrefs.settings.spacing?.lineHeight?.[ReadingDisplayLineHeightOptions.medium] || defaultLineHeights[ReadingDisplayLineHeightOptions.medium],
+          [ReadingDisplayLineHeightOptions.large]: RSPrefs.settings.spacing?.lineHeight?.[ReadingDisplayLineHeightOptions.large] || defaultLineHeights[ReadingDisplayLineHeightOptions.large],
+        };
 
         const preferences: IEpubPreferences = isFXL ? {} : {
           columnCount: cache.current.settings.columnCount === "auto" ? null : Number(cache.current.settings.columnCount),
@@ -681,6 +676,12 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
             defaults: defaults,
             localDataKey: localDataKey.current,
           }, () => p.observe(window));
+      })
+      .finally(() => {
+        const setLoadingThunk = (dispatch: Dispatch) => {
+          dispatch(setLoading(false));
+        };
+        dispatch(setLoadingThunk);
 
           //NYU Press fixes init position bug TODO: remove when fixed in navigator
           go(initialPosition , true, () => {});

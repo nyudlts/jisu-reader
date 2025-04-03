@@ -7,6 +7,7 @@ import { SettingsContainerKeys } from "@/models/settings";
 
 const initialState: IReaderState = {
   direction: LayoutDirection.ltr,
+  isLoading: true,
   isImmersive: false,
   isHovering: false,
   hasArrows: true,
@@ -21,6 +22,9 @@ export const readerSlice = createSlice({
   reducers: {
     setDirection: (state, action) => {
       state.direction = action.payload
+    },
+    setLoading: (state, action) => {
+      state.isLoading = action.payload
     },
     setPlatformModifier: (state, action) => {
       state.platformModifier = action.payload
@@ -49,6 +53,7 @@ export const readerSlice = createSlice({
 // Action creators are generated for each case reducer function
 export const { 
   setDirection, 
+  setLoading,
   setPlatformModifier, 
   setImmersive, 
   toggleImmersive, 

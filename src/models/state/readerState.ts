@@ -4,6 +4,7 @@ import { IPlatformModifier } from "../shortcut";
 
 export interface IReaderState {
   direction: LayoutDirection;
+  isLoading: boolean;
   isImmersive: boolean;
   isHovering: boolean;
   hasArrows: boolean;
