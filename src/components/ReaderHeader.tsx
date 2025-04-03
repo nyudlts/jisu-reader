@@ -74,7 +74,6 @@ export const ReaderHeader = () => {
 
   // NYU Switch the header based on the theme, auto = NYU Theme 
   let headerID = (theme === ThemeKeys.auto) ? "top-bar-nyu" : "top-bar";
-  const headerClassName = (theme === ThemeKeys.auto) ? readerHeaderStyles.nyuHeader : readerHeaderStyles.header;
   let logoSrc = "/nyu-logo-dark.svg";
 
   // Switch the logo based on the theme, auto = NYU Theme 
@@ -126,7 +125,7 @@ export const ReaderHeader = () => {
   return (
     <>
     <header 
-      className={ classNames(readerHeaderStyles.nyuHeader, handleClassNameFromState()) } 
+      className={ classNames(( theme === ThemeKeys.auto ? readerHeaderStyles.nyuHeader : readerHeaderStyles.header), handleClassNameFromState()) } 
       id={ headerID }  
       aria-label={ Locale.reader.app.header.label } 
       onMouseEnter={ setHover } 
