@@ -649,10 +649,10 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
         }
 
          //NYU Press if a locatorParam was passed as a deeplink, send the reader there
-        if (locatorParam !== "") {  
+         if (locatorParam !== "") {  
           const deepLinkData = JSON.parse(decodeURIComponent(locatorParam));
           const deepLinkLocator = Locator.deserialize(deepLinkData);
-  
+
           EpubNavigatorLoad({
             container: container.current, 
             publication: publication.current!,
@@ -662,10 +662,8 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
             preferences: preferences,
             defaults: defaults,
             localDataKey: localDataKey.current,
-          }, () =>  goDeepLink(deepLinkLocator));
-      
-        } else {
-  
+          }, () => goDeepLink(deepLinkLocator));
+         } else {
           EpubNavigatorLoad({
             container: container.current, 
             publication: publication.current!,
@@ -676,18 +674,15 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
             defaults: defaults,
             localDataKey: localDataKey.current,
           }, () => p.observe(window));
+         } 
       })
       .finally(() => {
         const setLoadingThunk = (dispatch: Dispatch) => {
           dispatch(setLoading(false));
         };
         dispatch(setLoadingThunk);
-
-          //NYU Press fixes init position bug TODO: remove when fixed in navigator
-          go(initialPosition , true, () => {});
-        }
       });
-
+       
     return () => {
       EpubNavigatorDestroy(() => p.destroy());
     };

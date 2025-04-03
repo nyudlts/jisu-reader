@@ -10,7 +10,7 @@ import { Link } from "@readium/shared";
 import "../app.css";
 
 import dynamic from "next/dynamic";
-const Reader = dynamic<{ rawManifest: object; selfHref: string }>(() => import("../../components/Reader").then((mod) => mod.Reader), { ssr: false });
+const Reader = dynamic<{ rawManifest: object; selfHref: string, locatorParam:string }>(() => import("../../components/Reader").then((mod) => mod.Reader), { ssr: false });
 
 import { useTheming } from "@/hooks/useTheming";
 
@@ -24,6 +24,8 @@ export default function ReaderPage({ searchParams }: { searchParams: Promise<{ [
   const [error, setError] = useState("");
   const [manifest, setManifest] = useState<object | undefined>(undefined);
   const [selfLink, setSelfLink] = useState<string | undefined>(undefined);
+  const [locatorParam, setLocatorParam] = useState<string>("");
+  
 
   const readerIsLoading = useAppSelector(state => state.reader.isLoading);
 
@@ -41,6 +43,13 @@ export default function ReaderPage({ searchParams }: { searchParams: Promise<{ [
       let publicationURL = "";
       if (params["book"]) {
         book = Array.isArray(params["book"]) ? params["book"][0] : params["book"];
+      }
+
+      // NYU Press get locator/deep link from Url param 
+      let nyuLocator = "";
+      if (params["locator"]) {
+        nyuLocator = Array.isArray(params["locator"]) ? params["locator"][0] : params["locator"];
+        setLocatorParam(nyuLocator);
       }
       
       if (book.startsWith("http://") || book.startsWith("https://")) {
@@ -74,7 +83,7 @@ export default function ReaderPage({ searchParams }: { searchParams: Promise<{ [
       ? <span>{error}</span> 
       : <>
         { readerIsLoading && <div className="readerLoader">{ Locale.reader.app.loading }</div> }
-        { isClient && manifest && selfLink && <Reader rawManifest={ manifest } selfHref={ selfLink } /> }
+        { isClient && manifest && selfLink && <Reader rawManifest={ manifest } selfHref={ selfLink } locatorParam={locatorParam} /> }
       </>
     }
     </>
