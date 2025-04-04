@@ -4,14 +4,3 @@ html, body {
   height: 100%;
   margin: 0;
 }
-
-.readerLoader {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  color: var(--theme-text);
-  background-color: var(--theme-background);
-  font-weight: bold;
-}

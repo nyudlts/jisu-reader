@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-import Locale from "../../resources/locales/en.json";
-
 import { HttpFetcher } from "@readium/shared";
 import { Link } from "@readium/shared";
 
@@ -11,6 +9,8 @@ import "../app.css";
 
 import dynamic from "next/dynamic";
 const Reader = dynamic<{ rawManifest: object; selfHref: string, locatorParam:string }>(() => import("../../components/Reader").then((mod) => mod.Reader), { ssr: false });
+
+import { Loader } from "@/components/Loader";
 
 import { useTheming } from "@/hooks/useTheming";
 
@@ -80,11 +80,10 @@ export default function ReaderPage({ searchParams }: { searchParams: Promise<{ [
   return (
     <>
     { error 
-      ? <span>{error}</span> 
-      : <>
-        { readerIsLoading && <div className="readerLoader">{ Locale.reader.app.loading }</div> }
-        { isClient && manifest && selfLink && <Reader rawManifest={ manifest } selfHref={ selfLink } locatorParam={locatorParam} /> }
-      </>
+      ? <span>{ error }</span> 
+      : <Loader isLoading={ readerIsLoading }>
+          { isClient && manifest && selfLink && <Reader rawManifest={ manifest } selfHref={ selfLink } locatorParam={locatorParam} /> }
+        </Loader>        
     }
     </>
   );

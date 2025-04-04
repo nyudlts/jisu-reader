@@ -33,6 +33,7 @@ import { useDocking } from "@/hooks/useDocking";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { setActionOpen } from "@/lib/actionsReducer";
 import { setTocEntry } from "@/lib/publicationReducer";
+import { setHovering, setImmersive } from "@/lib/readerReducer";
 
 export const TocActionContainer: React.FC<IActionComponentContainer> = ({ triggerRef }) => {
   const tocEntry = useAppSelector(state => state.publication.tocEntry);
@@ -73,9 +74,13 @@ export const TocActionContainer: React.FC<IActionComponentContainer> = ({ trigge
       (sheetType === SheetTypes.dockedStart || sheetType === SheetTypes.dockedEnd)
         ? () => {
           dispatch(setTocEntry(key));
+          dispatch(setImmersive(true));
+          dispatch(setHovering(false));
         } 
         : () => {
           dispatch(setTocEntry(key));
+          dispatch(setImmersive(true));
+          dispatch(setHovering(false));
           dispatch(setActionOpen({ 
             key: ActionKeys.toc,
             isOpen: false 

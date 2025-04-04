@@ -1,7 +1,7 @@
 {
   "reader": {
     "app": {
-      "loading": "Loading...",
+      "loading": "Loading",
       "publicationWrapper": "You’re now in the publication.",
       "docking": {
         "dockingLeft": "Docked panel left",
