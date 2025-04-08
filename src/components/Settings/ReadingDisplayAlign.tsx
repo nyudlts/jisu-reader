@@ -41,7 +41,6 @@ export const ReadingDisplayAlign: React.FC<IAdvancedDisplayProps> = ({ standalon
       : (currentHyphens ?? textAlign === TextAlignment.justify);
     
       await submitPreferences({
-        publisherStyles: false,
         textAlign: textAlign,
         hyphens: hyphens
       });

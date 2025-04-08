@@ -25,7 +25,6 @@ export const ReadingDisplayHyphens: React.FC<IAdvancedDisplayProps> = ({ standal
   
   const updatePreference = useCallback(async (value: boolean) => {
     await submitPreferences({ 
-      publisherStyles: false,
       hyphens: value 
     });
   

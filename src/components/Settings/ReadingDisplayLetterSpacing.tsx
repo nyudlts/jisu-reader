@@ -33,12 +33,11 @@ export const ReadingDisplayLetterSpacing: React.FC<IAdvancedDisplayProps> = ({ s
 
   const updatePreference = useCallback(async (value: number) => {
     await submitPreferences({
-      publisherStyles: false, 
       letterSpacing: value
     });
 
     dispatch(setLetterSpacing(getSetting("letterSpacing")));
-    dispatch(setPublisherStyles(getSetting("publisherStyles")));
+    dispatch(setPublisherStyles(false));
   }, [submitPreferences, getSetting, dispatch]);
 
   return (

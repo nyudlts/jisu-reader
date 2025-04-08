@@ -33,12 +33,11 @@ export const ReadingDisplayParaIndent: React.FC<IAdvancedDisplayProps> = ({ stan
 
   const updatePreference = useCallback(async (value: number) => {
     await submitPreferences({
-      publisherStyles: false, 
       paragraphIndent: value
     });
 
     dispatch(setParagraphIndent(getSetting("paragraphIndent")));
-    dispatch(setPublisherStyles(getSetting("publisherStyles")));
+    dispatch(setPublisherStyles(false));
   }, [submitPreferences, getSetting, dispatch]);
 
   return (

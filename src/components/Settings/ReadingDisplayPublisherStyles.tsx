@@ -34,7 +34,7 @@ export const ReadingDisplayPublisherStyles: React.FC<IAdvancedDisplayProps> = ({
     [ReadingDisplayLineHeightOptions.large]: RSPrefs.settings.spacing?.lineHeight?.[ReadingDisplayLineHeightOptions.large] || defaultLineHeights[ReadingDisplayLineHeightOptions.large],
   });
 
-  const { getSetting, submitPreferences } = useEpubNavigator();
+  const { submitPreferences } = useEpubNavigator();
 
   const updatePreference = useCallback(async (isSelected: boolean) => {
     const values = isSelected ? 
@@ -43,8 +43,7 @@ export const ReadingDisplayPublisherStyles: React.FC<IAdvancedDisplayProps> = ({
       paragraphIndent: null,
       paragraphSpacing: null,
       letterSpacing: null,
-      wordSpacing: null,
-      publisherStyles: true
+      wordSpacing: null
     } : 
     {
       lineHeight: lineHeight === ReadingDisplayLineHeightOptions.publisher 
@@ -53,13 +52,12 @@ export const ReadingDisplayPublisherStyles: React.FC<IAdvancedDisplayProps> = ({
       paragraphIndent: paragraphIndent || 0,
       paragraphSpacing: paragraphSpacing || 0,
       letterSpacing: letterSpacing || 0,
-      wordSpacing: wordSpacing || 0,
-      publisherStyles: false
+      wordSpacing: wordSpacing || 0
     };
     await submitPreferences(values);
 
-    dispatch(setPublisherStyles(getSetting("publisherStyles")));
-  }, [submitPreferences, getSetting, dispatch, lineHeight, paragraphIndent, paragraphSpacing, letterSpacing, wordSpacing]);
+    dispatch(setPublisherStyles(isSelected ? true : false));
+  }, [submitPreferences, dispatch, lineHeight, paragraphIndent, paragraphSpacing, letterSpacing, wordSpacing]);
 
   return(
     <>

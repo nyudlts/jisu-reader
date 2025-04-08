@@ -33,12 +33,11 @@ export const ReadingDisplayWordSpacing: React.FC<IAdvancedDisplayProps> = ({ sta
 
   const updatePreference = useCallback(async (value: number) => {
     await submitPreferences({
-      publisherStyles: false, 
       wordSpacing: value
     });
 
     dispatch(setWordSpacing(getSetting("wordSpacing")));
-    dispatch(setPublisherStyles(getSetting("publisherStyles")));
+    dispatch(setPublisherStyles(false));
   }, [submitPreferences, getSetting, dispatch]);
 
   return (

@@ -62,7 +62,7 @@ importers:
     devDependencies:
       '@readium/css':
         specifier: github:readium/readium-css
-        version: https://codeload.github.com/readium/readium-css/tar.gz/c31ea6f13713d6930c209dc6d9abac40cfc06b5a
+        version: https://codeload.github.com/readium/readium-css/tar.gz/bbda8f6f1d0b81c11401b62db8118a04e046ffad
       '@svgr/webpack':
         specifier: ^8.1.0
         version: 8.1.0(typescript@5.8.2)
@@ -1601,9 +1601,9 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
 
-  '@readium/css@https://codeload.github.com/readium/readium-css/tar.gz/c31ea6f13713d6930c209dc6d9abac40cfc06b5a':
-    resolution: {tarball: https://codeload.github.com/readium/readium-css/tar.gz/c31ea6f13713d6930c209dc6d9abac40cfc06b5a}
-    version: 2.0.0-beta.6
+  '@readium/css@https://codeload.github.com/readium/readium-css/tar.gz/bbda8f6f1d0b81c11401b62db8118a04e046ffad':
+    resolution: {tarball: https://codeload.github.com/readium/readium-css/tar.gz/bbda8f6f1d0b81c11401b62db8118a04e046ffad}
+    version: 2.0.0-beta.7
 
   '@reduxjs/toolkit@2.6.1':
     resolution: {integrity: sha512-SSlIqZNYhqm/oMkXbtofwZSt9lrncblzo6YcZ9zoX+zLngRBrCOjK4lNLdkNucJF58RHOWrD9txT3bT3piH7Zw==}
@@ -5382,7 +5382,7 @@ snapshots:
       '@react-types/shared': 3.28.0(react@19.1.0)
       react: 19.1.0
 
-  '@readium/css@https://codeload.github.com/readium/readium-css/tar.gz/c31ea6f13713d6930c209dc6d9abac40cfc06b5a': {}
+  '@readium/css@https://codeload.github.com/readium/readium-css/tar.gz/bbda8f6f1d0b81c11401b62db8118a04e046ffad': {}
 
   '@reduxjs/toolkit@2.6.1(react-redux@9.2.0(@types/react@19.1.0)(react@19.1.0)(redux@5.0.1))(react@19.1.0)':
     dependencies:

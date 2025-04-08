@@ -41,7 +41,6 @@ export const ReadingDisplayLineHeight: React.FC<IAdvancedDisplayProps> = ({ stan
       : lineHeightOptions.current[value as keyof typeof ReadingDisplayLineHeightOptions];
     
     await submitPreferences({
-      publisherStyles: false,
       lineHeight: computedValue
     });
 

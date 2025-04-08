@@ -33,12 +33,11 @@ export const ReadingDisplayParaSpacing: React.FC<IAdvancedDisplayProps> = ({ sta
 
   const updatePreference = useCallback(async (value: number) => {
     await submitPreferences({
-      publisherStyles: false, 
       paragraphSpacing: value
     });
 
     dispatch(setParagraphSpacing(getSetting("paragraphSpacing")));
-    dispatch(setPublisherStyles(getSetting("publisherStyles")));
+    dispatch(setPublisherStyles(false));
   }, [submitPreferences, getSetting, dispatch]);
 
   return (

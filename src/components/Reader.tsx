@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 import { RSPrefs } from "@/preferences";
 
@@ -632,7 +632,6 @@ export const Reader = ({ rawManifest, selfHref, locatorParam }: { rawManifest: o
           lineLength: cache.current.settings.lineLength,
           paragraphIndent: cache.current.settings.publisherStyles ? undefined :cache.current.settings.paragraphIndent,
           paragraphSpacing: cache.current.settings.publisherStyles ? undefined :cache.current.settings.paragraphSpacing,
-          publisherStyles: cache.current.settings.publisherStyles,
           scroll: cache.current.settings.scroll,
           textAlign: cache.current.settings.textAlign as unknown as TextAlignment | null | undefined,
           textNormalization: cache.current.settings.textNormalization,
