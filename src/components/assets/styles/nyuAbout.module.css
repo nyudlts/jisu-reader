@@ -1,0 +1,34 @@
+.aboutPanel {
+  width: 340px;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.title {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.sectionSeparator {
+  margin: 10px 0;
+  height: 1px;
+  background-color: #ddd;
+  border: none;
+}
+
+.aboutSubsection {
+  margin-bottom: 10px;
+}
+
+.infoValue {
+  overflow-wrap: break-word;
+}
+
+.infoValueSm {
+  font-size: 0.9rem;
+  overflow-wrap: break-word;
+}

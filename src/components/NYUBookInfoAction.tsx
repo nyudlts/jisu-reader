@@ -19,13 +19,7 @@ import { ActionIcon } from "./ActionTriggers/ActionIcon";
 import { SheetWithType } from "./Sheets/SheetWithType";
 import { OverflowMenuItem } from "./ActionTriggers/OverflowMenuItem";
 import { Heading, Text, Separator, Key } from "react-aria-components";
-import {
-  Tree,
-  TreeItem,
-  TreeItemContent
-} from "react-aria-components";
 
-import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 import { useDocking } from "@/hooks/useDocking";
 
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
@@ -92,7 +86,7 @@ export const NYUBookInfoActionContainer: React.FC<IActionComponentContainer> = (
         id: ActionKeys.nyuBookInfo,
         triggerRef: triggerRef, 
         heading: Locale.reader.nyuBookInfo.heading,
-        className: bookInfoStyles.toc,
+        className: bookInfoStyles.info,
         placement: "bottom",
         isOpen: actionState.isOpen || false,
         onOpenChangeCallback: setOpen,
@@ -109,15 +103,15 @@ export const NYUBookInfoActionContainer: React.FC<IActionComponentContainer> = (
       />
       <div className={bookInfoStyles.infoGroup}>
         <div className={bookInfoStyles.infoRow}>
-          <span className={bookInfoStyles.infoLabel}>Author:</span>
+          <span className={bookInfoStyles.infoLabel}>{Locale.reader.nyuBookInfo.author}</span>
           <span className={bookInfoStyles.infoValue}>{authors}</span>
         </div>
         <div className={bookInfoStyles.infoRow}>
-          <span className={bookInfoStyles.infoLabel}>Publisher:</span>
-          <span className="info-value">{publishers}</span>
+          <span className={bookInfoStyles.infoLabel}>{Locale.reader.nyuBookInfo.publisher}</span>
+          <span className={bookInfoStyles.infoValue}>{publishers}</span>
         </div>
         <div className={bookInfoStyles.infoRow}>
-          <span className={bookInfoStyles.infoLabel}>Identifier:</span>
+          <span className={bookInfoStyles.infoLabel}>{Locale.reader.nyuBookInfo.identifier}</span>
           <span className={bookInfoStyles.infoValue}>{identifier}</span>
         </div>
       </div>
@@ -125,10 +119,10 @@ export const NYUBookInfoActionContainer: React.FC<IActionComponentContainer> = (
       <Separator className={bookInfoStyles.sectionSeparator} />
 
       <section className="accessibility-section">
-        <Heading level={3} className="section-heading">Book Accessibility</Heading>
+        <Heading level={3} className="section-heading">{Locale.reader.nyuBookInfo.a11yHeader}</Heading>
 
         <div className={bookInfoStyles.accessibilitySubsection}>
-          <Text className={bookInfoStyles.subheading}>Ways of reading:</Text>
+          <Text className={bookInfoStyles.subheading}>{Locale.reader.nyuBookInfo.a11yWays}</Text>
           <ul>
           {accessibilityInfo?.waysOfReading.map((item, index) => (
               <li key={`reading-${index}`}>{item}</li>
@@ -137,7 +131,7 @@ export const NYUBookInfoActionContainer: React.FC<IActionComponentContainer> = (
         </div>
 
         <div className={bookInfoStyles.accessibilitySubsection}>
-          <Text className={bookInfoStyles.subheading}>Navigation:</Text>
+          <Text className={bookInfoStyles.subheading}>{Locale.reader.nyuBookInfo.a11yNavigation}</Text>
           <ul>
           {accessibilityInfo?.navigation.map((item, index) => (
               <li key={`nav-${index}`}>{item}</li>
@@ -146,7 +140,7 @@ export const NYUBookInfoActionContainer: React.FC<IActionComponentContainer> = (
         </div>
 
         <div className={bookInfoStyles.accessibilitySubsection}>
-          <Text className={bookInfoStyles.subheading}>Hazards:</Text>
+          <Text className={bookInfoStyles.subheading}>{Locale.reader.nyuBookInfo.a11yHazards}</Text>
           <ul>
           {accessibilityInfo?.hazards.map((item, index) => (
               <li key={`hazard-${index}`}>{item}</li>
@@ -155,7 +149,7 @@ export const NYUBookInfoActionContainer: React.FC<IActionComponentContainer> = (
         </div>
 
         <div className={bookInfoStyles.accessibilitySubsection}>
-          <Text className={bookInfoStyles.subheading}>Accessibility summary:</Text>
+          <Text className={bookInfoStyles.subheading}>{Locale.reader.nyuBookInfo.a11ySummary}</Text>
           <p>{accessibilityInfo?.summary}</p>
         </div>
       </section>

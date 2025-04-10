@@ -125,9 +125,9 @@ export const NYUSearchContainer: React.FC<IActionComponentContainer> = ({ trigge
     const bookParam = searchParams.get("book");
     const urlBookID = getBookIDFromUrl(bookParam!);
 
-    //TODO Switch to bookID instead of title
-    if (bookID === urlBookID) {
-      // If the bookID is the same as the current title just go to the locator
+    // If the bookID is the same as the current title just go to the locator
+    // If not, create a deep link to the new book
+    if (bookID === urlBookID) {  
       const searchLocator = Locator.deserialize(locatorData);
       go(searchLocator! , true, () => {highlightSearchTerm(searchLocator!)});
 
@@ -236,6 +236,14 @@ export const NYUSearchContainer: React.FC<IActionComponentContainer> = ({ trigge
     };
   };
 
+  const getResultsString = () => {
+    if (numFound === -1) return "";
+    if (numFound === 0) return Locale.reader.nyuSearch.noResults;
+    if (booksFound === 1) return `${Locale.reader.nyuSearch.resultsPre} ${numFound} ${Locale.reader.nyuSearch.resultsMid} ${booksFound} ${Locale.reader.nyuSearch.resultsOne}`;
+    if (booksFound > 1) return `${Locale.reader.nyuSearch.resultsPre} ${numFound} ${Locale.reader.nyuSearch.resultsMid} ${booksFound} ${Locale.reader.nyuSearch.resultsMany}`;
+      
+  }
+
   const makeSafeID = (str: string) => {
     return str.replace(/[^a-z0-9]/gi, '-').toLowerCase();
   };
@@ -260,10 +268,10 @@ export const NYUSearchContainer: React.FC<IActionComponentContainer> = ({ trigge
         <TextField name="term" className={ searchStyles.inputContainer } defaultValue={searchTerm}>
           <Input className={ searchStyles.inputField } aria-label="Search Input" />
         </TextField>
-        <Button type="submit" aria-label="Search Button"  className={ searchStyles.submitButton }>Search</Button>
+        <Button type="submit" aria-label="Search Button"  className={ searchStyles.submitButton }>{Locale.reader.nyuSearch.buttonLabel}</Button>
       </Form>
 
-      {numFound !== -1 && <div className={ searchStyles.numFound }>Results found: {numFound} chapters, in {booksFound} books.  </div>}
+      {numFound !== -1 && <div className={ searchStyles.numFound }>{ getResultsString() }</div>}
 
       <div className={ searchStyles.booksContainer }>
         {currentTitleFirst.map(([bookTitle, chapters]) => (

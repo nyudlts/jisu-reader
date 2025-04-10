@@ -88,19 +88,39 @@
       "trigger": "Search",
       "close": "Close Search",
       "heading": "Search",
-      "empty": "No search items returned."
+      "empty": "No search items returned.",
+      "buttonLabel": "Search",
+      "noResults": "No results found",
+      "resultsPre": "Results found: ",
+      "resultsMid": "chapters, in",
+      "resultsOne": "book",
+      "resultsMany": "books"
     },
     "nyuBookInfo": {
       "tooltip": "Book Info",
       "trigger": "Book Info",
       "close": "Close Book Info",
-      "heading": "Book Info"
+      "heading": "Book Info",
+      "author": "Author:",
+      "publisher": "Publisher:",
+      "identifier": "Identifier:",
+      "a11yHeader": "Book Accessibility",
+      "a11yWays": "Ways of reading:",
+      "a11yNavigation": "Navigation:",
+      "a11yHazards": "Hazards:",
+      "a11ySummary": "Accessibility summary:"
     },
     "nyuAbout": {
       "tooltip": "About",
       "trigger": "About",
       "close": "Close About",
-      "heading": "About"
+      "heading": "About",
+      "nyu": "NYU Press",
+      "version": "Version 1.0",
+      "designedBy": "Designed and developed for NYU Press by",
+      "about": "This application is open-source, released under a BSD 3 license. It is based on the Readium TS Toolkit project hosted by Readium Foundation.",
+      "source": "Sourde code available on",
+      "sourceLink": "https://nyupress.org"
     },
     "nyuPageList": {
       "tooltip": "Page List",

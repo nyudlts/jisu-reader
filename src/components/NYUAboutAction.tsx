@@ -11,7 +11,7 @@ import { ActionComponentVariant, ActionKeys, IActionComponentContainer, IActionC
 import { SheetTypes } from "@/models/sheets";
 import { LayoutDirection } from "@/models/layout";
 
-import tocStyles from "./assets/styles/toc.module.css";
+import aboutStyles from "./assets/styles/nyuAbout.module.css";
 
 import AboutIcon from "./assets/icons/about.svg";
 
@@ -19,11 +19,7 @@ import { ActionIcon } from "./ActionTriggers/NYUActionIcon";
 import { SheetWithType } from "./Sheets/SheetWithType";
 import { OverflowMenuItem } from "./ActionTriggers/OverflowMenuItem";
 import { Button, Collection, Key } from "react-aria-components";
-import {
-  Tree,
-  TreeItem,
-  TreeItemContent
-} from "react-aria-components";
+import { Heading, Text, Separator } from "react-aria-components";
 
 import { useEpubNavigator } from "@/hooks/useEpubNavigator";
 import { useDocking } from "@/hooks/useDocking";
@@ -81,7 +77,7 @@ export const NYUAboutActionContainer: React.FC<IActionComponentContainer> = ({ t
         id: ActionKeys.nyuAbout,
         triggerRef: triggerRef, 
         heading: Locale.reader.nyuAbout.heading,
-        className: tocStyles.toc,
+        className: aboutStyles.about,
         placement: "bottom",
         isOpen: actionState.isOpen || false,
         onOpenChangeCallback: setOpen,
@@ -89,7 +85,20 @@ export const NYUAboutActionContainer: React.FC<IActionComponentContainer> = ({ t
         docker: docking.getDocker()
       } }
     >
-      About this reader
+      
+
+      <div className={aboutStyles.aboutPanel}>
+        <Heading level={2} className={aboutStyles.title}>{Locale.reader.nyuAbout.nyu}</Heading>
+        <div className={aboutStyles.aboutSubsection}>
+          <Text className={aboutStyles.infoValue}>{Locale.reader.nyuAbout.version}</Text><br/>
+          <Text className={aboutStyles.infoValue}>{Locale.reader.nyuAbout.designedBy}<br/> <a href="http://bluefirereader.com" target="_blank">Bluefire</a></Text>
+          <Separator className={aboutStyles.sectionSeparator} />
+          <Text className={aboutStyles.infoValueSm}>{Locale.reader.nyuAbout.about}</Text>
+          <Separator className={aboutStyles.sectionSeparator} />
+          <Text className={aboutStyles.infoValue}>{Locale.reader.nyuAbout.source} <a href={Locale.reader.nyuAbout.sourceLink} target="_blank">GitHub</a></Text>
+        </div>
+      </div> 
+      
     </SheetWithType>
     </>
   )
