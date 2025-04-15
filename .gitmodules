@@ -1,4 +1,3 @@
 [submodule "src/readium/ts-toolkit"]
 	path = src/readium/ts-toolkit
 	url = https://github.com/readium/ts-toolkit
-	branch = PreferencesAPI
