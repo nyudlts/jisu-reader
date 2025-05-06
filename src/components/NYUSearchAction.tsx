@@ -61,7 +61,7 @@ export const NYUSearchContainer: React.FC<IActionComponentContainer> = ({ trigge
   const { getCframes, go } = useEpubNavigator();
 
   const isDev = process.env.NODE_ENV === "development";
-  const NYU_PRESS_API = isDev ? 'http://localhost:3001' : 'http://18.205.45.14:3001';  //'http://35.95.95.96:3001';
+  const NYU_PRESS_API = isDev ? 'http://localhost:3001' : 'http://18.205.45.14:3001';
 
   const [results, setResults] = useState<SearchResult[]>([]);
   const [highlighting, setHighlighting] = useState<Highlighting>({});

@@ -46,7 +46,7 @@ export const ReaderFooter = () => {
   const [localProgress, setLocalProgress] = useState(stateProgression);
   const [shouldUpdate, setShouldUpdate] = useState(true);
   const isDev = process.env.NODE_ENV === "development";
-  const NYU_PRESS_API = isDev ? 'http://localhost:3001' : 'http://18.205.45.14:3001'; //'http://35.95.95.96:3001';
+  const NYU_PRESS_API = isDev ? 'http://localhost:3001' : 'http://18.205.45.14:3001';
   const searchParams = useSearchParams();
   const [chapters, setChapters] = useState<ChaptersResult[]>([]);
   const [chapterRanges, setChapterRanges] = useState<ChapterRanges[]>([]);
