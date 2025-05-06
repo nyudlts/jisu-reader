@@ -35,10 +35,10 @@ Click on a link to a book from the landing page.
 If the book content loads then the jisu-pub-server is working.  
 
 Check that the reader footer contains the chapter name on the left side.
-If so, then the 'chapter' api call is working.
+If so, then Solr and the 'chapter' api call is working.
 
 Perform a search via the magnifying glass icon in the reader header.
-If search results are shown thn the 'search' api call is working.
+If search results are shown then Solr and the 'search' api call is working.
 ```
 
 ## Production Setup
