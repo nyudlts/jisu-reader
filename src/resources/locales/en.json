@@ -120,7 +120,7 @@
       "designedBy": "Designed and developed for NYU Press by",
       "about": "This application is open-source, released under a BSD 3 license. It is based on the Readium TS Toolkit project hosted by Readium Foundation.",
       "source": "Sourde code available on",
-      "sourceLink": "https://nyupress.org"
+      "sourceLink": "https://github.com/nyudlts/jisu-reader"
     },
     "nyuPageList": {
       "tooltip": "Page List",
