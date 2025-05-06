@@ -4,9 +4,9 @@ A web-based EPUB reader based on the Readium [ts-toolkit](https://github.com/rea
 ## Dev Setup
 For development purposes it is possible to run this project locally.  Note that this project requires the following projects to also be running locally in order to work.
 
-[jisu-build](https://github.com/nyudlts/jisu-build)             For a Solr database populated with book data.   
-[jisu-pub-server](https://github.com/nyudlts/jisu-pub-server)   A Publication Manifest Server with books in the 'test' directory.   
-[jisu-api](https://github.com/nyudlts/jisu-api)                 An API for the reader to make Solr calls.    
+[jisu-build](https://github.com/nyudlts/jisu-build)             A Solr database populated with book data.   
+[jisu-pub-server](https://github.com/nyudlts/jisu-pub-server)   A Publication Manifest Server with books in the 'test' directory.   
+[jisu-api](https://github.com/nyudlts/jisu-api)                 An API for the reader to make Solr calls.    
 
 With these three service running you run the reader in development mode by follow these steps:
 
